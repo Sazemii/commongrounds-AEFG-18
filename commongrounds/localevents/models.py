@@ -32,7 +32,7 @@ class Event(models.Model):
         ordering = ['-created_on']
 
     def get_absolute_url(self):
-        return reverse('localevents:event-detail', kwargs={'pk': self.pk})
+        return reverse('localevents:event_detail', kwargs={'pk': self.pk})
 
     def __str__(self):
         return self.title

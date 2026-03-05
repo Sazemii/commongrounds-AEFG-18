@@ -3,7 +3,7 @@ from django.utils import timezone
 
 # Create your models here.
 
-class CommisionType(models.Model):
+class CommissionType(models.Model):
     name = models.CharField(max_length=255)
     description = models.TextField()
     

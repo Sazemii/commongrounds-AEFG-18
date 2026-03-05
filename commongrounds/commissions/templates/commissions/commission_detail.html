@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>{{ commission.title }}</h1>
+
+<p>{{ commission.description }}</p>
+
+<p><strong>People Required:</strong> {{ commission.people_required }}</p>
+<p><strong>Created:</strong> {{ commission.created_on }}</p>
+<p><strong>Last Updated:</strong> {{ commission.updated_on }}</p>
+
+<a href="{% url 'commissions:commission_list' %}">Back to Requests</a>
+{% endblock %}

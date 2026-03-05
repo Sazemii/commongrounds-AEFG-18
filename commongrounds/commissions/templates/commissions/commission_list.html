@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<h1>Commission Requests</h1>
+
+{% if commissions %}
+    <div class="commission0list">
+        {% for commission in commissions %}
+            <div class="commission-item">
+                <h2>
+                    <a href="{% url 'commissions:commission_detail' commission.pk %}">
+                        {{ commission.title }}
+                    </a>
+                </h2>
+                <p>{{ commission.description }}</p>
+                <p><strong>People Required:</strong> {{ commission.people_required }}</p>
+                <p><strong>Created:</strong> {{ commission.created_on }}</p>
+            </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <p>No commission requests available.</p>
+{% endif %}
+{% endblock %}

@@ -11,6 +11,5 @@ urlpatterns = [
          CommissionDetailView.as_view(),
          name='commission_detail'
          )
-    
 ]
 

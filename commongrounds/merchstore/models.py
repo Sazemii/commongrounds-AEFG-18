@@ -21,7 +21,7 @@ class Product(models.Model):
     price = models.DecimalField(max_digits=20, decimal_places=2)
 
     class Meta:
-        ordering = ['sname']
+        ordering = ['name']
 
     def get_absolute_url(self):
         return reverse('merchstore:item_detail', kwargs={'pk': self.pk})

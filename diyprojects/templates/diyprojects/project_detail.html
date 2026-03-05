@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+{% for protail in project_detail %}
+<h1> {{ protail.title }} </h1>
+<h3> Category: {{ protail.category }} </h3>
+<hr> 
+<p> Description: {{ protail.description }} </p>
+<hr>
+<p> Materials: {{ protail.materials }} </p>
+<hr>
+<p> Steps: {{ protail.steps }} </p>
+<hr>
+<p> Created On: {{ protail.created_on }} </p>
+<p> Updated On: {{ protail.updated_on }} </p>
+<hr>
+<a href="{% url 'diyprojects:project_list' %}">Back to DIY Projects</a>
+{% endblock %}

@@ -19,13 +19,13 @@ class Project(models.Model):
         null=True,
     )
     description = models.TextField()
-    Materials = models.TextField()
-    Steps = models.TextField()
+    materials = models.TextField()
+    steps = models.TextField()
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
 
     class Meta:
-        ordering = ['created_on']
+        ordering = ['-created_on']
 
     def __str__(self):
         return self.title

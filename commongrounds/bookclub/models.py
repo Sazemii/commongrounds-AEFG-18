@@ -1,4 +1,5 @@
 from django.db import models
+from django.urls import reverse
 
 
 class Genre(models.Model):
@@ -9,6 +10,7 @@ class Genre(models.Model):
         ordering = ['name']
 
     # for readability in shell/panel
+
     def __str__(self):
         return self.name
 
@@ -30,3 +32,6 @@ class Book(models.Model):
 
     def __str__(self):
         return self.title
+
+    def get_absolute_url(self):
+        return reverse('bookclub:book-detail', args=[str(self.pk)])

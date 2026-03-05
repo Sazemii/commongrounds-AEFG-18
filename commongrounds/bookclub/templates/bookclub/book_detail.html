@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ object.title }}{% endblock %}
+
+{% block content %}
+<h1>{{ object.title }}</h1>
+<p>Author: {{ object.author }}</p>
+<p>Genre: {{ object.genre }}</p>
+<p>Publication Year: {{ object.publication_year }}</p>
+<p>Created On: {{ object.created_on }}</p>
+<p>Updated On: {{ object.updated_on }}</p>
+<a href="{% url 'bookclub:book-list' %}">Back to Books</a>
+{% endblock %}

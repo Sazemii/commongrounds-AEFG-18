@@ -14,8 +14,8 @@ class ProjectCategory(models.Model):
 class Project(models.Model):
     title = models.CharField(max_length=255)
     category = models.ForeignKey(
-        PostCategory,
-        on_delete=models.NULL,
+        ProjectCategory,
+        on_delete=models.SET_NULL,
         null=True,
     )
     description = models.TextField()

@@ -1,20 +1,12 @@
 from django.contrib import admin
 from .models import ProjectCategory, Project
 
-class ProjectCategoryInline(admin.TabularInline):
-    model = ProjectCategory
-    extra = 1
-
 class ProjectCategoryAdmin(admin.ModelAdmin):
-    inlines = [ProjectCategoryInline]
-
-class ProjectInline(admin.TabularInline):
-    model = Project
-    extra = 1
+    model = ProjectCategory
 
 class ProjectAdmin(admin.ModelAdmin):
-    inlines = [ProjectCategoryInline]
+    model = Project
 
-admin.site.register(ProjectCategoryInline, ProjectCategoryAdmin)
-admin.site.register(ProjectInline, ProjectAdmin)
+admin.site.register(ProjectCategory, ProjectCategoryAdmin)
+admin.site.register(Project, ProjectAdmin)
 # Register your models here.

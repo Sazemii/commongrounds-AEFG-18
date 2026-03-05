@@ -7,12 +7,12 @@ from .models import Commission, CommisionType
 class CommissionListView(ListView):
     model = Commission
     template_name = 'commissions/commission_list.html'
-    context_object_name = 'commissions'
+    context_object_name = 'requests'
     pass
 
 
 class CommissionDetailView(DetailView):
     model = Commission
     template_name = 'commissions/commission_detail.html'
-    context_object_name = 'commission'
+    context_object_name = 'request'
     pass

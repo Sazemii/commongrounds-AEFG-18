@@ -8,9 +8,8 @@
     {% for project in object_list %}
     <li>
         <a href="{{ project.get_absolute_url }}">
-            {{ project.title }}
+            <h3>{{ project.title }}</h3>
         </a>
-        - {{ project.category }}: ({{ project.description }})
     </li>
     {% empty %}
     <li>No projects available.</li>

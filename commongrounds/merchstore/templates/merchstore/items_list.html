@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block title %} Merch Store - Common Grounds {% endblock %}
+{% block page_heading %}List of Merch{% endblock %}
+
+{% block content %}
+
+<ul>
+    {% for product in products %}
+    <li>
+        <a href="{{ product.get_absolute_url }}">{{ product.name }}</a> - PHP {{ product.price }}
+    </li>
+    {% endfor %}
+</ul>
+{% endblock %}

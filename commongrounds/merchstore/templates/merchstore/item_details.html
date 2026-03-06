@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block title %} Merch Store - Common Grounds {% endblock %}
+{% block page_heading %}{{ product.name }}{% endblock %}
+
+{% block content %}
+<p><strong>Description:</strong> {{ product.description }}</p>
+<p><strong>Price: </strong> {{ product.price }}</p>
+<br>
+<a href="{% url 'merchstore:items_list' %}">Back to Merchstore List</a>
+{% endblock %}

@@ -9,8 +9,6 @@ class Genre(models.Model):
     class Meta:
         ordering = ['name']
 
-    # for readability in shell/panel
-
     def __str__(self):
         return self.name
 

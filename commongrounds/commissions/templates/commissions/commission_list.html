@@ -7,11 +7,11 @@
     <div class="commission-list">
         {% for commission in commissions %}
             <div class="commission-item">
-                <h2>
+                <h3>
                     <a href="{% url 'commissions:commission_detail' commission.pk %}">
                         {{ commission.title }}
                     </a>
-                </h2>
+                </h3>
             </div>
         {% endfor %}
     </div>

@@ -3,7 +3,7 @@
 {% block title %}{{ title }}{% endblock %}
 
 {% block content %}
-{% for protail in project_detail %}
+{% for protail in project_detail.all %}
 <h1> {{ protail.title }} </h1>
 <h3> Category: {{ protail.category }} </h3>
 <hr> 

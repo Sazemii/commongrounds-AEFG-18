@@ -3,9 +3,11 @@ from .models import Project
 
 # Centralized data to mimic a database for now
 
+
 def project_list(request):
     projects = Project.objects.all()
     return render(request, 'project_list.html', {'projects': projects})
+
 
 def project_detail(request, pk):
     project = get_object_or_404(Project, pk=pk)

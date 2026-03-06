@@ -5,15 +5,15 @@
 
 {% if commissions %}
     <div class="commission-list">
+        <ul>
         {% for commission in commissions %}
-            <div class="commission-item">
-                <h3>
-                    <a href="{% url 'commissions:commission_detail' commission.pk %}">
-                        {{ commission.title }}
-                    </a>
-                </h3>
-            </div>
+            <li>
+                <a href="{% url 'commissions:commission_detail' commission.pk %}">
+                    {{ commission.title }}
+                </a>
+            </li>
         {% endfor %}
+        </ul>
     </div>
 {% else %}
     <p>No commission requests available.</p>

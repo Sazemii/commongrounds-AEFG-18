@@ -4,11 +4,11 @@
 
 {% block content %}
 <h1>{{ object.title }}</h1>
-<p>Category: {{ object.category }}</p>
-<p>Description: {{ object.description }}</p>
-<p>Materials: {{ object.materials }}</p>
-<p>Steps: {{ object.steps }}</p>
-<p>Created On: {{ object.created_on }}</p>
-<p>Updated On: {{ object.updated_on }}</p>
+<p><strong>Category:</strong> {{ object.category }}</p>
+<p><strong>Description:</strong> {{ object.description }}</p>
+<p><strong>Materials:</strong> {{ object.materials }}</p>
+<p><strong>Steps:</strong> {{ object.steps }}</p>
+<p><strong>Created On:</strong> {{ object.created_on }}</p>
+<p><strong>Updated On:</strong> {{ object.updated_on }}</p>
 <a href="{% url 'diyprojects:project-list' %}">Back to DIY Projects</a>
 {% endblock %}

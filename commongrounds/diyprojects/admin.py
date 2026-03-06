@@ -12,4 +12,3 @@ class ProjectAdmin(admin.ModelAdmin):
 
 admin.site.register(ProjectCategory, ProjectCategoryAdmin)
 admin.site.register(Project, ProjectAdmin)
-# Register your models here.

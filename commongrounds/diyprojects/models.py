@@ -33,7 +33,4 @@ class Project(models.Model):
         return self.title
 
     def get_absolute_url(self):
-        return reverse('diyprojects:project_detail', args=[str(self.pk)])
-
-
-# Create your models here.
+        return reverse('diyprojects:project-detail', args=[str(self.pk)])

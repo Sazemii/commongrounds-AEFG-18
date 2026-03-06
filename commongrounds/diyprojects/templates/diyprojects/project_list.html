@@ -3,18 +3,17 @@
 {% block title %}DIY Projects - Projects{% endblock %}
 
 {% block content %}
-<h1> Projects </h1>
+<h1>Projects</h1>
 <ul>
-    {% for project in project_list %}
+    {% for project in object_list %}
     <li>
         <a href="{{ project.get_absolute_url }}">
             {{ project.title }}
         </a>
         - {{ project.category }}: ({{ project.description }})
-        <hr>
     </li>
     {% empty %}
-    <li> No projects available. </li>
+    <li>No projects available.</li>
     {% endfor %}
 </ul>
 {% endblock %}

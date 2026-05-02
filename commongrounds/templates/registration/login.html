@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+
+{% block title %}Login | Common Grounds{% endblock %}
+{% block page_heading %}Login{% endblock %}
+
+{% block content %}
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">Login</button>
+</form>
+<p><em>Placeholder login page (will be replaced by accounts app).</em></p>
+{% endblock %}

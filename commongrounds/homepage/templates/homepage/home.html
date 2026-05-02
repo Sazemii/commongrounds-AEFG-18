@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block title %}Home | Common Grounds{% endblock %}
+{% block page_heading %}Welcome to Common Grounds{% endblock %}
+
+{% block content %}
+<p>Choose a hub:</p>
+<ul>
+  <li><a href="{% url 'merchstore:items_list' %}">Merchandise Store</a></li>
+  <li><a href="{% url 'localevents:event_list' %}">Local Events</a></li>
+  <li><a href="{% url 'bookclub:book-list' %}">Book Club</a></li>
+  <li><a href="{% url 'diyprojects:project-list' %}">DIY Projects</a></li>
+  <li><a href="{% url 'commissions:commission_list' %}">Commission Requests</a></li>
+</ul>
+
+{% if user.is_authenticated %}
+  <p>Logged in as {{ user.username }}.
+    <form method="post" action="{% url 'logout' %}" style="display:inline">
+      {% csrf_token %}
+      <button type="submit">Logout</button>
+    </form>
+  </p>
+{% else %}
+  <p><a href="{% url 'login' %}">Login</a></p>
+{% endif %}
+{% endblock %}

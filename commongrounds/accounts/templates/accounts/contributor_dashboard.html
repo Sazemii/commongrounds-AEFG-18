@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %}Book Contributor Dashboard | Common Grounds{% endblock %}
+{% block page_heading %}Book Contributor Dashboard{% endblock %}
+
+{% block content %}
+<p>Welcome, {{ user.profile.display_name }}.</p>
+<h3>Books you contributed</h3>
+<ul>
+{% for book in books %}
+  <li>{{ book }}</li>
+{% empty %}
+  <li>No books yet.</li>
+{% endfor %}
+</ul>
+{% endblock %}

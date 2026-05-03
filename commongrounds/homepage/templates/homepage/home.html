@@ -14,13 +14,14 @@
 </ul>
 
 {% if user.is_authenticated %}
-  <p>Logged in as {{ user.username }}.
+  <p>Logged in as {{ user.username }}
+    (<a href="{% url 'accounts:profile-update' user.username %}">edit profile</a>).
     <form method="post" action="{% url 'logout' %}" style="display:inline">
       {% csrf_token %}
       <button type="submit">Logout</button>
     </form>
   </p>
 {% else %}
-  <p><a href="{% url 'login' %}">Login</a></p>
+  <p><a href="{% url 'login' %}">Login</a> or <a href="{% url 'accounts:register' %}">Register</a></p>
 {% endif %}
 {% endblock %}

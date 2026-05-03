@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+
+{% block title %}Edit Profile | Common Grounds{% endblock %}
+{% block page_heading %}Edit Profile{% endblock %}
+
+{% block content %}
+<p>Username: {{ object.user.username }}</p>
+<p>Email: {{ object.email_address }}</p>
+<p>Role: {{ object.get_role_display }}</p>
+
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">Save</button>
+</form>
+{% endblock %}

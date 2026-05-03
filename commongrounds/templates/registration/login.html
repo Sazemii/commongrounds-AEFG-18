@@ -4,10 +4,11 @@
 {% block page_heading %}Login{% endblock %}
 
 {% block content %}
-<form method="post">
+<form method="POST">
   {% csrf_token %}
   {{ form.as_p }}
   <button type="submit">Login</button>
 </form>
-<p><em>Placeholder login page (will be replaced by accounts app).</em></p>
+<p><a href="{% url 'password_reset' %}">Forgot password?</a></p>
+<p>No account yet? <a href="{% url 'accounts:register' %}">Register</a></p>
 {% endblock %}

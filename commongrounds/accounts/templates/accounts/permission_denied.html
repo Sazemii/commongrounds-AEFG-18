@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+
+{% block title %}Permission Denied | Common Grounds{% endblock %}
+{% block page_heading %}Permission Denied{% endblock %}
+
+{% block content %}
+<p>Your account does not have the required role to access this page.</p>
+<p><a href="{% url 'homepage:home' %}">Back to home</a></p>
+{% endblock %}

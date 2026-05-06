@@ -148,6 +148,36 @@ white
   800  #33194d    900  #190d26    950  #12091b
 
 
+── SHADOW PRINCIPLE (Apple Card style) ────────────────────────────────────────
+
+Cards and elevated surfaces use a multi-layer, soft shadow approach inspired by
+Apple's design language. The goal is "floating" depth, not a heavy drop shadow.
+
+Key principles:
+  1. Layered shadows — use 2-3 box-shadow layers at very low opacity (4-8%)
+     instead of one dark shadow. This creates natural, diffused depth.
+  2. Large blur radius — prefer blur values of 16px–56px to keep the shadow soft.
+  3. Border accent — use a 1-1.5px semi-transparent white/light border
+     (rgba(255,255,255,0.7)) to define the card edge against the shadow.
+  4. Interaction — on hover, shadows expand and shift upward to mimic
+     a physical lift. The border subtly picks up the hub accent color.
+
+Implementation (resting):
+  box-shadow:
+    0 2px 4px rgba(0,0,0,0.04),
+    0 6px 16px rgba(0,0,0,0.06),
+    0 16px 40px rgba(0,0,0,0.04);
+
+Implementation (hover/lifted):
+  box-shadow:
+    0 4px 8px rgba(0,0,0,0.05),
+    0 12px 28px rgba(0,0,0,0.08),
+    0 28px 56px rgba(0,0,0,0.06);
+
+Do NOT use a single heavy shadow like box-shadow: 0 4px 6px rgba(0,0,0,0.3).
+That reads as old/flat-design skeuomorphism, not modern glassmorphism.
+
+
 ── NOTES ──────────────────────────────────────────────────────────────────────
 
 - The ★ shade is the hub's primary accent — matches the Tailwind config in base.html.

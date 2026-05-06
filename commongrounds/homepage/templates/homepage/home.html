@@ -14,43 +14,48 @@
     overflow: hidden;
     border-radius: 1rem;
     border: 1.5px solid transparent;
-    padding: 1.5rem;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    padding: 1.25rem;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
     text-decoration: none;
     display: flex;
     flex-direction: column;
-    gap: 0.5rem;
+    gap: 0.75rem;
   }
   .hub-card:hover {
     transform: translateY(-3px);
-    box-shadow: 0 12px 32px -8px rgba(0,0,0,0.12);
   }
 
-  /* Pastel tinted backgrounds + matching border on hover */
   .hub-card.card-events      { background: #fff0e6; border-color: #ffe0cc; }
-  .hub-card.card-events:hover  { border-color: #fa7305; }
+  .hub-card.card-events:hover  { border-color: #fa7305; box-shadow: 0 12px 32px -8px rgba(250,115,5,0.18); }
 
   .hub-card.card-books       { background: #e0f2fe; border-color: #bae6fd; }
-  .hub-card.card-books:hover   { border-color: #0897f7; }
+  .hub-card.card-books:hover   { border-color: #0897f7; box-shadow: 0 12px 32px -8px rgba(8,151,247,0.18); }
 
   .hub-card.card-merch       { background: #dcfce7; border-color: #bbf7d0; }
-  .hub-card.card-merch:hover   { border-color: #10bc4c; }
+  .hub-card.card-merch:hover   { border-color: #10bc4c; box-shadow: 0 12px 32px -8px rgba(16,188,76,0.18); }
 
   .hub-card.card-diy         { background: #fef9c3; border-color: #fef08a; }
-  .hub-card.card-diy:hover     { border-color: #eab308; }
+  .hub-card.card-diy:hover     { border-color: #eab308; box-shadow: 0 12px 32px -8px rgba(234,179,8,0.18); }
 
   .hub-card.card-commissions { background: #f3e8ff; border-color: #e9d5ff; }
-  .hub-card.card-commissions:hover { border-color: #830bf4; }
+  .hub-card.card-commissions:hover { border-color: #830bf4; box-shadow: 0 12px 32px -8px rgba(131,11,244,0.18); }
 
-  .hub-card .card-arrow {
-    opacity: 0;
-    transform: translateX(-4px);
-    transition: opacity 0.2s, transform 0.2s;
+  .hub-card .card-figure img {
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    border-radius: 0.75rem;
   }
-  .hub-card:hover .card-arrow {
-    opacity: 1;
-    transform: translateX(0);
+  .hub-card .card-action {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    margin-top: 0.5rem;
+    transition: gap 0.2s;
   }
+  .hub-card:hover .card-action { gap: 0.5rem; }
 </style>
 {% endblock %}
 
@@ -63,7 +68,7 @@
             Welcome, {{ user.profile.display_name|default:user.username }}.
         </h1>
         <p class="text-lg text-slate-600 max-w-xl mx-auto">
-            Ready to explore your community of interests?
+            What fancies you today?
         </p>
         <form method="post" action="{% url 'logout' %}" class="mt-6">
             {% csrf_token %}
@@ -76,7 +81,7 @@
             Welcome, beloved guest.
         </h1>
         <p class="text-lg text-slate-600 max-w-xl mx-auto">
-            Ready to explore your community of interests?
+            What fancies you today?
         </p>
         <p class="mt-6 text-sm text-slate-500">
             <a href="{% url 'login' %}" class="font-semibold text-slate-700 underline underline-offset-2 hover:text-slate-900 transition-colors">Sign in</a>
@@ -94,56 +99,61 @@
 </div>
 
 {# ── Hub cards ───────────────────────────────────────── #}
-<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pb-8">
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 pb-8">
 
     <a href="{% url 'localevents:event_list' %}" class="hub-card card-events">
-        <div class="flex items-center justify-between">
-            <span class="inline-flex items-center justify-center h-10 w-10 rounded-xl bg-orange-50 text-xl">🎉</span>
-            <span class="card-arrow text-events">→</span>
+        <div class="card-figure">
+            <img src="{% static 'img/LocalEvents.jpg' %}" alt="Local Events">
         </div>
-        <p class="text-base font-bold text-slate-900 mt-1">Local Events</p>
-        <p class="text-sm text-slate-500 leading-relaxed">Discover and join events happening around you. Organizers can create and manage their own.</p>
-        <span class="mt-2 text-xs font-semibold text-events">Browse Events</span>
+        <div class="flex flex-col gap-1 mt-1">
+            <p class="text-base font-bold text-slate-900">Local Events</p>
+            <p class="text-sm text-slate-500 leading-relaxed">Discover and join events happening around you. Organizers can create and manage their own.</p>
+            <span class="card-action text-events">Browse Events →</span>
+        </div>
     </a>
 
     <a href="{% url 'bookclub:book-list' %}" class="hub-card card-books">
-        <div class="flex items-center justify-between">
-            <span class="inline-flex items-center justify-center h-10 w-10 rounded-xl bg-blue-50 text-xl">📚</span>
-            <span class="card-arrow text-books">→</span>
+        <div class="card-figure">
+            <img src="{% static 'img/Books.jpg' %}" alt="Book Club">
         </div>
-        <p class="text-base font-bold text-slate-900 mt-1">Book Club</p>
-        <p class="text-sm text-slate-500 leading-relaxed">Explore the reading list, leave reviews, and keep track of what you're borrowing.</p>
-        <span class="mt-2 text-xs font-semibold text-books">Browse Books</span>
+        <div class="flex flex-col gap-1 mt-1">
+            <p class="text-base font-bold text-slate-900">Book Club</p>
+            <p class="text-sm text-slate-500 leading-relaxed">Explore the reading list, leave reviews, and keep track of what you're borrowing.</p>
+            <span class="card-action text-books">Browse Books →</span>
+        </div>
     </a>
 
     <a href="{% url 'merchstore:items_list' %}" class="hub-card card-merch">
-        <div class="flex items-center justify-between">
-            <span class="inline-flex items-center justify-center h-10 w-10 rounded-xl bg-green-50 text-xl">🛍️</span>
-            <span class="card-arrow text-merch">→</span>
+        <div class="card-figure">
+            <img src="{% static 'img/Merch.jpg' %}" alt="Merch Store">
         </div>
-        <p class="text-base font-bold text-slate-900 mt-1">Merch Store</p>
-        <p class="text-sm text-slate-500 leading-relaxed">Browse community merchandise. Rep the brand, support the community.</p>
-        <span class="mt-2 text-xs font-semibold text-merch">Browse Merch</span>
+        <div class="flex flex-col gap-1 mt-1">
+            <p class="text-base font-bold text-slate-900">Merch Store</p>
+            <p class="text-sm text-slate-500 leading-relaxed">Browse community merchandise. Rep the brand, support the community.</p>
+            <span class="card-action text-merch">Browse Merch →</span>
+        </div>
     </a>
 
     <a href="{% url 'diyprojects:project-list' %}" class="hub-card card-diy">
-        <div class="flex items-center justify-between">
-            <span class="inline-flex items-center justify-center h-10 w-10 rounded-xl bg-yellow-50 text-xl">🔧</span>
-            <span class="card-arrow text-diy">→</span>
+        <div class="card-figure">
+            <img src="{% static 'img/DIY.jpg' %}" alt="DIY Projects">
         </div>
-        <p class="text-base font-bold text-slate-900 mt-1">DIY Projects</p>
-        <p class="text-sm text-slate-500 leading-relaxed">Share your builds, get inspired by others, and find your next weekend project.</p>
-        <span class="mt-2 text-xs font-semibold text-diy">Browse Projects</span>
+        <div class="flex flex-col gap-1 mt-1">
+            <p class="text-base font-bold text-slate-900">DIY Projects</p>
+            <p class="text-sm text-slate-500 leading-relaxed">Share your builds, get inspired by others, and find your next weekend project.</p>
+            <span class="card-action text-diy">Browse Projects →</span>
+        </div>
     </a>
 
     <a href="{% url 'commissions:commission_list' %}" class="hub-card card-commissions">
-        <div class="flex items-center justify-between">
-            <span class="inline-flex items-center justify-center h-10 w-10 rounded-xl bg-purple-50 text-xl">🎨</span>
-            <span class="card-arrow text-commissions">→</span>
+        <div class="card-figure">
+            <img src="{% static 'img/Commissions.jpg' %}" alt="Commissions">
         </div>
-        <p class="text-base font-bold text-slate-900 mt-1">Commissions</p>
-        <p class="text-sm text-slate-500 leading-relaxed">Request custom work or offer your skills. Connect creators with the community.</p>
-        <span class="mt-2 text-xs font-semibold text-commissions">Browse Commissions</span>
+        <div class="flex flex-col gap-1 mt-1">
+            <p class="text-base font-bold text-slate-900">Commissions</p>
+            <p class="text-sm text-slate-500 leading-relaxed">Request custom work or offer your skills. Connect creators with the community.</p>
+            <span class="card-action text-commissions">Browse Commissions →</span>
+        </div>
     </a>
 
 </div>

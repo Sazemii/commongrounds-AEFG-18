@@ -1,26 +1,151 @@
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Home | Common Grounds{% endblock %}
+{% block page_heading %}{% endblock %}
+
+{% block styles %}
+<style>
+  /* suppress the base.html h2 wrapper on this page */
+  main > h2:empty { display: none; }
+
+  .hub-card {
+    position: relative;
+    overflow: hidden;
+    border-radius: 1rem;
+    border: 1.5px solid transparent;
+    padding: 1.5rem;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    text-decoration: none;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+  .hub-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 32px -8px rgba(0,0,0,0.12);
+  }
+
+  /* Pastel tinted backgrounds + matching border on hover */
+  .hub-card.card-events      { background: #fff0e6; border-color: #ffe0cc; }
+  .hub-card.card-events:hover  { border-color: #fa7305; }
+
+  .hub-card.card-books       { background: #e0f2fe; border-color: #bae6fd; }
+  .hub-card.card-books:hover   { border-color: #0897f7; }
+
+  .hub-card.card-merch       { background: #dcfce7; border-color: #bbf7d0; }
+  .hub-card.card-merch:hover   { border-color: #10bc4c; }
+
+  .hub-card.card-diy         { background: #fef9c3; border-color: #fef08a; }
+  .hub-card.card-diy:hover     { border-color: #eab308; }
+
+  .hub-card.card-commissions { background: #f3e8ff; border-color: #e9d5ff; }
+  .hub-card.card-commissions:hover { border-color: #830bf4; }
+
+  .hub-card .card-arrow {
+    opacity: 0;
+    transform: translateX(-4px);
+    transition: opacity 0.2s, transform 0.2s;
+  }
+  .hub-card:hover .card-arrow {
+    opacity: 1;
+    transform: translateX(0);
+  }
+</style>
+{% endblock %}
 
 {% block content %}
-<p>Choose a hub:</p>
-<ul>
-  <li><a href="{% url 'merchstore:items_list' %}">Merchandise Store</a></li>
-  <li><a href="{% url 'localevents:event_list' %}">Local Events</a></li>
-  <li><a href="{% url 'bookclub:book-list' %}">Book Club</a></li>
-  <li><a href="{% url 'diyprojects:project-list' %}">DIY Projects</a></li>
-  <li><a href="{% url 'commissions:commission_list' %}">Commission Requests</a></li>
-</ul>
 
-{% if user.is_authenticated %}
-  <p>Logged in as {{ user.username }}
-    (<a href="{% url 'accounts:profile-update' user.username %}">edit profile</a>).
-    <form method="post" action="{% url 'logout' %}" style="display:inline">
-      {% csrf_token %}
-      <button type="submit">Logout</button>
-    </form>
-  </p>
-{% else %}
-  <p><a href="{% url 'login' %}">Login</a> or <a href="{% url 'accounts:register' %}">Register</a></p>
-{% endif %}
+{# ── Hero ───────────────────────────────────────────── #}
+<section class="pt-6 pb-10 text-center">
+    {% if user.is_authenticated %}
+        <h1 class="text-5xl sm:text-6xl font-extrabold tracking-tight text-slate-900 mb-4">
+            Welcome, {{ user.profile.display_name|default:user.username }}.
+        </h1>
+        <p class="text-lg text-slate-600 max-w-xl mx-auto">
+            Ready to explore your community of interests?
+        </p>
+        <form method="post" action="{% url 'logout' %}" class="mt-6">
+            {% csrf_token %}
+            <button type="submit" class="text-sm text-slate-400 hover:text-slate-600 transition-colors underline underline-offset-2">
+                Sign out
+            </button>
+        </form>
+    {% else %}
+        <h1 class="text-5xl sm:text-6xl font-extrabold tracking-tight text-slate-900 mb-4">
+            Welcome, beloved guest.
+        </h1>
+        <p class="text-lg text-slate-600 max-w-xl mx-auto">
+            Ready to explore your community of interests?
+        </p>
+        <p class="mt-6 text-sm text-slate-500">
+            <a href="{% url 'login' %}" class="font-semibold text-slate-700 underline underline-offset-2 hover:text-slate-900 transition-colors">Sign in</a>
+            <span class="mx-2 text-slate-300">·</span>
+            <a href="{% url 'accounts:register' %}" class="font-semibold text-slate-700 underline underline-offset-2 hover:text-slate-900 transition-colors">Create an account</a>
+        </p>
+    {% endif %}
+</section>
+
+{# ── Divider ─────────────────────────────────────────── #}
+<div class="flex items-center gap-4 mb-10">
+    <div class="flex-1 h-px bg-slate-100"></div>
+    <span class="text-xs font-semibold uppercase tracking-widest text-slate-300">Explore the hubs</span>
+    <div class="flex-1 h-px bg-slate-100"></div>
+</div>
+
+{# ── Hub cards ───────────────────────────────────────── #}
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 pb-8">
+
+    <a href="{% url 'localevents:event_list' %}" class="hub-card card-events">
+        <div class="flex items-center justify-between">
+            <span class="inline-flex items-center justify-center h-10 w-10 rounded-xl bg-orange-50 text-xl">🎉</span>
+            <span class="card-arrow text-events">→</span>
+        </div>
+        <p class="text-base font-bold text-slate-900 mt-1">Local Events</p>
+        <p class="text-sm text-slate-500 leading-relaxed">Discover and join events happening around you. Organizers can create and manage their own.</p>
+        <span class="mt-2 text-xs font-semibold text-events">Browse Events</span>
+    </a>
+
+    <a href="{% url 'bookclub:book-list' %}" class="hub-card card-books">
+        <div class="flex items-center justify-between">
+            <span class="inline-flex items-center justify-center h-10 w-10 rounded-xl bg-blue-50 text-xl">📚</span>
+            <span class="card-arrow text-books">→</span>
+        </div>
+        <p class="text-base font-bold text-slate-900 mt-1">Book Club</p>
+        <p class="text-sm text-slate-500 leading-relaxed">Explore the reading list, leave reviews, and keep track of what you're borrowing.</p>
+        <span class="mt-2 text-xs font-semibold text-books">Browse Books</span>
+    </a>
+
+    <a href="{% url 'merchstore:items_list' %}" class="hub-card card-merch">
+        <div class="flex items-center justify-between">
+            <span class="inline-flex items-center justify-center h-10 w-10 rounded-xl bg-green-50 text-xl">🛍️</span>
+            <span class="card-arrow text-merch">→</span>
+        </div>
+        <p class="text-base font-bold text-slate-900 mt-1">Merch Store</p>
+        <p class="text-sm text-slate-500 leading-relaxed">Browse community merchandise. Rep the brand, support the community.</p>
+        <span class="mt-2 text-xs font-semibold text-merch">Browse Merch</span>
+    </a>
+
+    <a href="{% url 'diyprojects:project-list' %}" class="hub-card card-diy">
+        <div class="flex items-center justify-between">
+            <span class="inline-flex items-center justify-center h-10 w-10 rounded-xl bg-yellow-50 text-xl">🔧</span>
+            <span class="card-arrow text-diy">→</span>
+        </div>
+        <p class="text-base font-bold text-slate-900 mt-1">DIY Projects</p>
+        <p class="text-sm text-slate-500 leading-relaxed">Share your builds, get inspired by others, and find your next weekend project.</p>
+        <span class="mt-2 text-xs font-semibold text-diy">Browse Projects</span>
+    </a>
+
+    <a href="{% url 'commissions:commission_list' %}" class="hub-card card-commissions">
+        <div class="flex items-center justify-between">
+            <span class="inline-flex items-center justify-center h-10 w-10 rounded-xl bg-purple-50 text-xl">🎨</span>
+            <span class="card-arrow text-commissions">→</span>
+        </div>
+        <p class="text-base font-bold text-slate-900 mt-1">Commissions</p>
+        <p class="text-sm text-slate-500 leading-relaxed">Request custom work or offer your skills. Connect creators with the community.</p>
+        <span class="mt-2 text-xs font-semibold text-commissions">Browse Commissions</span>
+    </a>
+
+</div>
+
 {% endblock %}

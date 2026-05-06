@@ -1,14 +1,51 @@
-{% extends 'base.html' %} 
+{% extends 'base.html' %}
 {% load static %}
-{% block title %}{{ event.title }}{% endblock %} 
+{% block title %}{{ event.title }}{% endblock %}
 {% block page_heading %}{{ event.title }}{% endblock %}
-{% block content %}
-    <p><strong>Category:</strong> {{ event.category }}</p>
-    <p><strong>Date and Time:</strong> {{ event.start_time }} to {{ event.end_time }}</p>
 
+{% block content %}
+    {% if event.event_image %}
+        <img src="{{ event.event_image.url }}" alt="{{ event.title }}" style="max-width: 400px;">
+    {% endif %}
+
+    <p><strong>Category:</strong> {{ event.category }}</p>
+    <p><strong>Status:</strong> {{ event.status }}</p>
+    <p><strong>Date and Time:</strong> {{ event.start_time }} to {{ event.end_time }}</p>
     <p><strong>Location:</strong> {{ event.location }}</p>
+    <p><strong>Capacity:</strong> {{ event.signups.count }} / {{ event.event_capacity }}</p>
     <p><strong>Description:</strong> {{ event.description }}</p>
-    <br>
-    <br>
+
+    <p><strong>Organizers:</strong>
+        {% for organizer in event.organizer.all %}
+            {{ organizer }}{% if not forloop.last %}, {% endif %}
+        {% endfor %}
+    </p>
+
+    {% if is_organizer %}
+        <p><a href="{% url 'localevents:event_edit' event.pk %}">Edit Event</a></p>
+    {% else %}
+        {% if user.is_authenticated %}
+            {% if already_signed_up %}
+                <button {% if already_signed_up %}disabled{% endif %}>
+                    {% if already_signed_up %}Already Signed Up{% endif %}
+                </button>
+            {% else %}
+                <form method="post">
+                    {% csrf_token %}
+                    <button type="submit" {% if is_full %}disabled{% endif %}>
+                        {% if is_full %}Event Full{% else %}Sign Up{% endif %}
+                    </button>
+                </form>
+            {% endif %}
+        {% else %}
+            <a href="{% url 'localevents:event_signup' event.pk %}">
+                <button {% if is_full %}disabled{% endif %}>
+                    {% if is_full %}Event Full{% else %}Sign Up{% endif %}
+                </button>
+            </a>
+        {% endif %}
+    {% endif %}
+
+    <br><br>
     <a href="{% url 'localevents:event_list' %}">Back to Event List</a>
 {% endblock %}

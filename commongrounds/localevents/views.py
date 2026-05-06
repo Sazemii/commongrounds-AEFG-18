@@ -1,19 +1,113 @@
-from django.shortcuts import render
+from django.views import View
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
+from django.views.generic.edit import CreateView, UpdateView
+from django.shortcuts import get_object_or_404, redirect, render
 
-from .models import Event, EventType
+from accounts.mixins import RoleRequiredMixin
+from accounts.models import Profile
+
+from .forms import EventForm
+
+from .models import Event, EventType, EventSignup
 
 
 class LocalEventsListView(ListView):
     model = Event
     template_name = 'localevents/event_list.html'
     context_object_name = 'events'
-    pass
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        user = self.request.user
+
+        if user.is_authenticated:
+            profile = user.profile
+            context['organized_events'] = Event.objects.filter(
+                organizer=profile)
+            context['signed_up_events'] = Event.objects.filter(
+                signups__user_registrant=profile
+            )
+            context['events'] = Event.objects.exclude(
+                pk__in=context['organized_events'],
+            ).exclude(
+                pk__in=context['signed_up_events'],
+            )
+        return context
 
 
 class LocalEventsDetailView(DetailView):
     model = Event
     template_name = 'localevents/event_detail.html'
     context_object_name = 'event'
-    pass
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        event = self.object
+        user = self.request.user
+        context['is_full'] = event.signups.count() >= event.event_capacity
+
+        if user.is_authenticated:
+            profile = user.profile
+            context['is_organizer'] = profile in event.organizer.all()
+            context['already_signed_up'] = event.signups.filter(
+                user_registrant=profile,
+            ).exists()
+        else:
+            context['is_organizer'] = False
+            context['already_signed_up'] = False
+        return context
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        if request.user.is_authenticated:
+            EventSignup.objects.create(
+                event=self.object,
+                user_registrant=request.user.profile
+            )
+        return redirect(self.object.get_absolute_url())
+
+
+class LocalEventsCreateView(RoleRequiredMixin, CreateView):
+    model = Event
+    form_class = EventForm
+    template_name = 'localevents/event_form.html'
+    required_role = Profile.ROLE_EVENT_ORGANIZER
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        self.object.organizer.add(self.request.user.profile)
+        return response
+
+
+class LocalEventsUpdateView(RoleRequiredMixin, UpdateView):
+    model = Event
+    form_class = EventForm
+    template_name = 'localevents/event_form.html'
+    required_role = Profile.ROLE_EVENT_ORGANIZER
+
+    def form_valid(self, form):
+        event = form.instance
+        if event.signups.count() >= event.event_capacity:
+            event.status = 'Full'
+        else:
+            event.status = 'Available'
+        return super().form_valid(form)
+
+
+class LocalEventsSignupView(View):
+    template_name = 'localevents/event_signup.html'
+
+    def get(self, request, pk):
+        event = get_object_or_404(Event, pk=pk)
+        return render(request, self.template_name, {'event': event})
+
+    def post(self, request, pk):
+        event = get_object_or_404(Event, pk=pk)
+        name = request.POST.get('new_registrant', '').strip()
+        if name:
+            EventSignup.objects.create(
+                event=event,
+                new_registrant=name
+            )
+        return redirect(event.get_absolute_url())

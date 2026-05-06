@@ -50,9 +50,12 @@ class LocalEventsDetailView(DetailView):
         if user.is_authenticated:
             profile = user.profile
             context['is_organizer'] = profile in event.organizer.all()
+            context['already_signed_up'] = event.signups.filter(
+                user_registrant=profile,
+            ).exists()
         else:
             context['is_organizer'] = False
-
+            context['already_signed_up'] = False
         return context
 
     def post(self, request, *args, **kwargs):

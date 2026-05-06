@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}
+    {% if object %}Edit {{ object.title }}{% else %}Create Event{% endif %}
+{% endblock %}
+{% block page_heading %}
+    {% if object %}Edit Event{% else %}Create New Event{% endif %}
+{% endblock %}
+
+{% block content %}
+    <form method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">
+            {% if object %}Save Changes{% else %}Create Event{% endif %}
+        </button>
+    </form>
+
+    <br>
+    <a href="{% url 'localevents:event_list' %}">Cancel</a>
+{% endblock %}

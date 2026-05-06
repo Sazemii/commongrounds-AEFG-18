@@ -1,0 +1,48 @@
+{% load static %}
+{# Top nav for Common Grounds. Variables expected: none (uses {% url %} + user). #}
+
+<header class="fixed w-full z-20 top-0 start-0">
+    <nav class="bg-neutral-primary">
+        <div class="flex flex-wrap justify-between items-center mx-auto max-w-screen-xl p-4">
+            <a href="{% url 'homepage:home' %}" class="flex items-center space-x-3 rtl:space-x-reverse">
+                <img src="{% static 'img/logo.svg' %}" class="h-7" alt="Common Grounds Logo">
+                <span class="self-center text-xl text-heading font-semibold whitespace-nowrap">
+                    Common Grounds
+                </span>
+            </a>
+            <div class="flex items-center space-x-6 rtl:space-x-reverse">
+                {% if user.is_authenticated %}
+                    <a href="{% url 'accounts:profile-update' user.username %}"
+                       class="text-sm text-body hover:underline">
+                        {{ user.profile.display_name|default:user.username }}
+                    </a>
+                    <form method="post" action="{% url 'logout' %}" class="inline">
+                        {% csrf_token %}
+                        <button type="submit"
+                                class="text-sm font-medium text-fg-brand hover:underline">
+                            Logout
+                        </button>
+                    </form>
+                {% else %}
+                    <a href="{% url 'login' %}"
+                       class="text-sm font-medium text-fg-brand hover:underline">
+                        Login
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+    </nav>
+
+    <nav class="bg-neutral-secondary-soft border-y border-default">
+        <div class="max-w-screen-xl px-4 py-3 mx-auto">
+            <ul class="flex flex-row font-medium space-x-8 rtl:space-x-reverse text-sm">
+                <li><a href="{% url 'homepage:home' %}" class="text-heading hover:underline">Home</a></li>
+                <li><a href="{% url 'localevents:event_list' %}" class="text-heading hover:underline">Events</a></li>
+                <li><a href="{% url 'bookclub:book-list' %}" class="text-heading hover:underline">Books</a></li>
+                <li><a href="{% url 'merchstore:items_list' %}" class="text-heading hover:underline">Merch</a></li>
+                <li><a href="{% url 'diyprojects:project-list' %}" class="text-heading hover:underline">DIY</a></li>
+                <li><a href="{% url 'commissions:commission_list' %}" class="text-heading hover:underline">Commissions</a></li>
+            </ul>
+        </div>
+    </nav>
+</header>

@@ -1,6 +1,12 @@
 from django.shortcuts import render
 from django.views.generic.list import ListView
 from django.views.generic.detail import DetailView
+from django.views.generic.edit import CreateView
+
+from accounts.mixins import RoleRequiredMixin
+from accounts.models import Profile
+
+from .forms import EventForm
 
 from .models import Event, EventType, EventSignup
 
@@ -47,3 +53,15 @@ class LocalEventsDetailView(DetailView):
             context['is_organizer'] = False
 
         return context
+
+
+class LocalEventsCreateView(RoleRequiredMixin, CreateView):
+    model = Event
+    form_class = EventForm
+    template_name = 'localevents/event_form.html'
+    required_role = Profile.ROLE_EVENT_ORGANIZER
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        self.object.organizer.add(self.request.user.profile)
+        return response

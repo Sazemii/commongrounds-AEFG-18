@@ -185,3 +185,5 @@ That reads as old/flat-design skeuomorphism, not modern glassmorphism.
   to keep the per-hub identity cohesive.
 - Nav component: commongrounds/templates/components/nav.html
 - Shared styles: commongrounds/templates/base.html
+- For card design, shadow behavior, and hero styling — refer to the homepage as
+  the reference implementation: commongrounds/homepage/templates/homepage/home.html

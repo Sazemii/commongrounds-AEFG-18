@@ -1,0 +1,157 @@
+COMMON GROUNDS — Design Reference
+===================================
+
+This file documents the color palettes and design conventions for each hub.
+Keep this in sync whenever you update hub colors in base.html.
+
+
+── GLOBAL NAV COLORS ──────────────────────────────────────────────────────────
+
+These are the primary accent colors registered in the Tailwind config (base.html).
+They drive the nav underline and active state.
+
+  Home        #64748b   (slate-500 gray)
+  Events      #fa7305   (dark-orange)
+  Books       #0897f7   (alice-blue)
+  Merch       #10bc4c   (frosted-mint)
+  DIY         #eab308   (sunflower-gold / yellow)
+  Commissions #830bf4   (lavender-purple)
+
+
+── HUB COLOR PALETTES ─────────────────────────────────────────────────────────
+
+Each hub has a full 50–950 palette for use in hub-specific templates.
+The ★ shade is the primary accent (matches the nav/Tailwind config above).
+
+────────────────────────────────────
+BOOKS  (primary: #0897f7 alice-blue)
+────────────────────────────────────
+
+alice-blue
+  50   #e6f5fe    100  #ceeafd    200  #9cd6fc    300  #6bc1fa
+  400  #39acf9    500  #0897f7 ★  600  #0679c6    700  #055b94
+  800  #033d63    900  #021e31    950  #011523
+
+mint-cream
+  50   #e9fcee    100  #d2f9de    200  #a5f3bc    300  #78ed9b
+  400  #4be77a    500  #1fe059    600  #18b447    700  #128735
+  800  #0c5a23    900  #062d12    950  #041f0c
+
+electric-sapphire
+  50   #e8e8fd    100  #d0d1fb    200  #a1a3f7    300  #7274f3
+  400  #4346ef    500  #1418eb    600  #1013bc    700  #0c0e8d
+  800  #080a5e    900  #04052f    950  #030321
+
+bright-snow
+  50   #edf2f7    100  #dbe6f0    200  #b8cce0    300  #94b2d1
+  400  #7099c2    500  #4d7fb3    600  #3d668f    700  #2e4c6b
+  800  #1f3347    900  #0f1924    950  #0b1219
+
+
+────────────────────────────────────────────
+EVENTS  (primary: #fa7305 dark-orange)
+────────────────────────────────────────────
+
+papaya-whip
+  50   #fff4e5    100  #ffe9cc    200  #ffd399    300  #ffbd66
+  400  #ffa733    500  #ff9100    600  #cc7400    700  #995700
+  800  #663a00    900  #331d00    950  #241400
+
+lavender-blush
+  50   #fde7e7    100  #fbd0d0    200  #f8a0a0    300  #f47171
+  400  #f14141    500  #ed1212    600  #be0e0e    700  #8e0b0b
+  800  #5f0707    900  #2f0404    950  #210202
+
+dark-orange
+  50   #fef1e6    100  #fee3cd    200  #fdc79b    300  #fcab69
+  400  #fb8f37    500  #fa7305 ★  600  #c85c04    700  #964503
+  800  #642e02    900  #321701    950  #231001
+
+floral-white
+  50   #fff4e5    100  #ffe8cc    200  #ffd199    300  #ffba66
+  400  #ffa333    500  #ff8c00    600  #cc7000    700  #995400
+  800  #663800    900  #331c00    950  #241400
+
+
+────────────────────────────────────────────
+MERCH  (primary: #10bc4c frosted-mint)
+────────────────────────────────────────────
+
+frosted-mint
+  50   #e8fdef    100  #d0fbdf    200  #a1f7bf    300  #72f39f
+  400  #43ef7f    500  #14eb5f    600  #10bc4c ★  700  #0c8d39
+  800  #085e26    900  #042f13    950  #03210d
+
+platinum
+  50   #edf2f7    100  #dbe6f0    200  #b8cce0    300  #94b2d1
+  400  #7099c2    500  #4d7fb3    600  #3d668f    700  #2e4c6b
+  800  #1f3347    900  #0f1924    950  #0b1219
+
+mint-leaf
+  50   #e8fdf6    100  #d0fbed    200  #a1f7da    300  #72f3c8
+  400  #43efb6    500  #14eba3    600  #10bc83    700  #0c8d62
+  800  #085e41    900  #042f21    950  #032117
+
+beige
+  50   #f7fee7    100  #effdce    200  #dffb9d    300  #cff96c
+  400  #bff73b    500  #aef50a    600  #8cc408    700  #699306
+  800  #466204    900  #233102    950  #182201
+
+
+────────────────────────────────────────────────
+DIY PROJECTS  (primary: #eab308 sunflower-gold)
+────────────────────────────────────────────────
+
+lemon-chiffon
+  50   #fffde6    100  #fefacd    200  #fdf59b    300  #fdf068
+  400  #fceb36    500  #fbe704    600  #c9b803    700  #978a02
+  800  #645c02    900  #322e01    950  #232001
+
+frosted-mint
+  50   #f6fee7    100  #edfccf    200  #dbf99f    300  #c9f76e
+  400  #b7f43e    500  #a5f10e    600  #84c10b    700  #639108
+  800  #426006    900  #213003    950  #172202
+
+sunflower-gold
+  50   #fef8e6    100  #fdf1ce    200  #fbe49d    300  #fad66b
+  400  #f8c83a    500  #f6bb09    600  #c59507    700  #947005
+  800  #624b04    900  #312502    950  #221a01
+
+porcelain
+  50   #ffffe5    100  #ffffcc    200  #ffff99    300  #ffff66
+  400  #ffff33    500  #ffff00    600  #cccc00    700  #999900
+  800  #666600    900  #333300    950  #242400
+
+
+────────────────────────────────────────────────────
+COMMISSIONS  (primary: #830bf4 lavender-purple)
+────────────────────────────────────────────────────
+
+lavender
+  50   #ebe7fe    100  #d7cefd    200  #af9efa    300  #866df8
+  400  #5e3cf6    500  #360bf4    600  #2b09c3    700  #200792
+  800  #160561    900  #0b0231    950  #080222
+
+lavender-veil
+  50   #f9e5ff    100  #f4ccff    200  #e999ff    300  #de66ff
+  400  #d333ff    500  #c800ff    600  #a000cc    700  #780099
+  800  #500066    900  #280033    950  #1c0024
+
+lavender-purple
+  50   #f3e7fe    100  #e6cefd    200  #ce9efa    300  #b56df8
+  400  #9c3cf6    500  #830bf4 ★  600  #6909c3    700  #4f0792
+  800  #350561    900  #1a0231    950  #120222
+
+white
+  50   #f2ecf9    100  #e6d9f2    200  #ccb3e6    300  #b28cd9
+  400  #9966cc    500  #7f40bf    600  #663399    700  #4c2673
+  800  #33194d    900  #190d26    950  #12091b
+
+
+── NOTES ──────────────────────────────────────────────────────────────────────
+
+- The ★ shade is the hub's primary accent — matches the Tailwind config in base.html.
+- When styling hub-specific pages, prefer shades from that hub's palette
+  to keep the per-hub identity cohesive.
+- Nav component: commongrounds/templates/components/nav.html
+- Shared styles: commongrounds/templates/base.html

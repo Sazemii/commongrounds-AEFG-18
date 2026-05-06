@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block title %}Borrow {{ object.title }} | Book Club{% endblock %}
+{% block page_heading %}Borrow: {{ object.title }}{% endblock %}
+
+{% block content %}
+<p>Author: {{ object.author }}</p>
+<p>Genre: {{ object.genre }}</p>
+<p>Publication Year: {{ object.publication_year }}</p>
+<p>Synopsis: {{ object.synopsis }}</p>
+
+<p>Note: the return date is automatically set to two weeks after the borrow date.</p>
+
+<form method="post">
+  {% csrf_token %}
+  {{ borrow_form.as_p }}
+  <button type="submit">Confirm Borrow</button>
+</form>
+<p><a href="{{ object.get_absolute_url }}">Back to book</a></p>
+{% endblock %}

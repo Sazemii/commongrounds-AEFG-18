@@ -1,79 +1,166 @@
 {% load static %}
-{# Top nav for Common Grounds. Active hub detected via request.path. #}
+{# Top nav for Common Grounds. Active hub detected via request.path. Tailwind-only. #}
 
-<header class="fixed w-full z-20 top-0 start-0 bg-white shadow-sm">
-    <nav class="bg-white">
-        <div class="flex flex-wrap justify-between items-center mx-auto max-w-screen-xl p-4">
-            <a href="{% url 'homepage:home' %}" class="flex items-center space-x-3">
-                <img src="{% static 'img/logo.svg' %}" class="h-7" alt="Common Grounds Logo">
-                <span class="self-center text-xl font-semibold text-slate-900">
-                    Common Grounds
-                </span>
-            </a>
-            <div class="flex items-center space-x-6">
-                {% if user.is_authenticated %}
-                    <a href="{% url 'accounts:profile-update' user.username %}"
-                       class="text-sm text-slate-700 hover:text-slate-900">
-                        {{ user.profile.display_name|default:user.username }}
-                    </a>
-                    <form method="post" action="{% url 'logout' %}" class="inline">
-                        {% csrf_token %}
-                        <button type="submit"
-                                class="text-sm font-medium text-slate-700 hover:text-slate-900">
-                            Logout
-                        </button>
-                    </form>
-                {% else %}
-                    <a href="{% url 'login' %}"
-                       class="text-sm font-medium text-slate-700 hover:text-slate-900">
-                        Login
-                    </a>
-                {% endif %}
-            </div>
-        </div>
-    </nav>
+<style>
+  .nav-link {
+    position: relative;
+    transition: color 0.2s;
+    text-decoration: none;
+  }
+  .nav-link::after {
+    content: '';
+    position: absolute;
+    inset-inline: 0.75rem;
+    bottom: calc(50% - 14px);
+    height: 2px;
+    border-radius: 9999px;
+    transform: scaleX(0);
+    transition: transform 0.2s ease;
+  }
+  .nav-link:hover::after { transform: scaleX(1); }
 
-    <nav class="bg-slate-50 border-t border-slate-200">
-        <div class="max-w-screen-xl px-4 mx-auto">
-            <ul class="flex flex-row font-medium space-x-8 text-sm">
-                {% url 'homepage:home' as home_url %}
-                <li>
-                    <a href="{{ home_url }}"
-                       class="block py-3 border-b-2 {% if request.path == home_url %}border-home text-home{% else %}border-transparent text-slate-700 hover:text-home{% endif %}">
-                        Home
-                    </a>
-                </li>
-                <li>
-                    <a href="{% url 'localevents:event_list' %}"
-                       class="block py-3 border-b-2 {% if '/localevents/' in request.path %}border-events text-events{% else %}border-transparent text-slate-700 hover:text-events{% endif %}">
-                        Events
-                    </a>
-                </li>
-                <li>
-                    <a href="{% url 'bookclub:book-list' %}"
-                       class="block py-3 border-b-2 {% if '/bookclub/' in request.path %}border-books text-books{% else %}border-transparent text-slate-700 hover:text-books{% endif %}">
-                        Books
-                    </a>
-                </li>
-                <li>
-                    <a href="{% url 'merchstore:items_list' %}"
-                       class="block py-3 border-b-2 {% if '/merchstore/' in request.path %}border-merch text-merch{% else %}border-transparent text-slate-700 hover:text-merch{% endif %}">
-                        Merch
-                    </a>
-                </li>
-                <li>
-                    <a href="{% url 'diyprojects:project-list' %}"
-                       class="block py-3 border-b-2 {% if '/diyprojects/' in request.path %}border-diy text-diy{% else %}border-transparent text-slate-700 hover:text-diy{% endif %}">
-                        DIY
-                    </a>
-                </li>
-                <li>
-                    <a href="{% url 'commissions:commission_list' %}"
-                       class="block py-3 border-b-2 {% if '/commissions/' in request.path %}border-commissions text-commissions{% else %}border-transparent text-slate-700 hover:text-commissions{% endif %}">
-                        Commissions
-                    </a>
-                </li>
-            </ul>
+  .nav-link.link-home:hover     { color: #64748b; }
+  .nav-link.link-home::after    { background: #64748b; }
+
+  .nav-link.link-events:hover   { color: #fa7305; }
+  .nav-link.link-events::after  { background: #fa7305; }
+
+  .nav-link.link-books:hover    { color: #0897f7; }
+  .nav-link.link-books::after   { background: #0897f7; }
+
+  .nav-link.link-merch:hover    { color: #10bc4c; }
+  .nav-link.link-merch::after   { background: #10bc4c; }
+
+  .nav-link.link-diy:hover      { color: #eab308; }
+  .nav-link.link-diy::after     { background: #eab308; }
+
+  .nav-link.link-commissions:hover { color: #830bf4; }
+  .nav-link.link-commissions::after { background: #830bf4; }
+</style>
+
+<header class="fixed w-full z-20 top-0 start-0 bg-white/90 backdrop-blur-md border-b border-slate-200">
+    <div class="flex items-center justify-between gap-4 mx-auto max-w-7xl px-4 sm:px-6 h-16">
+
+        {# Brand #}
+        <a href="{% url 'homepage:home' %}" class="flex items-center gap-2 group shrink-0">
+            <img src="{% static 'img/logo.svg' %}" class="h-8 w-8 transition-transform group-hover:scale-110" alt="Common Grounds Logo">
+            <span class="hidden sm:inline text-lg font-bold tracking-tight text-slate-900">
+                Common Grounds
+            </span>
+        </a>
+
+        {# Hub links #}
+        <ul class="flex flex-row items-center gap-1 overflow-x-auto flex-1 justify-center">
+            {% url 'homepage:home' as home_url %}
+            <li>
+                <a href="{{ home_url }}"
+                   class="nav-link link-home relative inline-flex items-center h-16 px-3 text-sm font-medium whitespace-nowrap transition-colors
+                          {% if request.path == home_url %}text-home{% else %}text-slate-600 hover:text-home hover:bg-home/10{% endif %}">
+                    Home
+                    {% if request.path == home_url %}
+                        <span class="absolute inset-x-3 bottom-0 h-0.5 bg-home rounded-full"></span>
+                    {% endif %}
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'localevents:event_list' %}"
+                   class="nav-link link-events relative inline-flex items-center h-16 px-3 text-sm font-medium whitespace-nowrap transition-colors
+                          {% if '/localevents/' in request.path %}text-events{% else %}text-slate-600 hover:text-events hover:bg-events/10{% endif %}">
+                    Events
+                    {% if '/localevents/' in request.path %}
+                        <span class="absolute inset-x-3 bottom-0 h-0.5 bg-events rounded-full"></span>
+                    {% endif %}
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'bookclub:book-list' %}"
+                   class="nav-link link-books relative inline-flex items-center h-16 px-3 text-sm font-medium whitespace-nowrap transition-colors
+                          {% if '/bookclub/' in request.path %}text-books{% else %}text-slate-600 hover:text-books hover:bg-books/10{% endif %}">
+                    Books
+                    {% if '/bookclub/' in request.path %}
+                        <span class="absolute inset-x-3 bottom-0 h-0.5 bg-books rounded-full"></span>
+                    {% endif %}
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'merchstore:items_list' %}"
+                   class="nav-link link-merch relative inline-flex items-center h-16 px-3 text-sm font-medium whitespace-nowrap transition-colors
+                          {% if '/merchstore/' in request.path %}text-merch{% else %}text-slate-600 hover:text-merch hover:bg-merch/10{% endif %}">
+                    Merch
+                    {% if '/merchstore/' in request.path %}
+                        <span class="absolute inset-x-3 bottom-0 h-0.5 bg-merch rounded-full"></span>
+                    {% endif %}
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'diyprojects:project-list' %}"
+                   class="nav-link link-diy relative inline-flex items-center h-16 px-3 text-sm font-medium whitespace-nowrap transition-colors
+                          {% if '/diyprojects/' in request.path %}text-diy{% else %}text-slate-600 hover:text-diy hover:bg-diy/10{% endif %}">
+                    DIY Projects
+                    {% if '/diyprojects/' in request.path %}
+                        <span class="absolute inset-x-3 bottom-0 h-0.5 bg-diy rounded-full"></span>
+                    {% endif %}
+                </a>
+            </li>
+            <li>
+                <a href="{% url 'commissions:commission_list' %}"
+                   class="nav-link link-commissions relative inline-flex items-center h-16 px-3 text-sm font-medium whitespace-nowrap transition-colors
+                          {% if '/commissions/' in request.path %}text-commissions{% else %}text-slate-600 hover:text-commissions hover:bg-commissions/10{% endif %}">
+                    Commissions
+                    {% if '/commissions/' in request.path %}
+                        <span class="absolute inset-x-3 bottom-0 h-0.5 bg-commissions rounded-full"></span>
+                    {% endif %}
+                </a>
+            </li>
+        </ul>
+
+        {# User menu #}
+        <div class="flex items-center shrink-0">
+            {% if user.is_authenticated %}
+                {# Avatar dropdown — opens on hover #}
+                <div class="relative group">
+                    <button class="flex items-center gap-2 pl-2 pr-3 py-1.5 rounded-full hover:bg-slate-100 transition-colors focus:outline-none">
+                        <span class="h-8 w-8 rounded-full bg-gradient-to-br from-slate-700 to-slate-900 flex items-center justify-center text-xs font-bold text-white select-none">
+                            {{ user.profile.display_name|default:user.username|first|upper }}
+                        </span>
+                        <span class="hidden md:inline text-sm font-medium text-slate-700">
+                            {{ user.profile.display_name|default:user.username }}
+                        </span>
+                        <svg class="w-3.5 h-3.5 text-slate-400 transition-transform group-hover:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7"/>
+                        </svg>
+                    </button>
+
+                    {# Dropdown panel #}
+                    <div class="absolute right-0 top-full mt-1 w-44 bg-white rounded-xl shadow-lg border border-slate-100 py-1
+                                opacity-0 invisible translate-y-1 transition-all duration-150
+                                group-hover:opacity-100 group-hover:visible group-hover:translate-y-0">
+                        <a href="{% url 'accounts:profile-update' user.username %}"
+                           class="flex items-center gap-2.5 px-4 py-2.5 text-sm text-slate-700 hover:bg-slate-50 transition-colors">
+                            <svg class="w-4 h-4 text-slate-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z"/>
+                            </svg>
+                            Profile
+                        </a>
+                        <div class="border-t border-slate-100 my-1"></div>
+                        <form method="post" action="{% url 'logout' %}">
+                            {% csrf_token %}
+                            <button type="submit"
+                                    class="w-full flex items-center gap-2.5 px-4 py-2.5 text-sm text-red-500 hover:bg-red-50 transition-colors">
+                                <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75"/>
+                                </svg>
+                                Logout
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            {% else %}
+                <a href="{% url 'login' %}"
+                   class="px-4 py-1.5 rounded-full text-sm font-semibold text-white bg-slate-900 hover:bg-slate-700 transition-colors">
+                    Login
+                </a>
+            {% endif %}
         </div>
-    </nav>
+    </div>
 </header>

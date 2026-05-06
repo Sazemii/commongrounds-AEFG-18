@@ -62,7 +62,7 @@
 {% block content %}
 
 {# ── Hero ───────────────────────────────────────────── #}
-<section class="pt-6 pb-10 text-center">
+<section class="pt-6 pb-16 text-center">
     {% if user.is_authenticated %}
         <h1 class="text-5xl sm:text-6xl font-extrabold tracking-tight text-slate-900 mb-4">
             Welcome, {{ user.profile.display_name|default:user.username }}.
@@ -90,13 +90,6 @@
         </p>
     {% endif %}
 </section>
-
-{# ── Divider ─────────────────────────────────────────── #}
-<div class="flex items-center gap-4 mb-10">
-    <div class="flex-1 h-px bg-slate-100"></div>
-    <span class="text-xs font-semibold uppercase tracking-widest text-slate-300">Explore the hubs</span>
-    <div class="flex-1 h-px bg-slate-100"></div>
-</div>
 
 {# ── Hub cards ───────────────────────────────────────── #}
 <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 pb-8">

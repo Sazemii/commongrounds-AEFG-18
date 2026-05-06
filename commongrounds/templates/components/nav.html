@@ -1,31 +1,31 @@
 {% load static %}
-{# Top nav for Common Grounds. Variables expected: none (uses {% url %} + user). #}
+{# Top nav for Common Grounds. Active hub detected via request.path. #}
 
-<header class="fixed w-full z-20 top-0 start-0">
-    <nav class="bg-neutral-primary">
+<header class="fixed w-full z-20 top-0 start-0 bg-white shadow-sm">
+    <nav class="bg-white">
         <div class="flex flex-wrap justify-between items-center mx-auto max-w-screen-xl p-4">
-            <a href="{% url 'homepage:home' %}" class="flex items-center space-x-3 rtl:space-x-reverse">
+            <a href="{% url 'homepage:home' %}" class="flex items-center space-x-3">
                 <img src="{% static 'img/logo.svg' %}" class="h-7" alt="Common Grounds Logo">
-                <span class="self-center text-xl text-heading font-semibold whitespace-nowrap">
+                <span class="self-center text-xl font-semibold text-slate-900">
                     Common Grounds
                 </span>
             </a>
-            <div class="flex items-center space-x-6 rtl:space-x-reverse">
+            <div class="flex items-center space-x-6">
                 {% if user.is_authenticated %}
                     <a href="{% url 'accounts:profile-update' user.username %}"
-                       class="text-sm text-body hover:underline">
+                       class="text-sm text-slate-700 hover:text-slate-900">
                         {{ user.profile.display_name|default:user.username }}
                     </a>
                     <form method="post" action="{% url 'logout' %}" class="inline">
                         {% csrf_token %}
                         <button type="submit"
-                                class="text-sm font-medium text-fg-brand hover:underline">
+                                class="text-sm font-medium text-slate-700 hover:text-slate-900">
                             Logout
                         </button>
                     </form>
                 {% else %}
                     <a href="{% url 'login' %}"
-                       class="text-sm font-medium text-fg-brand hover:underline">
+                       class="text-sm font-medium text-slate-700 hover:text-slate-900">
                         Login
                     </a>
                 {% endif %}
@@ -33,15 +33,46 @@
         </div>
     </nav>
 
-    <nav class="bg-neutral-secondary-soft border-y border-default">
-        <div class="max-w-screen-xl px-4 py-3 mx-auto">
-            <ul class="flex flex-row font-medium space-x-8 rtl:space-x-reverse text-sm">
-                <li><a href="{% url 'homepage:home' %}" class="text-heading hover:underline">Home</a></li>
-                <li><a href="{% url 'localevents:event_list' %}" class="text-heading hover:underline">Events</a></li>
-                <li><a href="{% url 'bookclub:book-list' %}" class="text-heading hover:underline">Books</a></li>
-                <li><a href="{% url 'merchstore:items_list' %}" class="text-heading hover:underline">Merch</a></li>
-                <li><a href="{% url 'diyprojects:project-list' %}" class="text-heading hover:underline">DIY</a></li>
-                <li><a href="{% url 'commissions:commission_list' %}" class="text-heading hover:underline">Commissions</a></li>
+    <nav class="bg-slate-50 border-t border-slate-200">
+        <div class="max-w-screen-xl px-4 mx-auto">
+            <ul class="flex flex-row font-medium space-x-8 text-sm">
+                {% url 'homepage:home' as home_url %}
+                <li>
+                    <a href="{{ home_url }}"
+                       class="block py-3 border-b-2 {% if request.path == home_url %}border-home text-home{% else %}border-transparent text-slate-700 hover:text-home{% endif %}">
+                        Home
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'localevents:event_list' %}"
+                       class="block py-3 border-b-2 {% if '/localevents/' in request.path %}border-events text-events{% else %}border-transparent text-slate-700 hover:text-events{% endif %}">
+                        Events
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'bookclub:book-list' %}"
+                       class="block py-3 border-b-2 {% if '/bookclub/' in request.path %}border-books text-books{% else %}border-transparent text-slate-700 hover:text-books{% endif %}">
+                        Books
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'merchstore:items_list' %}"
+                       class="block py-3 border-b-2 {% if '/merchstore/' in request.path %}border-merch text-merch{% else %}border-transparent text-slate-700 hover:text-merch{% endif %}">
+                        Merch
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'diyprojects:project-list' %}"
+                       class="block py-3 border-b-2 {% if '/diyprojects/' in request.path %}border-diy text-diy{% else %}border-transparent text-slate-700 hover:text-diy{% endif %}">
+                        DIY
+                    </a>
+                </li>
+                <li>
+                    <a href="{% url 'commissions:commission_list' %}"
+                       class="block py-3 border-b-2 {% if '/commissions/' in request.path %}border-commissions text-commissions{% else %}border-transparent text-slate-700 hover:text-commissions{% endif %}">
+                        Commissions
+                    </a>
+                </li>
             </ul>
         </div>
     </nav>

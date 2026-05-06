@@ -2,13 +2,29 @@
 <html lang="en">
   <head>
     <title>{% block title %}Common Grounds{% endblock %}</title>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              books: '#0897f7',
+              events: '#fa7305',
+              merch: '#10bc4c',
+              diy: '#10bc4c',
+              commissions: '#830bf4',
+              home: '#eab308',
+            }
+          }
+        }
+      }
+    </script>
     <script src="https://cdn.tailwindcss.com"></script>
     {% block styles %}{% endblock %}
   </head>
-  <body>
+  <body class="bg-white">
     {% include 'components/nav.html' %}
     <main class="pt-32 max-w-screen-xl mx-auto px-4">
-        <h2>{% block page_heading %}{% endblock %}</h2>
+        <h2 class="text-2xl font-semibold mb-4">{% block page_heading %}{% endblock %}</h2>
         <div id="content">{% block content %}{% endblock %}</div>
     </main>
     {% block scripts %}{% endblock %}

@@ -1,0 +1,61 @@
+{% load static %}
+
+<footer class="mt-24 border-t border-slate-100 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 py-12">
+
+        <div class="flex flex-col md:flex-row items-start justify-between gap-10">
+
+            {# Brand column #}
+            <div class="flex flex-col gap-3 max-w-xs">
+                <a href="{% url 'homepage:home' %}" class="flex items-center gap-2.5 group w-fit">
+                    <img src="{% static 'img/logo.svg' %}" class="h-9 w-9 transition-transform group-hover:scale-110" alt="Common Grounds Logo">
+                    <span class="text-xl font-bold tracking-tight text-slate-900">Common Grounds</span>
+                </a>
+                <p class="text-sm text-slate-500 leading-relaxed">
+                    A community platform where people gather around the things they love — events, books, merch, DIY projects, and commissions.
+                </p>
+                {# Hub color dots #}
+                <div class="flex gap-1.5 mt-1">
+                    <span class="h-2 w-2 rounded-full bg-events"  title="Events"></span>
+                    <span class="h-2 w-2 rounded-full bg-books"   title="Books"></span>
+                    <span class="h-2 w-2 rounded-full bg-merch"   title="Merch"></span>
+                    <span class="h-2 w-2 rounded-full bg-diy"     title="DIY"></span>
+                    <span class="h-2 w-2 rounded-full bg-commissions" title="Commissions"></span>
+                </div>
+            </div>
+
+            {# Hubs column #}
+            <div>
+                <p class="text-xs font-semibold uppercase tracking-widest text-slate-400 mb-3">Explore</p>
+                <ul class="flex flex-col gap-2 text-sm">
+                    <li><a href="{% url 'localevents:event_list' %}"    class="text-slate-600 hover:text-events transition-colors">Events</a></li>
+                    <li><a href="{% url 'bookclub:book-list' %}"        class="text-slate-600 hover:text-books transition-colors">Book Club</a></li>
+                    <li><a href="{% url 'merchstore:items_list' %}"     class="text-slate-600 hover:text-merch transition-colors">Merch Store</a></li>
+                    <li><a href="{% url 'diyprojects:project-list' %}"  class="text-slate-600 hover:text-diy transition-colors">DIY Projects</a></li>
+                    <li><a href="{% url 'commissions:commission_list' %}" class="text-slate-600 hover:text-commissions transition-colors">Commissions</a></li>
+                </ul>
+            </div>
+
+            {# Team column #}
+            <div>
+                <p class="text-xs font-semibold uppercase tracking-widest text-slate-400 mb-3">The Team</p>
+                <p class="text-xs text-slate-400 mb-2">Ateneo de Manila University · CSCI 40 </p>
+                <ul class="flex flex-col gap-1 text-sm text-slate-600">
+                    <li>Cimafranca, Ethan Lawrence</li>
+                    <li>Cortes, Jiancarlo Rafael</li>
+                    <li>Enriquez, Dexter Jethro</li>
+                    <li>Landicho, Carl Jacob</li>
+                    <li>Quinto, Charles Daniel</li>
+                </ul>
+            </div>
+
+        </div>
+
+        {# Bottom bar #}
+        <div class="mt-10 pt-6 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-2 text-xs text-slate-400">
+            <span>© 2026 Common Grounds — Final Project</span>
+            <span class="italic">Made with love and a bit too much coffee.</span>
+        </div>
+
+    </div>
+</footer>

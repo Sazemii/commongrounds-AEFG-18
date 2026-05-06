@@ -66,7 +66,7 @@
                 <a href="{% url 'localevents:event_list' %}"
                    class="nav-link link-events relative inline-flex items-center h-16 px-3 text-sm font-medium whitespace-nowrap transition-colors
                           {% if '/localevents/' in request.path %}text-events{% else %}text-slate-600 hover:text-events hover:bg-events/10{% endif %}">
-                    Events
+                    Local Events
                     {% if '/localevents/' in request.path %}
                         <span class="absolute inset-x-3 bottom-0 h-0.5 bg-events rounded-full"></span>
                     {% endif %}

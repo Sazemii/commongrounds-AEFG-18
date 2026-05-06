@@ -27,6 +27,7 @@
         <h2 class="text-2xl font-semibold mb-4">{% block page_heading %}{% endblock %}</h2>
         <div id="content">{% block content %}{% endblock %}</div>
     </main>
+    {% include 'components/footer.html' %}
     {% block scripts %}{% endblock %}
   </body>
 </html>

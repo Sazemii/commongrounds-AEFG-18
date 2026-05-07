@@ -82,10 +82,9 @@ class CommissionDetailView(DetailView):
         jobs = commission.jobs.all()
 
         total_manpower = jobs.aggregate(total=Sum('manpower_required'))['total'] or 0
-        accepted_count = JobApplication.objects.filter(
+        taken_count = JobApplication.objects.filter(
             job__commission=commission,
-            status='Accepted'
-        ).count()
+        ).exclude(status='Rejected').count()
 
         profile = None
         if user.is_authenticated:
@@ -95,8 +94,8 @@ class CommissionDetailView(DetailView):
 
         jobs = list(jobs)
         for job in jobs:
-            accepted_for_job = job.applications.filter(status='Accepted').count()
-            job.is_full = accepted_for_job >= job.manpower_required
+            taken_for_job = job.applications.exclude(status='Rejected').count()
+            job.is_full = taken_for_job >= job.manpower_required
             job.user_applied = profile is not None and JobApplication.objects.filter(
                 job=job,
                 applicant=profile
@@ -105,7 +104,7 @@ class CommissionDetailView(DetailView):
         context.update({
             'jobs': jobs,
             'total_manpower': total_manpower,
-            'open_manpower': max(total_manpower - accepted_count, 0),
+            'open_manpower': max(total_manpower - taken_count, 0),
             'is_owner': user.is_authenticated and profile is not None and commission.maker == profile,
             'can_apply': user.is_authenticated,
         })
@@ -130,7 +129,22 @@ class CommissionDetailView(DetailView):
         if JobApplication.objects.filter(job=job, applicant=profile).exists():
             return redirect('commissions:commission_detail', pk=commission.pk)
 
-        JobApplication.objects.create(job=job, applicant=profile, status='Pending')
+        taken_for_job = job.applications.exclude(status='Rejected').count()
+        if taken_for_job >= job.manpower_required:
+            return redirect('commissions:commission_detail', pk=commission.pk)
+
+        with transaction.atomic():
+            JobApplication.objects.create(job=job, applicant=profile, status='Pending')
+
+            taken_for_job += 1
+            if taken_for_job >= job.manpower_required and job.status != 'Full':
+                job.status = 'Full'
+                job.save(update_fields=['status'])
+
+            all_full = not commission.jobs.exclude(status='Full').exists()
+            if all_full and commission.status != 'Full':
+                commission.status = 'Full'
+                commission.save(update_fields=['status'])
 
         return redirect('commissions:commission_detail', pk=commission.pk)
 

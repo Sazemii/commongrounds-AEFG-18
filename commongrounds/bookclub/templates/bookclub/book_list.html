@@ -417,8 +417,13 @@
     </div>
   {% else %}
     <div class="empty">
-      <p class="text-base font-medium text-slate-700">The shelf is empty.</p>
-      <p class="mt-1 text-sm">Be the first to <a style="color: var(--books-600)" class="font-semibold underline-offset-2 hover:underline" href="{% url 'bookclub:book-create' %}">contribute a book</a>.</p>
+      {% if user.is_authenticated %}
+        <p class="text-base font-medium text-slate-700">No other books to show.</p>
+        <p class="mt-1 text-sm text-slate-400">Books you contributed, bookmarked, or reviewed appear in the sections above.</p>
+      {% else %}
+        <p class="text-base font-medium text-slate-700">The shelf is empty.</p>
+        <p class="mt-1 text-sm">Be the first to <a style="color: var(--books-600)" class="font-semibold underline-offset-2 hover:underline" href="{% url 'bookclub:book-create' %}">contribute a book</a>.</p>
+      {% endif %}
     </div>
   {% endif %}
 </section>

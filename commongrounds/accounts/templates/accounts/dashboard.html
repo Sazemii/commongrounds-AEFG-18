@@ -239,7 +239,7 @@
           <div class="db-row-title">{{ event.title }}</div>
           <div class="db-row-meta">{{ event.location }} &nbsp;·&nbsp; {{ event.start_time|date:"M d, Y" }} &nbsp;·&nbsp; {{ event.status }}</div>
         </div>
-        <span class="db-view-btn">View →</span>
+        <span class="db-view-btn">Click to view</span>
       </a>
     {% empty %}
       <div class="db-empty">No events organized yet.</div>
@@ -261,7 +261,7 @@
           <div class="db-row-title">{{ book.title }}</div>
           <div class="db-row-meta">by {{ book.author }} &nbsp;·&nbsp; {{ book.genre.name|default:"—" }} &nbsp;·&nbsp; {{ book.publication_year }}</div>
         </div>
-        <span class="db-view-btn">View →</span>
+        <span class="db-view-btn">Click to view</span>
       </a>
     {% empty %}
       <div class="db-empty">No books contributed yet.</div>
@@ -283,7 +283,7 @@
           <div class="db-row-title">{{ commission.title }}</div>
           <div class="db-row-meta">{{ commission.type.name|default:"—" }} &nbsp;·&nbsp; {{ commission.status }} &nbsp;·&nbsp; {{ commission.created_on|date:"M d, Y" }}</div>
         </div>
-        <span class="db-view-btn">View →</span>
+        <span class="db-view-btn">Click to view</span>
       </a>
     {% empty %}
       <div class="db-empty">No commissions created yet.</div>

@@ -274,26 +274,9 @@
     margin-top: 0.95rem;
     display: flex; align-items: center; justify-content: space-between;
   }
-  .badge {
-    display: inline-flex; align-items: center; gap: 0.35rem;
-    font-size: 0.7rem; font-weight: 600;
-    padding: 0.22rem 0.55rem;
-    border-radius: 9999px;
-  }
-  .badge-avail {
-    color: #047857;
-    background: #ecfdf5;
-    border: 1px solid #a7f3d0;
-  }
-  .badge-out {
-    color: #b91c1c;
-    background: #fef2f2;
-    border: 1px solid #fecaca;
-  }
-  .badge::before {
-    content: ''; width: 6px; height: 6px; border-radius: 9999px;
-    background: currentColor;
-  }
+  .badge { font-size: 0.7rem; font-weight: 600; }
+  .badge-avail { color: #047857; }
+  .badge-out   { color: #b91c1c; }
   .arrow {
     font-size: 0.78rem; font-weight: 700;
     color: var(--books-600);
@@ -336,6 +319,7 @@
 <section class="bc-hero fade-in">
   <div class="bc-hero-grid">
     <div class="bc-hero-content">
+      <span style="font-size:0.7rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--books-700);">Book Club</span>
       <h1>Read together. Lend generously.</h1>
       <p class="sub">
         A small, well-kept shelf maintained by the community. Borrow what catches your eye,

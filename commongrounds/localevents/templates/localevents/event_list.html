@@ -219,16 +219,10 @@
   .ev-status {
     position: absolute;
     top: 0.6rem; right: 0.6rem;
-    display: inline-flex; align-items: center; gap: 0.3rem;
     font-size: 0.65rem; font-weight: 700;
     letter-spacing: 0.08em; text-transform: uppercase;
     padding: 0.2rem 0.55rem;
-    border-radius: 9999px;
-    backdrop-filter: blur(6px);
-  }
-  .ev-status::before {
-    content: ''; width: 5px; height: 5px; border-radius: 9999px;
-    background: currentColor;
+    border-radius: 0.4rem;
   }
   .status-available { background: rgba(220,252,231,0.92); color: #15803d; }
   .status-full      { background: rgba(254,226,226,0.92); color: #b91c1c; }
@@ -310,7 +304,7 @@
 <section class="ev-hero fade-in">
   <div class="ev-hero-grid">
     <div class="ev-hero-content">
-      <span class="ev-hero-eyebrow">Local Events</span>
+      <span style="font-size:0.7rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--ev-700);">Local Events</span>
       <h1>Find your next<br>great experience.</h1>
       <p class="sub">
         Discover events happening in your community — from meetups to workshops.

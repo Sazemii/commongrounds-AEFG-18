@@ -424,13 +424,17 @@
   <div class="grid-commissions">
     {% for commission in commissions %}
       <a href="{% url 'commissions:commission_detail' commission.pk %}" class="commission-card" style="animation-delay: {{ forloop.counter0|stringformat:'d' }}0ms">
-        <div class="cm-card-bar"></div>
+        <div class="cm-card-img">
+          <div class="cm-card-img-type">{{ commission.type.name|default:"Commission" }}</div>
+          <div class="cm-card-img-status">
+            <span class="cm-status status-{{ commission.status|lower }}">{{ commission.status }}</span>
+          </div>
+        </div>
         <div class="cm-card-body">
-          <div class="cm-card-type">{{ commission.type.name|default:"—" }}</div>
           <div class="cm-card-title">{{ commission.title }}</div>
           <div class="cm-card-desc">{{ commission.description|truncatewords:18 }}</div>
           <div class="cm-card-foot">
-            <span class="cm-status status-{{ commission.status|lower }}">{{ commission.status }}</span>
+            <span style="font-size:0.75rem; color:#94a3b8;">👥 {{ commission.people_required }} needed</span>
             <span class="arrow">View →</span>
           </div>
         </div>

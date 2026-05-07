@@ -123,21 +123,43 @@
     font-size: 0.92rem; color: #334155; line-height: 1.65;
   }
 
-  /* ── Jobs list ────────────────────────────────────── */
-  .cm-jobs { display: flex; flex-direction: column; gap: 0.85rem; margin-top: 0.5rem; }
+  /* ── Jobs list (Jobs.ph-style rows) ──────────────── */
+  .cm-jobs { display: flex; flex-direction: column; gap: 0.75rem; margin-top: 0.5rem; }
 
   .cm-job-card {
-    background: var(--cm-50);
-    border: 1px solid var(--cm-100);
-    border-radius: 0.75rem;
+    display: flex; align-items: center; gap: 1rem;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.85rem;
     padding: 1rem 1.1rem;
+    transition: border-color .18s, box-shadow .18s, transform .18s;
   }
+  .cm-job-card:hover {
+    border-color: var(--cm-200);
+    box-shadow: 0 4px 16px rgba(131,11,244,0.07);
+    transform: translateY(-1px);
+  }
+  .cm-job-avatar {
+    flex-shrink: 0;
+    width: 48px; height: 48px;
+    border-radius: 0.65rem;
+    background:
+      linear-gradient(135deg, var(--cm-400), var(--cm-700));
+    display: flex; align-items: center; justify-content: center;
+    color: #fff;
+    font-size: 1.2rem;
+    font-weight: 800;
+  }
+  .cm-job-info { flex: 1; min-width: 0; }
   .cm-job-role {
-    font-size: 0.92rem; font-weight: 700; color: #0f172a;
+    font-size: 0.95rem; font-weight: 700; color: #0f172a;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
   }
   .cm-job-meta {
-    font-size: 0.8rem; color: #64748b; margin-top: 0.25rem;
+    font-size: 0.78rem; color: #64748b; margin-top: 0.2rem;
+    display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem 0.75rem;
   }
+  .cm-job-action { flex-shrink: 0; }
 
   /* ── Sidebar ──────────────────────────────────────── */
   .cm-sidebar { display: flex; flex-direction: column; gap: 1rem; }
@@ -192,12 +214,12 @@
   }
 
   .applied-badge {
-    display: inline-flex; align-items: center; gap: 0.35rem;
-    width: 100%; justify-content: center;
-    padding: 0.6rem 1rem; border-radius: 9999px;
-    font-size: 0.85rem; font-weight: 600;
+    display: inline-flex; align-items: center; gap: 0.3rem;
+    padding: 0.45rem 0.9rem; border-radius: 9999px;
+    font-size: 0.82rem; font-weight: 600;
     background: rgba(220,252,231,0.9); color: #15803d;
     border: 1px solid rgba(134,239,172,0.5);
+    white-space: nowrap;
   }
 </style>
 {% endblock %}
@@ -260,22 +282,27 @@
       <div class="cm-jobs">
         {% for job in jobs %}
           <div class="cm-job-card">
-            <div class="cm-job-role">{{ job.role }}</div>
-            <div class="cm-job-meta">{{ job.manpower_required }} person{{ job.manpower_required|pluralize }} needed &nbsp;·&nbsp; <span class="status-badge status-{{ job.status|lower }}">{{ job.status }}</span></div>
-
-            <div style="margin-top: 0.75rem;">
+            <div class="cm-job-avatar">{{ job.role|slice:":1"|upper }}</div>
+            <div class="cm-job-info">
+              <div class="cm-job-role">{{ job.role }}</div>
+              <div class="cm-job-meta">
+                <span>👥 {{ job.manpower_required }} person{{ job.manpower_required|pluralize }}</span>
+                <span class="status-badge status-{{ job.status|lower }}">{{ job.status }}</span>
+              </div>
+            </div>
+            <div class="cm-job-action">
               {% if job.user_applied %}
-                <span class="applied-badge">✓ You have applied</span>
+                <span class="applied-badge">✓ Applied</span>
               {% elif can_apply %}
                 <form method="post">
                   {% csrf_token %}
                   <input type="hidden" name="job_id" value="{{ job.id }}">
-                  <button type="submit" class="btn-cm-primary" {% if job.is_full %}disabled{% endif %}>
-                    {% if job.is_full %}Role Full{% else %}Apply to Role{% endif %}
+                  <button type="submit" class="btn-cm-primary" style="width:auto; padding:0.5rem 1.1rem; font-size:0.82rem;" {% if job.is_full %}disabled{% endif %}>
+                    {% if job.is_full %}Full{% else %}Apply{% endif %}
                   </button>
                 </form>
               {% else %}
-                <a href="{% url 'login' %}" class="btn-cm-ghost" style="width: auto; padding: 0.5rem 1rem;">Log in to apply</a>
+                <a href="{% url 'login' %}" class="btn-cm-ghost" style="width:auto; padding:0.45rem 0.9rem; font-size:0.82rem;">Log in</a>
               {% endif %}
             </div>
           </div>

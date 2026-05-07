@@ -1,5 +1,6 @@
 from django.db import models
 from django.urls import reverse
+from django.core import MinValueValidator, MaxValueIndicator
 
 
 class ProjectCategory(models.Model):
@@ -8,8 +9,6 @@ class ProjectCategory(models.Model):
 
     class Meta:
         ordering = ['name']
-        verbose_name = 'Project category'
-        verbose_name_plural = 'Project categories'
 
     def __str__(self):
         return self.name
@@ -22,9 +21,17 @@ class Project(models.Model):
         on_delete=models.SET_NULL,
         null=True,
     )
+
+    creator = models.ForeignKey(
+        Profile,
+        on_delete=models.SET_NULL,
+        null=True,
+    )
+
     description = models.TextField()
     materials = models.TextField()
     steps = models.TextField()
+
     created_on = models.DateTimeField(auto_now_add=True)
     updated_on = models.DateTimeField(auto_now=True)
 
@@ -36,3 +43,46 @@ class Project(models.Model):
 
     def get_absolute_url(self):
         return reverse('diyprojects:project-detail', args=[str(self.pk)])
+
+
+class Favorite(models.Model):
+    STATUS_CHOICES = [
+        ('Backlog', 'Backlog'),
+        ('To-Do', 'To-Do'),
+        ('Done', 'Done'),
+    ]
+
+    project = models.ForeignKey(
+        Project,
+        on_delete=models.CASCADE,
+        null=True,
+    )
+    profile = models.ForeignKey(
+        Profile,
+        on_delete=models.CASCADE,
+        null=True,
+    )
+    date_favorited = models.DateField()
+    project_status = models.CharField(
+        max_length=10, choices=STATUS_CHOICES
+    )
+
+
+class ProjectReview(models.Model):
+    reviewer = models.ForeignKey(
+        Profile,
+        on_delete=models.CASCADE,
+        null=True,
+    )
+    comment = models.TextField()
+    image = models.ImageField()
+
+
+class ProjectRating(models.Model):
+    profile = models.ForeignKey(
+        Profile,
+        on_delete=models.CASCADE,
+        null=True,
+    )
+    score = models.IntegerField(default=0, validators=[
+                                MinValueValidator(1), MaxValueIndicator(10)])

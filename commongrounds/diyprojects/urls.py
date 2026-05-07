@@ -1,10 +1,18 @@
 from django.urls import path
 
-from .views import ProjectListView, ProjectDetailView
+from .views import (
+    ProjectCreateView,
+    ProjectDetailView,
+    ProjectListView,
+    ProjectUpdateView,
+)
 
-app_name = "diyprojects"
+app_name = 'commissions'
 
 urlpatterns = [
-    path('projects', ProjectListView.as_view(), name='project-list'),
-    path('project/<int:pk>', ProjectDetailView.as_view(), name='project-detail'),
+    path('requests', ProjectListView.as_view(), name='commission_list'),
+    path('request/<int:pk>', ProjectDetailView.as_view(), name='commission_detail'),
+    path('request/add', ProjectCreateView.as_view(), name='commission_add'),
+    path('request/<int:pk>/edit',
+         ProjectUpdateView.as_view(), name='commission_edit'),
 ]

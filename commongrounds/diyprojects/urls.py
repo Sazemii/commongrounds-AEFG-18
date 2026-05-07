@@ -5,14 +5,18 @@ from .views import (
     ProjectDetailView,
     ProjectListView,
     ProjectUpdateView,
+    ProjectReviewView,
+    ProjectRatingView,
 )
 
-app_name = 'commissions'
+app_name = 'projects'
 
 urlpatterns = [
-    path('requests', ProjectListView.as_view(), name='commission_list'),
-    path('request/<int:pk>', ProjectDetailView.as_view(), name='commission_detail'),
-    path('request/add', ProjectCreateView.as_view(), name='commission_add'),
-    path('request/<int:pk>/edit',
-         ProjectUpdateView.as_view(), name='commission_edit'),
+    path('projects', ProjectListView.as_view(), name='project_list'),
+    path('project/<int:pk>', ProjectDetailView.as_view(), name='project_detail'),
+    path('project/add', ProjectCreateView.as_view(), name='project_add'),
+    path('project/<int:pk>/edit',
+         ProjectUpdateView.as_view(), name='project_edit'),
+    path('project/review', ProjectReviewView.as_view(), name='project_form'),
+    path('project/rating', ProjectRatingView.as_view(), name='project_form'),
 ]

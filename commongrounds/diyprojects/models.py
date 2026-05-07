@@ -84,5 +84,5 @@ class ProjectRating(models.Model):
         on_delete=models.CASCADE,
         null=True,
     )
-    score = models.IntegerField(default=0, validators=[
+    score = models.IntegerField(default=5, validators=[
                                 MinValueValidator(1), MaxValueIndicator(10)])

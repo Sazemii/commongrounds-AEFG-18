@@ -1,0 +1,25 @@
+{% block content %}
+    <h3>Rate and Review this Project</h3>
+    <form method="post" action="{% url 'diyprojects:project_form'
+    project.pk %}" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        
+        <label for="id_score">Rating (1-10):</label>
+        <input type="number" name="score" min="1" max="10"
+        id="id_score">
+        </p>
+           
+        <p>
+<label for="id_comment">Your Review:</label>
+<textarea name="comment" id="id_comment"></textarea>
+ </p>
+        
+    <p>
+    <label for="id_image">Upload Image (optional):</label>
+    <input type="file" name="image" id="id_image">
+  </p>
+
+   <button type="submit">Submit Feedback</button>
+    </form>
+  {% endblock %}

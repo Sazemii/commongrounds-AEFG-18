@@ -601,7 +601,16 @@
   <form method="post" class="form-card">
     {% csrf_token %}
     <input type="hidden" name="action" value="rate" />
-    {{ rating_form.as_p }}
+    <div class="star-rating" id="starRating">
+      {% for i in "0123456789" %}
+        {% with star=forloop.revcounter %}
+          <input type="radio" name="score" id="star{{ star }}" value="{{ star }}" required />
+          <label for="star{{ star }}" aria-label="{{ star }} star{{ star|pluralize }}"></label>
+        {% endwith %}
+      {% endfor %}
+      <span class="star-rating-value" id="starValue">Pick a score</span>
+    </div>
+    {{ rating_form.score.errors }}
     <button type="submit" class="btn-primary">
       <svg
         class="icon"
@@ -619,6 +628,18 @@
       Submit rating
     </button>
   </form>
+  <script>
+    (function () {
+      const wrap = document.getElementById('starRating');
+      const display = document.getElementById('starValue');
+      if (!wrap || !display) return;
+      wrap.addEventListener('change', (e) => {
+        if (e.target.name === 'score') {
+          display.textContent = `${e.target.value} / 10`;
+        }
+      });
+    })();
+  </script>
 </section>
 {% endif %}
 

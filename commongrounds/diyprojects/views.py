@@ -11,7 +11,7 @@ from accounts.models import Profile
 
 from .forms import ProjectForm, ReviewRatingForm
 
-from .models import ProjectCategory, Project, Favorite, ProjectReview, ProjectRating
+from .models import Project, Favorite, ProjectReview, ProjectRating
 
 
 class ProjectListView(ListView):
@@ -82,6 +82,11 @@ class ProjectCreateView(LoginRequiredMixin, RoleRequiredMixin, CreateView):
     template_name = 'diyprojects/project_form.html'
     form_class = ProjectForm
     required_role = ROLE_PROJECT_CREATOR
+
+    def form_valid(self, form):
+        response = super().form_valid(form)
+        self.object.organizer.add(self.request.user.profile)
+        return response
 
 
 class ProjectUpdateView(LoginRequiredMixin, RoleRequiredMixin, UpdateView):

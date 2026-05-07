@@ -1,0 +1,310 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Dashboard | {{ request.user.profile }}{% endblock %}
+{% block page_heading %}{% endblock %}
+
+{% block styles %}
+<style>
+  main > h2:empty { display: none; }
+
+  /* ── Animations ───────────────────────────────────── */
+  .fade-in { opacity: 0; animation: db-fade .5s ease forwards; }
+  @keyframes db-fade { to { opacity: 1; } }
+  @keyframes db-rise {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .fade-in, .db-row { animation: none; opacity: 1; transform: none; }
+  }
+
+  /* ── Hero ─────────────────────────────────────────── */
+  .db-hero {
+    position: relative; overflow: hidden;
+    border-radius: 1.25rem;
+    padding: 1.75rem 1.25rem 1.5rem;
+    background:
+      radial-gradient(900px 360px at 12% 0%, rgba(100,116,139,0.08), transparent 60%),
+      radial-gradient(700px 320px at 100% 100%, rgba(100,116,139,0.04), transparent 60%),
+      #ffffff;
+    border: 1px solid rgba(15,23,42,0.07);
+    box-shadow:
+      0 2px 4px rgba(0,0,0,0.04),
+      0 6px 16px rgba(0,0,0,0.05),
+      0 16px 40px rgba(0,0,0,0.04);
+  }
+  @media (min-width: 640px) { .db-hero { padding: 2.5rem 2rem 2.25rem; } }
+
+  .db-hero-grid {
+    display: grid; grid-template-columns: 1fr;
+    gap: 1.5rem; align-items: center;
+  }
+  @media (min-width: 768px) {
+    .db-hero-grid { grid-template-columns: 1fr 220px; }
+  }
+
+  .db-hero-eyebrow {
+    display: block;
+    font-size: 0.68rem; font-weight: 700; letter-spacing: 0.12em;
+    text-transform: uppercase; color: #475569;
+    margin-bottom: 0.65rem;
+  }
+  .db-hero h1 {
+    font-size: clamp(1.6rem, 6vw, 2.6rem);
+    font-weight: 800; letter-spacing: -0.02em; color: #0f172a; line-height: 1.1;
+  }
+  .db-hero h1 span { color: #64748b; }
+  .db-hero p {
+    margin-top: 0.6rem; font-size: 0.95rem; color: #64748b; line-height: 1.5;
+  }
+
+  .db-hero-art {
+    display: none; justify-content: center; align-items: center;
+  }
+  .db-hero-art img { width: 100%; max-width: 200px; height: auto; display: block; }
+  @media (min-width: 768px) { .db-hero-art { display: flex; } }
+
+  /* ── Stat cards row ───────────────────────────────── */
+  .db-stats {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.85rem;
+    margin-top: 1.5rem;
+  }
+  @media (min-width: 640px) { .db-stats { grid-template-columns: repeat(3, 1fr); } }
+  @media (min-width: 900px) { .db-stats { grid-template-columns: repeat(5, 1fr); } }
+
+  .db-stat {
+    background: #fff;
+    border: 1px solid rgba(15,23,42,0.06);
+    border-radius: 1rem;
+    padding: 1rem 1.1rem;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.03), 0 4px 12px rgba(0,0,0,0.04);
+    display: flex; flex-direction: column; gap: 0.2rem;
+  }
+  .db-stat-label {
+    font-size: 0.65rem; font-weight: 700; letter-spacing: 0.12em;
+    text-transform: uppercase; color: #94a3b8;
+  }
+  .db-stat-num {
+    font-size: 1.75rem; font-weight: 800; letter-spacing: -0.03em; color: #0f172a;
+    line-height: 1;
+  }
+  .db-stat-sub { font-size: 0.72rem; color: #94a3b8; }
+
+  /* Hub accent on stat number */
+  .stat-events      .db-stat-num { color: #fa7305; }
+  .stat-books       .db-stat-num { color: #0897f7; }
+  .stat-commissions .db-stat-num { color: #830bf4; }
+  .stat-merch       .db-stat-num { color: #10bc4c; }
+  .stat-diy         .db-stat-num { color: #eab308; }
+
+  /* ── Section ──────────────────────────────────────── */
+  .db-section { margin-top: 2.25rem; }
+  .db-section-head {
+    display: flex; align-items: baseline; justify-content: space-between;
+    margin-bottom: 0.75rem;
+  }
+  .db-section-title {
+    font-size: 0.78rem; font-weight: 700; letter-spacing: 0.16em;
+    text-transform: uppercase; color: #475569;
+  }
+  .db-section-count { font-size: 0.75rem; color: #94a3b8; }
+
+  /* Hub accent words */
+  .accent-events      { color: #fa7305; }
+  .accent-books       { color: #0897f7; }
+  .accent-commissions { color: #830bf4; }
+  .accent-merch       { color: #10bc4c; }
+  .accent-diy         { color: #eab308; }
+
+  /* ── Row list ─────────────────────────────────────── */
+  .db-list { display: flex; flex-direction: column; gap: 0.55rem; }
+
+  .db-row {
+    display: flex; align-items: center; gap: 0.9rem;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.85rem;
+    padding: 0.8rem 1rem;
+    text-decoration: none; color: inherit;
+    opacity: 0; transform: translateY(6px);
+    animation: db-rise .45s cubic-bezier(.22,.61,.36,1) forwards;
+    transition: border-color .18s, box-shadow .18s, transform .18s;
+  }
+  .db-row:hover {
+    border-color: #cbd5e1;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+    transform: translateY(-2px);
+  }
+
+  .db-row-avatar {
+    flex-shrink: 0; width: 42px; height: 42px;
+    border-radius: 0.6rem;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem; font-weight: 800; color: #fff;
+  }
+  .avatar-events      { background: linear-gradient(135deg, #fa7305, #964503); }
+  .avatar-books       { background: linear-gradient(135deg, #0897f7, #055b94); }
+  .avatar-commissions { background: linear-gradient(135deg, #830bf4, #350561); }
+  .avatar-merch       { background: linear-gradient(135deg, #10bc4c, #085e26); }
+  .avatar-diy         { background: linear-gradient(135deg, #eab308, #624b04); }
+
+  .db-row-info { flex: 1; min-width: 0; }
+  .db-row-title {
+    font-size: 0.9rem; font-weight: 700; color: #0f172a;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .db-row-meta { font-size: 0.73rem; color: #94a3b8; margin-top: 0.1rem; }
+
+  .db-view-btn {
+    flex-shrink: 0;
+    display: inline-flex; align-items: center;
+    padding: 0.38rem 0.85rem; border-radius: 9999px;
+    font-size: 0.75rem; font-weight: 600; color: #475569;
+    background: #f1f5f9; border: 1px solid #e2e8f0;
+    transition: background .18s, color .18s, border-color .18s;
+    white-space: nowrap;
+  }
+  .db-row:hover .db-view-btn {
+    background: #e2e8f0; color: #0f172a;
+  }
+
+  /* Empty / soon */
+  .db-empty, .db-soon {
+    text-align: center; padding: 1.25rem 1rem;
+    border: 1px dashed #e2e8f0; border-radius: 0.85rem;
+    font-size: 0.82rem; color: #94a3b8;
+  }
+  .db-soon { font-style: italic; text-align: left; padding: 0.9rem 1.1rem; }
+</style>
+{% endblock %}
+
+{% block content %}
+
+{# ── Hero ── #}
+<section class="db-hero fade-in">
+  <div class="db-hero-grid">
+    <div>
+      <span class="db-hero-eyebrow">My Dashboard</span>
+      <h1>Hello, <span>{{ request.user.profile.display_name|default:request.user.username }}!</span></h1>
+      <p>Here's everything you've contributed to Common Grounds.</p>
+    </div>
+    <div class="db-hero-art" aria-hidden="true">
+      <img src="{% static 'img/dashboard-icon.svg' %}" alt="">
+    </div>
+  </div>
+</section>
+
+{# ── Stat cards ── #}
+<div class="db-stats fade-in">
+  <div class="db-stat stat-events">
+    <span class="db-stat-label">Events</span>
+    <span class="db-stat-num">{{ events|length }}</span>
+    <span class="db-stat-sub">organized</span>
+  </div>
+  <div class="db-stat stat-books">
+    <span class="db-stat-label">Books</span>
+    <span class="db-stat-num">{{ books|length }}</span>
+    <span class="db-stat-sub">contributed</span>
+  </div>
+  <div class="db-stat stat-commissions">
+    <span class="db-stat-label">Commissions</span>
+    <span class="db-stat-num">{{ commissions|length }}</span>
+    <span class="db-stat-sub">created</span>
+  </div>
+  <div class="db-stat stat-merch">
+    <span class="db-stat-label">Products</span>
+    <span class="db-stat-num">—</span>
+    <span class="db-stat-sub">sold</span>
+  </div>
+  <div class="db-stat stat-diy">
+    <span class="db-stat-label">Projects</span>
+    <span class="db-stat-num">—</span>
+    <span class="db-stat-sub">created</span>
+  </div>
+</div>
+
+{# ── Events Organized ── #}
+<section class="db-section fade-in">
+  <div class="db-section-head">
+    <div class="db-section-title"><span class="accent-events">Events</span> you organized</div>
+    <div class="db-section-count">{{ events|length }} event{{ events|length|pluralize }}</div>
+  </div>
+  <div class="db-list">
+    {% for event in events %}
+      <a href="{% url 'localevents:event_detail' event.pk %}" class="db-row" style="animation-delay: {{ forloop.counter0|stringformat:'d' }}0ms">
+        <div class="db-row-avatar avatar-events">{{ event.title|slice:":1"|upper }}</div>
+        <div class="db-row-info">
+          <div class="db-row-title">{{ event.title }}</div>
+          <div class="db-row-meta">{{ event.location }} &nbsp;·&nbsp; {{ event.start_time|date:"M d, Y" }} &nbsp;·&nbsp; {{ event.status }}</div>
+        </div>
+        <span class="db-view-btn">Click to view</span>
+      </a>
+    {% empty %}
+      <div class="db-empty">No events organized yet.</div>
+    {% endfor %}
+  </div>
+</section>
+
+{# ── Books Contributed ── #}
+<section class="db-section fade-in">
+  <div class="db-section-head">
+    <div class="db-section-title"><span class="accent-books">Books</span> you contributed</div>
+    <div class="db-section-count">{{ books|length }} book{{ books|length|pluralize }}</div>
+  </div>
+  <div class="db-list">
+    {% for book in books %}
+      <a href="{% url 'bookclub:book-detail' book.pk %}" class="db-row" style="animation-delay: {{ forloop.counter0|stringformat:'d' }}0ms">
+        <div class="db-row-avatar avatar-books">{{ book.title|slice:":1"|upper }}</div>
+        <div class="db-row-info">
+          <div class="db-row-title">{{ book.title }}</div>
+          <div class="db-row-meta">by {{ book.author }} &nbsp;·&nbsp; {{ book.genre.name|default:"—" }} &nbsp;·&nbsp; {{ book.publication_year }}</div>
+        </div>
+        <span class="db-view-btn">Click to view</span>
+      </a>
+    {% empty %}
+      <div class="db-empty">No books contributed yet.</div>
+    {% endfor %}
+  </div>
+</section>
+
+{# ── Commissions Created ── #}
+<section class="db-section fade-in">
+  <div class="db-section-head">
+    <div class="db-section-title"><span class="accent-commissions">Commissions</span> you created</div>
+    <div class="db-section-count">{{ commissions|length }} commission{{ commissions|length|pluralize }}</div>
+  </div>
+  <div class="db-list">
+    {% for commission in commissions %}
+      <a href="{% url 'commissions:commission_detail' commission.pk %}" class="db-row" style="animation-delay: {{ forloop.counter0|stringformat:'d' }}0ms">
+        <div class="db-row-avatar avatar-commissions">{{ commission.title|slice:":1"|upper }}</div>
+        <div class="db-row-info">
+          <div class="db-row-title">{{ commission.title }}</div>
+          <div class="db-row-meta">{{ commission.type.name|default:"—" }} &nbsp;·&nbsp; {{ commission.status }} &nbsp;·&nbsp; {{ commission.created_on|date:"M d, Y" }}</div>
+        </div>
+        <span class="db-view-btn">Click to view</span>
+      </a>
+    {% empty %}
+      <div class="db-empty">No commissions created yet.</div>
+    {% endfor %}
+  </div>
+</section>
+
+{# ── Products Sold (placeholder) ── #}
+<section class="db-section fade-in">
+  <div class="db-section-head">
+    <div class="db-section-title"><span class="accent-merch">Products</span> you sold</div>
+  </div>
+  <div class="db-soon">Coming soon — merch store integration in progress.</div>
+</section>
+
+{# ── Projects Created (placeholder) ── #}
+<section class="db-section fade-in">
+  <div class="db-section-head">
+    <div class="db-section-title"><span class="accent-diy">Projects</span> you created</div>
+  </div>
+  <div class="db-soon">Coming soon — DIY projects integration in progress.</div>
+</section>
+
+{% endblock %}

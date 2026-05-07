@@ -6,6 +6,9 @@ from django.urls import reverse_lazy
 from django.views.generic import TemplateView
 from django.views.generic.edit import CreateView, UpdateView
 
+from bookclub.models import Book
+from commissions.models import Commission
+from localevents.models import Event
 from .decorators import role_required
 from .forms import ProfileUpdateForm, RegisterForm
 from .models import Profile
@@ -39,11 +42,23 @@ class ProfileUpdateView(LoginRequiredMixin, UpdateView):
         return self.request.user.profile
 
     def get_success_url(self):
-        return self.object.get_absolute_url()
+        return self.object.get_absolute_url() + '?saved=1'
 
 
 class PermissionDeniedView(TemplateView):
     template_name = 'accounts/permission_denied.html'
+
+
+class DashboardView(LoginRequiredMixin, TemplateView):
+    template_name = 'accounts/dashboard.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        profile = self.request.user.profile
+        context['books'] = Book.objects.filter(contributor=profile)
+        context['events'] = Event.objects.filter(organizer=profile)
+        context['commissions'] = Commission.objects.filter(maker=profile)
+        return context
 
 
 @role_required(Profile.ROLE_BOOK_CONTRIBUTOR)

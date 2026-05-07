@@ -118,34 +118,32 @@
 
   /* ── File Input ───────────────────────────────────── */
   .ev-form-card input[type="file"] {
-    padding: 0.5rem;
-    border: 2px solid #e2e8f0;
-    border-radius: 0.6rem;
-    font-size: 0.92rem;
-    color: #64748b;
-    background: #fff;
+    width: auto;
+    padding: 0;
+    margin-top: 0.25rem;
+    border: none;
+    background: transparent;
     cursor: pointer;
-    transition: border-color .18s, box-shadow .18s;
   }
   .ev-form-card input[type="file"]::file-selector-button {
-    padding: 0.5rem 1.25rem;
-    margin-right: 1rem;
+    padding: 0.7rem 1.1rem;
     border: none;
-    border-radius: 0.4rem;
+    border-radius: 9999px;
     background: var(--ev-500);
     color: #fff;
-    font-weight: 600;
-    font-size: 0.85rem;
+    font-weight: 700;
+    font-size: 0.92rem;
+    letter-spacing: 0.01em;
     cursor: pointer;
-    transition: background .18s, transform .18s;
+    box-shadow: 0 3px 10px rgba(250,115,5,0.14);
+    transition: background .18s, transform .18s, box-shadow .18s;
   }
   .ev-form-card input[type="file"]::file-selector-button:hover {
     background: var(--ev-600);
     transform: translateY(-1px);
+    box-shadow: 0 6px 14px rgba(250,115,5,0.18);
   }
   .ev-form-card input[type="file"]:focus {
-    border-color: var(--ev-400);
-    box-shadow: 0 0 0 3px rgba(250,115,5,0.12);
     outline: none;
   }
 

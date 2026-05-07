@@ -211,9 +211,7 @@
   .event-img img {
     width: 100%; height: 100%;
     object-fit: cover;
-    transition: transform .35s ease;
   }
-  .event-card:hover .event-img img { transform: scale(1.04); }
 
   /* Status pill overlaid on image */
   .ev-status {
@@ -224,10 +222,15 @@
     padding: 0.2rem 0.55rem;
     border-radius: 0.4rem;
   }
-  .status-available { background: rgba(220,252,231,0.92); color: #15803d; }
-  .status-full      { background: rgba(254,226,226,0.92); color: #b91c1c; }
-  .status-done      { background: rgba(226,232,240,0.92); color: #475569; }
-  .status-cancelled { background: rgba(254,249,195,0.92); color: #a16207; }
+  .ev-status {
+    background: rgba(255,255,255,0.75);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+  .status-available { color: #15803d; }
+  .status-full      { color: #b91c1c; }
+  .status-done      { color: #475569; }
+  .status-cancelled { color: #a16207; }
 
   /* Card body */
   .event-body {

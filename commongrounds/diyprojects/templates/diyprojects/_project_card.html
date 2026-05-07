@@ -12,8 +12,8 @@
     <p class="project-by">by {{ project.creator|default:"Unknown" }}</p>
     {% if project.description %}<p class="project-desc">{{ project.description }}</p>{% endif %}
     <div class="project-foot">
-      <span class="badge">{{ project.favorites.count }} favorite{{ project.favorites.count|pluralize }}</span>
-      <span class="arrow">Open →</span>
+      <span class="badge">♡ {{ project.favorites.count }} favorite{{ project.favorites.count|pluralize }}</span>
+      <span class="arrow">Click to open</span>
     </div>
   </div>
 </a>

@@ -1,201 +1,493 @@
-{% extends 'base.html' %}
-
-{% block title %}{{ project.title }} | DIY Projects{% endblock %}
-{% block page_heading %}{% endblock %}
-
-{% block styles %}
+{% extends 'base.html' %} {% block title %}{{ project.title }} | DIY Projects{%
+endblock %} {% block page_heading %}{% endblock %} {% block styles %}
 <style>
-  main > h2:empty { display: none; }
+  main > h2:empty {
+    display: none;
+  }
 
   :root {
-    --diy-50: #fefce8; --diy-100: #fef9c3; --diy-200: #fef08a;
-    --diy-500: #eab308; --diy-600: #ca8a04; --diy-700: #a16207;
+    --diy-50: #fefce8;
+    --diy-100: #fef9c3;
+    --diy-200: #fef08a;
+    --diy-500: #eab308;
+    --diy-600: #ca8a04;
+    --diy-700: #a16207;
     --diy-800: #854d0e;
   }
 
   .crumb {
-    display: inline-flex; align-items: center; gap: 0.35rem;
-    font-size: 0.78rem; font-weight: 600; color: #64748b;
-    transition: color .18s, gap .18s;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #64748b;
+    transition:
+      color 0.18s,
+      gap 0.18s;
   }
-  .crumb:hover { color: var(--diy-700); gap: 0.5rem; }
-  .crumb svg { width: 14px; height: 14px; }
+  .crumb:hover {
+    color: var(--diy-700);
+    gap: 0.5rem;
+  }
+  .crumb svg {
+    width: 14px;
+    height: 14px;
+  }
 
   .detail-grid {
-    display: grid; gap: 1.5rem;
+    display: grid;
+    gap: 1.5rem;
     grid-template-columns: 1fr;
   }
   @media (min-width: 900px) {
-    .detail-grid { grid-template-columns: 320px 1fr; gap: 2.5rem; }
+    .detail-grid {
+      grid-template-columns: 320px 1fr;
+      gap: 2.5rem;
+    }
   }
 
   .cover {
     position: relative;
     aspect-ratio: 3 / 4;
-    border-radius: 1rem; overflow: hidden;
+    border-radius: 1rem;
+    overflow: hidden;
     color: #1f1308;
     padding: 1.5rem 1.4rem;
-    display: flex; flex-direction: column; justify-content: space-between;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
     background:
-      linear-gradient(180deg, rgba(255,255,255,0.20), rgba(255,255,255,0) 35%),
+      linear-gradient(
+        180deg,
+        rgba(255, 255, 255, 0.2),
+        rgba(255, 255, 255, 0) 35%
+      ),
       linear-gradient(135deg, var(--diy-500), var(--diy-800));
     box-shadow:
-      0 2px 4px rgba(0,0,0,0.05),
-      0 12px 28px rgba(0,0,0,0.08),
-      0 28px 56px rgba(0,0,0,0.06);
-    transform: translateY(8px); opacity: 0;
-    animation: rise .55s cubic-bezier(.22,.61,.36,1) .05s forwards;
+      0 2px 4px rgba(0, 0, 0, 0.05),
+      0 12px 28px rgba(0, 0, 0, 0.08),
+      0 28px 56px rgba(0, 0, 0, 0.06);
+    transform: translateY(8px);
+    opacity: 0;
+    animation: rise 0.55s cubic-bezier(0.22, 0.61, 0.36, 1) 0.05s forwards;
   }
   .cover::before {
-    content: ''; position: absolute; top: 0; bottom: 0; right: 18px;
-    width: 1px; background: rgba(255,255,255,0.20);
+    content: "";
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    right: 18px;
+    width: 1px;
+    background: rgba(255, 255, 255, 0.2);
   }
   .cover-cat {
-    font-size: 0.68rem; letter-spacing: 0.16em; text-transform: uppercase;
-    font-weight: 700; opacity: 0.88;
+    font-size: 0.68rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    font-weight: 700;
+    opacity: 0.88;
   }
-  .cover-title { font-size: 1.4rem; font-weight: 800; line-height: 1.15; letter-spacing: -0.01em; }
-  .cover-by { margin-top: 0.4rem; font-size: 0.85rem; opacity: 0.85; }
-  .cover-date { font-size: 0.85rem; opacity: 0.75; }
+  .cover-title {
+    font-size: 1.4rem;
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+  }
+  .cover-by {
+    margin-top: 0.4rem;
+    font-size: 0.85rem;
+    opacity: 0.85;
+  }
+  .cover-date {
+    font-size: 0.85rem;
+    opacity: 0.75;
+  }
 
   .meta {
-    opacity: 0; transform: translateY(8px);
-    animation: rise .55s cubic-bezier(.22,.61,.36,1) .12s forwards;
+    opacity: 0;
+    transform: translateY(8px);
+    animation: rise 0.55s cubic-bezier(0.22, 0.61, 0.36, 1) 0.12s forwards;
   }
   .meta-eyebrow {
-    font-size: 0.72rem; letter-spacing: 0.16em; text-transform: uppercase;
-    color: var(--diy-700); font-weight: 700;
+    font-size: 0.72rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--diy-700);
+    font-weight: 700;
   }
   .meta-title {
     margin-top: 0.6rem;
     font-size: clamp(1.7rem, 3vw, 2.3rem);
-    font-weight: 800; letter-spacing: -0.02em;
-    color: #0f172a; line-height: 1.1;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: #0f172a;
+    line-height: 1.1;
   }
-  .meta-by { margin-top: 0.4rem; color: #64748b; font-size: 1rem; }
+  .meta-by {
+    margin-top: 0.4rem;
+    color: #64748b;
+    font-size: 1rem;
+  }
   .meta-list {
     margin-top: 1.5rem;
-    display: grid; gap: 0.6rem 2rem; grid-template-columns: max-content 1fr;
+    display: grid;
+    gap: 0.6rem 2rem;
+    grid-template-columns: max-content 1fr;
   }
   .meta-list dt {
-    font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase;
-    color: #94a3b8; font-weight: 600; padding-top: 2px;
+    font-size: 0.72rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #94a3b8;
+    font-weight: 600;
+    padding-top: 2px;
   }
-  .meta-list dd { font-size: 0.92rem; color: #1e293b; }
+  .meta-list dd {
+    font-size: 0.92rem;
+    color: #1e293b;
+  }
 
-  .actions { margin-top: 1.5rem; display: flex; flex-wrap: wrap; gap: 0.6rem; }
-  .btn-primary, .btn-ghost {
-    display: inline-flex; align-items: center; gap: 0.45rem;
-    padding: 0.6rem 1.05rem; border-radius: 9999px;
-    font-size: 0.85rem; font-weight: 600;
-    transition: transform .18s, background .18s, color .18s, border-color .18s, box-shadow .18s;
-    border: 1px solid transparent; cursor: pointer;
+  .actions {
+    margin-top: 1.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+  }
+  .btn-primary,
+  .btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.6rem 1.05rem;
+    border-radius: 9999px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition:
+      transform 0.18s,
+      background 0.18s,
+      color 0.18s,
+      border-color 0.18s,
+      box-shadow 0.18s;
+    border: 1px solid transparent;
+    cursor: pointer;
   }
   .btn-primary {
-    color: #fff; background: var(--diy-500);
-    box-shadow: 0 1px 2px rgba(234,179,8,0.22), 0 6px 16px rgba(234,179,8,0.20);
+    color: #fff;
+    background: var(--diy-500);
+    box-shadow:
+      0 1px 2px rgba(234, 179, 8, 0.22),
+      0 6px 16px rgba(234, 179, 8, 0.2);
   }
-  .btn-primary:hover { background: var(--diy-600); transform: translateY(-1px); }
-  .btn-ghost { color: #334155; background: #fff; border-color: #e2e8f0; }
-  .btn-ghost:hover { color: var(--diy-700); border-color: var(--diy-200); background: var(--diy-50); }
-  .icon { width: 14px; height: 14px; }
+  .btn-primary:hover {
+    background: var(--diy-600);
+    transform: translateY(-1px);
+  }
+  .btn-ghost {
+    color: #334155;
+    background: #fff;
+    border-color: #e2e8f0;
+  }
+  .btn-ghost:hover {
+    color: var(--diy-700);
+    border-color: var(--diy-200);
+    background: var(--diy-50);
+  }
+  .icon {
+    width: 14px;
+    height: 14px;
+  }
 
   .fav-btn {
-    display: inline-flex; align-items: center; gap: 0.4rem;
-    padding: 0.55rem 0.9rem; border-radius: 9999px;
-    background: #fff; border: 1px solid #e2e8f0;
-    font-size: 0.82rem; font-weight: 600; color: #334155; cursor: pointer;
-    transition: all .18s;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.55rem 0.9rem;
+    border-radius: 9999px;
+    background: var(--diy-500);
+    border: none;
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #fff;
+    cursor: pointer;
+    box-shadow:
+      0 1px 2px rgba(234, 179, 8, 0.2),
+      0 6px 16px rgba(234, 179, 8, 0.18);
+    transition:
+      background 0.18s,
+      transform 0.18s,
+      box-shadow 0.18s;
   }
-  .fav-btn:hover { border-color: var(--diy-200); background: var(--diy-50); color: var(--diy-700); }
-  .fav-btn.active { background: var(--diy-50); border-color: var(--diy-500); color: var(--diy-700); }
-  .fav-btn svg { width: 14px; height: 14px; transition: transform .25s cubic-bezier(.34,1.56,.64,1); }
-  .fav-btn:hover svg { transform: scale(1.15); }
-  .fav-btn.active svg { fill: var(--diy-500); stroke: var(--diy-500); }
+  .fav-btn:hover {
+    background: var(--diy-600);
+    transform: translateY(-1px);
+  }
+  .fav-btn.active {
+    background: var(--diy-700);
+  }
+  .fav-btn svg {
+    width: 14px;
+    height: 14px;
+    transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+  }
+  .fav-btn:hover svg {
+    transform: scale(1.15);
+  }
+  .fav-btn.active svg {
+    fill: #fff;
+    stroke: #fff;
+  }
 
-  .section { margin-top: 3rem; }
-  .section-title {
-    font-size: 0.78rem; letter-spacing: 0.16em; text-transform: uppercase;
-    color: #475569; font-weight: 700;
+  .section {
+    margin-top: 3rem;
   }
-  .section-title .accent { color: var(--diy-600); }
+  .section-title {
+    font-size: 0.78rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: #475569;
+    font-weight: 700;
+  }
+  .section-title .accent {
+    color: var(--diy-600);
+  }
 
   .text-block {
-    margin-top: 1rem; font-size: 0.97rem; line-height: 1.65;
-    color: #334155; max-width: 50rem; white-space: pre-line;
+    margin-top: 1rem;
+    font-size: 0.97rem;
+    line-height: 1.65;
+    color: #334155;
+    max-width: 50rem;
+    white-space: pre-line;
   }
 
-  .reviews { margin-top: 1rem; display: grid; gap: 0.85rem; }
+  .reviews {
+    margin-top: 1rem;
+    display: grid;
+    gap: 0.85rem;
+  }
   .review {
-    border: 1px solid #e2e8f0; border-radius: 0.9rem; background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.9rem;
+    background: #fff;
     padding: 1rem 1.1rem;
-    transition: border-color .18s, transform .18s, box-shadow .18s;
-    opacity: 0; transform: translateY(6px);
-    animation: rise .5s cubic-bezier(.22,.61,.36,1) forwards;
+    transition:
+      border-color 0.18s,
+      transform 0.18s,
+      box-shadow 0.18s;
+    opacity: 0;
+    transform: translateY(6px);
+    animation: rise 0.5s cubic-bezier(0.22, 0.61, 0.36, 1) forwards;
   }
   .review:hover {
-    border-color: var(--diy-200); transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(234,179,8,0.07);
+    border-color: var(--diy-200);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(234, 179, 8, 0.07);
   }
-  .review-by  { font-size: 0.78rem; color: #94a3b8; font-weight: 600; }
-  .review-body { margin-top: 0.45rem; font-size: 0.9rem; line-height: 1.55; color: #334155; white-space: pre-line; }
-  .review-img { margin-top: 0.7rem; max-width: 280px; border-radius: 0.6rem; border: 1px solid #e2e8f0; }
+  .review-by {
+    font-size: 0.78rem;
+    color: #94a3b8;
+    font-weight: 600;
+  }
+  .review-body {
+    margin-top: 0.45rem;
+    font-size: 0.9rem;
+    line-height: 1.55;
+    color: #334155;
+    white-space: pre-line;
+  }
+  .review-img {
+    margin-top: 0.7rem;
+    max-width: 280px;
+    border-radius: 0.6rem;
+    border: 1px solid #e2e8f0;
+  }
 
   .empty {
-    text-align: center; padding: 1.75rem 1rem; color: #94a3b8;
-    border: 1px dashed #e2e8f0; border-radius: 0.9rem;
+    text-align: center;
+    padding: 1.75rem 1rem;
+    color: #94a3b8;
+    border: 1px dashed #e2e8f0;
+    border-radius: 0.9rem;
   }
 
   .form-card {
-    margin-top: 1rem; padding: 1.25rem; background: #fff;
-    border: 1px solid #e2e8f0; border-radius: 1rem;
-    box-shadow: 0 1px 2px rgba(0,0,0,0.03), 0 6px 16px rgba(0,0,0,0.04);
+    margin-top: 1rem;
+    padding: 1.25rem;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 1rem;
+    box-shadow:
+      0 1px 2px rgba(0, 0, 0, 0.03),
+      0 6px 16px rgba(0, 0, 0, 0.04);
   }
   .form-card label {
-    display: block; font-size: 0.78rem; font-weight: 600;
-    color: #475569; letter-spacing: 0.04em; margin-bottom: 0.3rem;
+    display: block;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #475569;
+    letter-spacing: 0.04em;
+    margin-bottom: 0.3rem;
   }
-  .form-card input, .form-card textarea, .form-card select {
-    width: 100%; padding: 0.55rem 0.75rem; border-radius: 0.6rem;
-    border: 1px solid #e2e8f0; font-size: 0.9rem; color: #0f172a; background: #fff;
-    transition: border-color .18s, box-shadow .18s;
+  .form-card input,
+  .form-card textarea,
+  .form-card select {
+    width: 100%;
+    padding: 0.55rem 0.75rem;
+    border-radius: 0.6rem;
+    border: 1px solid #e2e8f0;
+    font-size: 0.9rem;
+    color: #0f172a;
+    background: #fff;
+    transition:
+      border-color 0.18s,
+      box-shadow 0.18s;
   }
-  .form-card input:focus, .form-card textarea:focus, .form-card select:focus {
-    outline: none; border-color: var(--diy-500);
-    box-shadow: 0 0 0 3px rgba(234,179,8,0.20);
+  .form-card input:focus,
+  .form-card textarea:focus,
+  .form-card select:focus {
+    outline: none;
+    border-color: var(--diy-500);
+    box-shadow: 0 0 0 3px rgba(234, 179, 8, 0.2);
   }
-  .form-card p { margin-bottom: 0.85rem; }
-  .form-card textarea { min-height: 100px; resize: vertical; }
-  .form-card .helptext, .form-card ul.errorlist {
-    color: #94a3b8; font-size: 0.75rem; margin-top: 0.3rem; list-style: none; padding: 0;
+  .form-card p {
+    margin-bottom: 0.85rem;
   }
-  .form-card ul.errorlist { color: #b91c1c; }
+  .form-card textarea {
+    min-height: 100px;
+    resize: vertical;
+  }
+  .form-card .helptext,
+  .form-card ul.errorlist {
+    color: #94a3b8;
+    font-size: 0.75rem;
+    margin-top: 0.3rem;
+    list-style: none;
+    padding: 0;
+  }
+  .form-card ul.errorlist {
+    color: #b91c1c;
+  }
 
   .stars {
-    display: inline-flex; align-items: center; gap: 0.5rem;
-    font-size: 1.1rem; font-weight: 700; color: var(--diy-700);
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--diy-700);
   }
-  .stars .num { font-size: 1.6rem; }
-  .stars .out { font-size: 0.85rem; color: #94a3b8; font-weight: 500; }
+  .stars .num {
+    font-size: 1.6rem;
+  }
+  .stars .out {
+    font-size: 0.85rem;
+    color: #94a3b8;
+    font-weight: 500;
+  }
 
-  @keyframes rise { to { opacity: 1; transform: translateY(0); } }
+  /* ── Star rating input (10 stars, hover + checked) ── */
+  .star-rating {
+    display: inline-flex;
+    flex-direction: row-reverse;
+    gap: 0.3rem;
+    margin-bottom: 0.85rem;
+  }
+  .star-rating input {
+    display: none;
+  }
+  .star-rating label {
+    cursor: pointer;
+    width: 42px;
+    height: 42px;
+    background-color: #e2e8f0;
+    -webkit-mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><polygon points='12 2 15 8.5 22 9.5 17 14.5 18.5 21.5 12 18 5.5 21.5 7 14.5 2 9.5 9 8.5'/></svg>")
+      center/contain no-repeat;
+    mask: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'><polygon points='12 2 15 8.5 22 9.5 17 14.5 18.5 21.5 12 18 5.5 21.5 7 14.5 2 9.5 9 8.5'/></svg>")
+      center/contain no-repeat;
+    transition:
+      background-color 0.15s,
+      transform 0.15s;
+  }
+  .star-rating label:hover,
+  .star-rating label:hover ~ label,
+  .star-rating input:checked ~ label {
+    background-color: var(--diy-500);
+  }
+  .star-rating label:hover {
+    transform: scale(1.1);
+  }
+  .star-rating-value {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--diy-700);
+    margin-left: 0.75rem;
+    align-self: center;
+  }
+
+  /* ── File input styling (matches diy palette) ── */
+  .form-card input[type="file"] {
+    font-size: 0.85rem;
+    color: #475569;
+    padding: 0;
+    border: none;
+    background: transparent;
+  }
+  .form-card input[type="file"]::file-selector-button {
+    margin-right: 0.75rem;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 0.6rem;
+    background: #475569;
+    color: #fff;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.18s;
+  }
+  .form-card input[type="file"]::file-selector-button:hover {
+    background: #334155;
+  }
+
+  @keyframes rise {
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
   @media (prefers-reduced-motion: reduce) {
-    .cover, .meta, .review { animation: none; opacity: 1; transform: none; }
+    .cover,
+    .meta,
+    .review {
+      animation: none;
+      opacity: 1;
+      transform: none;
+    }
   }
 </style>
-{% endblock %}
-
-{% block content %}
+{% endblock %} {% block content %}
 
 <a href="{% url 'diyprojects:project-list' %}" class="crumb">
-  <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+  <svg
+    class="icon"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    stroke-width="2.4"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+  >
+    <path d="M15 18l-6-6 6-6" />
+  </svg>
   Back to projects
 </a>
 
 <div class="detail-grid mt-4">
   <div class="cover">
     <div>
-      <div class="cover-cat">{{ project.category|default:"Uncategorized" }}</div>
+      <div class="cover-cat">
+        {{ project.category|default:"Uncategorized" }}
+      </div>
     </div>
     <div>
       <div class="cover-title">{{ project.title }}</div>
@@ -210,41 +502,75 @@
     <p class="meta-by">by {{ project.creator|default:"Unknown" }}</p>
 
     <dl class="meta-list">
-      <dt>Category</dt>  <dd>{{ project.category|default:"-" }}</dd>
-      <dt>Posted</dt>    <dd>{{ project.created_on|date:"M d, Y" }}</dd>
-      <dt>Updated</dt>   <dd>{{ project.updated_on|date:"M d, Y" }}</dd>
+      <dt>Category</dt>
+      <dd>{{ project.category|default:"-" }}</dd>
+      <dt>Posted</dt>
+      <dd>{{ project.created_on|date:"M d, Y" }}</dd>
+      <dt>Updated</dt>
+      <dd>{{ project.updated_on|date:"M d, Y" }}</dd>
       <dt>Rating</dt>
       <dd>
         {% if average_rating %}
-          <span class="stars"><span class="num">{{ average_rating }}</span><span class="out">/ 10</span> <span class="text-slate-400 text-xs font-normal">({{ rating_count }} rating{{ rating_count|pluralize }})</span></span>
+        <span class="stars"
+          ><span class="num">{{ average_rating }}</span
+          ><span class="out">/ 10</span>
+          <span class="text-slate-400 text-xs font-normal"
+            >({{ rating_count }} rating{{ rating_count|pluralize }})</span
+          ></span
+        >
         {% else %}
-          <span class="text-slate-400 text-sm">Not rated yet</span>
+        <span class="text-slate-400 text-sm">Not rated yet</span>
         {% endif %}
       </dd>
-      <dt>Favorites</dt> <dd>{{ favorite_count }}</dd>
+      <dt>Favorites</dt>
+      <dd>{{ favorite_count }}</dd>
     </dl>
 
     <div class="actions">
       {% if user.is_authenticated %}
-        <form method="post" action="{% url 'diyprojects:project-favorite' project.pk %}">
-          {% csrf_token %}
-          <button type="submit" class="fav-btn {% if is_favorited %}active{% endif %}">
-            <svg viewBox="0 0 24 24" fill="{% if is_favorited %}currentColor{% else %}none{% endif %}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-              <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"/>
-            </svg>
-            {% if is_favorited %}Favorited{% else %}Favorite{% endif %}
-          </button>
-        </form>
-      {% endif %}
-
-      {% if is_owner %}
-        <a href="{% url 'diyprojects:project-update' project.pk %}" class="btn-ghost">
-          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M12 20h9"/>
-            <path d="M16.5 3.5a2.121 2.121 0 113 3L7 19l-4 1 1-4z"/>
+      <form
+        method="post"
+        action="{% url 'diyprojects:project-favorite' project.pk %}"
+      >
+        {% csrf_token %}
+        <button
+          type="submit"
+          class="fav-btn {% if is_favorited %}active{% endif %}"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            fill="{% if is_favorited %}currentColor{% else %}none{% endif %}"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <path
+              d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"
+            />
           </svg>
-          Edit
-        </a>
+          {% if is_favorited %}Favorited{% else %}Favorite{% endif %}
+        </button>
+      </form>
+      {% endif %} {% if is_owner %}
+      <a
+        href="{% url 'diyprojects:project-update' project.pk %}"
+        class="btn-ghost"
+      >
+        <svg
+          class="icon"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.2"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M12 20h9" />
+          <path d="M16.5 3.5a2.121 2.121 0 113 3L7 19l-4 1 1-4z" />
+        </svg>
+        Edit
+      </a>
       {% endif %}
     </div>
   </div>
@@ -270,11 +596,21 @@
   <div class="section-title">Rate this <span class="accent">project</span></div>
   <form method="post" class="form-card">
     {% csrf_token %}
-    <input type="hidden" name="action" value="rate">
+    <input type="hidden" name="action" value="rate" />
     {{ rating_form.as_p }}
     <button type="submit" class="btn-primary">
-      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-        <polygon points="12 2 15 8.5 22 9.5 17 14.5 18.5 21.5 12 18 5.5 21.5 7 14.5 2 9.5 9 8.5 12 2"/>
+      <svg
+        class="icon"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2.2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <polygon
+          points="12 2 15 8.5 22 9.5 17 14.5 18.5 21.5 12 18 5.5 21.5 7 14.5 2 9.5 9 8.5 12 2"
+        />
       </svg>
       Submit rating
     </button>
@@ -285,19 +621,22 @@
 <section class="section">
   <div class="section-title">Maker <span class="accent">notes</span></div>
   {% if reviews %}
-    <div class="reviews">
-      {% for review in reviews %}
-        <div class="review" style="animation-delay: {% widthratio forloop.counter0 1 50 %}ms;">
-          <div class="review-by">{{ review.reviewer.display_name }}</div>
-          <div class="review-body">{{ review.comment }}</div>
-          {% if review.image %}
-            <img src="{{ review.image.url }}" alt="" class="review-img">
-          {% endif %}
-        </div>
-      {% endfor %}
+  <div class="reviews">
+    {% for review in reviews %}
+    <div
+      class="review"
+      style="animation-delay: {% widthratio forloop.counter0 1 50 %}ms;"
+    >
+      <div class="review-by">{{ review.reviewer.display_name }}</div>
+      <div class="review-body">{{ review.comment }}</div>
+      {% if review.image %}
+      <img src="{{ review.image.url }}" alt="" class="review-img" />
+      {% endif %}
     </div>
+    {% endfor %}
+  </div>
   {% else %}
-    <div class="empty">No reviews yet. Be the first to share how it went.</div>
+  <div class="empty">No reviews yet. Be the first to share how it went.</div>
   {% endif %}
 </section>
 
@@ -306,11 +645,20 @@
   <div class="section-title">Leave a <span class="accent">review</span></div>
   <form method="post" enctype="multipart/form-data" class="form-card">
     {% csrf_token %}
-    <input type="hidden" name="action" value="review">
+    <input type="hidden" name="action" value="review" />
     {{ review_form.as_p }}
     <button type="submit" class="btn-primary">
-      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4z"/>
+      <svg
+        class="icon"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2.2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path d="M22 2L11 13" />
+        <path d="M22 2l-7 20-4-9-9-4z" />
       </svg>
       Submit review
     </button>
@@ -319,9 +667,13 @@
 {% else %}
 <section class="section">
   <div class="empty">
-    <a class="font-semibold" style="color: var(--diy-600)" href="{% url 'login' %}">Log in</a> to rate or review this project.
+    <a
+      class="font-semibold"
+      style="color: var(--diy-600)"
+      href="{% url 'login' %}"
+      >Log in</a
+    >
+    to rate or review this project.
   </div>
 </section>
-{% endif %}
-
-{% endblock %}
+{% endif %} {% endblock %}

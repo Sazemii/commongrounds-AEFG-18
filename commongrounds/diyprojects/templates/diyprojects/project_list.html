@@ -37,18 +37,10 @@
       0 16px 40px rgba(0,0,0,0.04);
   }
   .dy-hero-eyebrow {
-    display: inline-flex; align-items: center; gap: 0.4rem;
+    display: block;
     font-size: 0.7rem; font-weight: 700; letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--diy-700);
-    background: var(--diy-50);
-    border: 1px solid var(--diy-100);
-    padding: 0.3rem 0.65rem; border-radius: 9999px;
-  }
-  .dy-hero-eyebrow::before {
-    content: ''; width: 6px; height: 6px; border-radius: 9999px;
-    background: var(--diy-500);
-    box-shadow: 0 0 0 4px rgba(234,179,8,0.20);
   }
   .dy-hero h1 {
     font-size: clamp(1.5rem, 6vw, 2.75rem);
@@ -187,13 +179,11 @@
     display: flex; align-items: center; justify-content: space-between;
   }
   .badge {
-    display: inline-flex; align-items: center; gap: 0.35rem;
-    font-size: 0.7rem; font-weight: 600;
-    padding: 0.22rem 0.55rem; border-radius: 9999px;
+    display: inline-flex; align-items: center; gap: 0.3rem;
+    font-size: 0.78rem; font-weight: 600;
     color: var(--diy-700);
-    background: var(--diy-50);
-    border: 1px solid var(--diy-100);
   }
+  .badge svg { width: 13px; height: 13px; fill: var(--diy-500); }
   .arrow {
     font-size: 0.78rem; font-weight: 700; color: var(--diy-600);
     display: inline-flex; align-items: center; gap: 0.2rem;
@@ -204,6 +194,7 @@
   .empty {
     text-align: center; padding: 3rem 1rem;
     border: 1px dashed #e2e8f0; border-radius: 1rem; color: #64748b;
+    grid-column: 1 / -1;
   }
 
   @keyframes dy-rise {
@@ -231,10 +222,12 @@
         Pick up materials, follow the steps, and post your own when you're ready.
       </p>
       <div class="mt-7 flex flex-wrap gap-2.5">
-        <a href="{% url 'diyprojects:project-create' %}" class="btn-primary">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
-          Create a project
-        </a>
+        {% if user.is_authenticated and user.profile.role == 'Project Creator' %}
+          <a href="{% url 'diyprojects:project-create' %}" class="btn-primary">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+            Create a project
+          </a>
+        {% endif %}
         <a href="#all-projects" class="btn-ghost">Browse all</a>
       </div>
     </div>
@@ -245,47 +238,63 @@
 </section>
 
 {% if user.is_authenticated %}
-  {% if created_projects %}
-    <section class="section">
-      <div class="section-head">
-        <div class="section-title">Your <span class="accent">creations</span></div>
-        <div class="section-meta">{{ created_projects|length }} project{{ created_projects|length|pluralize }}</div>
-      </div>
-      <div class="grid-projects">
-        {% for project in created_projects %}
-          {% include 'diyprojects/_project_card.html' with project=project idx=forloop.counter0 %}
-        {% endfor %}
-      </div>
-    </section>
-  {% endif %}
+  {# ── Projects You Created ── #}
+  <section class="section">
+    <div class="section-head">
+      <div class="section-title">Your <span class="accent">creations</span></div>
+      <div class="section-meta">{{ created_projects|length }} project{{ created_projects|length|pluralize }}</div>
+    </div>
+    <div class="grid-projects">
+      {% for project in created_projects %}
+        {% include 'diyprojects/_project_card.html' with project=project idx=forloop.counter0 %}
+      {% empty %}
+        <div class="empty">
+          <p class="text-base font-medium text-slate-700">No creations yet.</p>
+          {% if user.profile.role == 'Project Creator' %}
+            <p class="mt-1 text-sm">
+              <a style="color: var(--diy-600)" class="font-semibold underline-offset-2 hover:underline" href="{% url 'diyprojects:project-create' %}">Share your first project →</a>
+            </p>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </div>
+  </section>
 
-  {% if favorited_projects %}
-    <section class="section">
-      <div class="section-head">
-        <div class="section-title">Your <span class="accent">favorites</span></div>
-        <div class="section-meta">{{ favorited_projects|length }} saved</div>
-      </div>
-      <div class="grid-projects">
-        {% for project in favorited_projects %}
-          {% include 'diyprojects/_project_card.html' with project=project idx=forloop.counter0 %}
-        {% endfor %}
-      </div>
-    </section>
-  {% endif %}
+  {# ── Projects You Favorited ── #}
+  <section class="section">
+    <div class="section-head">
+      <div class="section-title">Your <span class="accent">favorites</span></div>
+      <div class="section-meta">{{ favorited_projects|length }} saved</div>
+    </div>
+    <div class="grid-projects">
+      {% for project in favorited_projects %}
+        {% include 'diyprojects/_project_card.html' with project=project idx=forloop.counter0 %}
+      {% empty %}
+        <div class="empty">
+          <p class="text-base font-medium text-slate-700">No favorites yet.</p>
+          <p class="mt-1 text-sm text-slate-400">Favorite projects from the section below.</p>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
 
-  {% if reviewed_projects %}
-    <section class="section">
-      <div class="section-head">
-        <div class="section-title">You've <span class="accent">reviewed</span></div>
-        <div class="section-meta">{{ reviewed_projects|length }} review{{ reviewed_projects|length|pluralize }}</div>
-      </div>
-      <div class="grid-projects">
-        {% for project in reviewed_projects %}
-          {% include 'diyprojects/_project_card.html' with project=project idx=forloop.counter0 %}
-        {% endfor %}
-      </div>
-    </section>
-  {% endif %}
+  {# ── Projects You Reviewed ── #}
+  <section class="section">
+    <div class="section-head">
+      <div class="section-title">You've <span class="accent">reviewed</span></div>
+      <div class="section-meta">{{ reviewed_projects|length }} review{{ reviewed_projects|length|pluralize }}</div>
+    </div>
+    <div class="grid-projects">
+      {% for project in reviewed_projects %}
+        {% include 'diyprojects/_project_card.html' with project=project idx=forloop.counter0 %}
+      {% empty %}
+        <div class="empty">
+          <p class="text-base font-medium text-slate-700">No reviews yet.</p>
+          <p class="mt-1 text-sm text-slate-400">Leave a review on any project's page.</p>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
 {% endif %}
 
 <section class="section" id="all-projects">
@@ -302,8 +311,13 @@
     </div>
   {% else %}
     <div class="empty">
-      <p class="text-base font-medium text-slate-700">Nothing here yet.</p>
-      <p class="mt-1 text-sm">Be the first to <a style="color: var(--diy-600)" class="font-semibold underline-offset-2 hover:underline" href="{% url 'diyprojects:project-create' %}">share a project</a>.</p>
+      {% if user.is_authenticated %}
+        <p class="text-base font-medium text-slate-700">No other projects to show.</p>
+        <p class="mt-1 text-sm text-slate-400">Projects you created, favorited, or reviewed appear in the sections above.</p>
+      {% else %}
+        <p class="text-base font-medium text-slate-700">Nothing here yet.</p>
+        <p class="mt-1 text-sm">Be the first to <a style="color: var(--diy-600)" class="font-semibold underline-offset-2 hover:underline" href="{% url 'diyprojects:project-create' %}">share a project</a>.</p>
+      {% endif %}
     </div>
   {% endif %}
 </section>

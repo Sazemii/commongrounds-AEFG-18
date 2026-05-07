@@ -8,7 +8,9 @@ from django.views.generic.edit import CreateView, UpdateView
 
 from bookclub.models import Book
 from commissions.models import Commission
+from diyprojects.models import Project
 from localevents.models import Event
+from merchstore.models import Product
 from .decorators import role_required
 from .forms import ProfileUpdateForm, RegisterForm
 from .models import Profile
@@ -58,6 +60,8 @@ class DashboardView(LoginRequiredMixin, TemplateView):
         context['books'] = Book.objects.filter(contributor=profile)
         context['events'] = Event.objects.filter(organizer=profile)
         context['commissions'] = Commission.objects.filter(maker=profile)
+        context['products'] = Product.objects.filter(owner=profile)
+        context['projects'] = Project.objects.filter(creator=profile)
         return context
 
 

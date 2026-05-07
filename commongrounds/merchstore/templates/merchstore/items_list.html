@@ -25,9 +25,9 @@
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
               List a product
             </a>
+            <a href="{% url 'merchstore:transactions' %}" class="btn-ghost">My sales</a>
           {% endif %}
           <a href="{% url 'merchstore:cart' %}" class="btn-ghost">View cart</a>
-          <a href="{% url 'merchstore:transactions' %}" class="btn-ghost">My sales</a>
         {% else %}
           <a href="#all-products" class="btn-primary">Browse all</a>
           <a href="{% url 'login' %}" class="btn-ghost">Sign in to sell</a>

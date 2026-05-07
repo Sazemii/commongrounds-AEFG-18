@@ -161,6 +161,35 @@
     transform: translateY(-1px); background: var(--cm-600);
     box-shadow: 0 2px 4px rgba(131,11,244,0.22), 0 12px 28px rgba(131,11,244,0.22);
   }
+  .btn-cm-secondary {
+    display: inline-flex; align-items: center; gap: 0.45rem;
+    padding: 0.65rem 1.2rem;
+    border-radius: 9999px; font-size: 0.88rem; font-weight: 600;
+    color: #fff; background: var(--cm-500);
+    border: none; cursor: pointer;
+    box-shadow: 0 1px 2px rgba(131,11,244,0.20), 0 6px 16px rgba(131,11,244,0.18);
+    transition: transform .18s, box-shadow .18s, background .18s, color .18s;
+    text-decoration: none;
+  }
+  .btn-cm-secondary:hover {
+    transform: translateY(-1px);
+    background: var(--cm-600);
+    box-shadow: 0 2px 4px rgba(131,11,244,0.22), 0 12px 28px rgba(131,11,244,0.22);
+  }
+  .btn-cm-danger {
+    display: inline-flex; align-items: center; gap: 0.45rem;
+    padding: 0.65rem 1.2rem;
+    border-radius: 9999px; font-size: 0.88rem; font-weight: 600;
+    color: #0f172a; background: #fff;
+    border: 1px solid rgba(15, 23, 42, 0.16); cursor: pointer;
+    transition: border-color .18s, color .18s, background .18s;
+    text-decoration: none;
+  }
+  .btn-cm-danger:hover {
+    color: #0f172a;
+    border-color: rgba(131, 11, 244, 0.35);
+    background: #f3e7ff;
+  }
   .btn-cm-ghost {
     display: inline-flex; align-items: center; gap: 0.4rem;
     padding: 0.6rem 1.2rem;
@@ -171,6 +200,10 @@
   }
   .btn-cm-ghost:hover {
     color: var(--cm-700); border-color: var(--cm-200); background: var(--cm-50);
+  }
+  .cm-jobs-actions {
+    margin-top: 0.85rem;
+    display: flex; gap: 0.75rem;
   }
 </style>
 {% endblock %}
@@ -247,7 +280,7 @@
             <th>Delete</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody id="jobs-table-body">
           {% for job_form in job_formset %}
             <tr>
               <td>
@@ -271,6 +304,31 @@
       {% if job_formset.non_form_errors %}
         <p style="font-size: 0.82rem; color: #b91c1c; margin-top: 0.75rem;">{{ job_formset.non_form_errors }}</p>
       {% endif %}
+      <div class="cm-jobs-actions">
+        <button type="button" id="add-job-row" class="btn-cm-secondary">+ Add Role</button>
+        <button type="button" id="remove-job-row" class="btn-cm-danger">− Remove Role</button>
+      </div>
+
+      <template id="job-form-template">
+        <tr>
+          <td>
+            {{ job_formset.empty_form.id }}
+            {{ job_formset.empty_form.role }}
+            <div class="errorlist"></div>
+          </td>
+          <td>
+            {{ job_formset.empty_form.manpower_required }}
+            <div class="errorlist"></div>
+          </td>
+          <td>
+            {{ job_formset.empty_form.status }}
+            <div class="errorlist"></div>
+          </td>
+          <td style="text-align: center; padding-top: 0.6rem;">
+            {{ job_formset.empty_form.DELETE }}
+          </td>
+        </tr>
+      </template>
     </div>
 
     <div class="cm-form-actions">
@@ -282,4 +340,61 @@
   </form>
 
 </div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const addButton = document.getElementById('add-job-row');
+    const removeButton = document.getElementById('remove-job-row');
+    const totalForms = document.querySelector('[name$="-TOTAL_FORMS"]');
+    const tableBody = document.getElementById('jobs-table-body');
+    const template = document.getElementById('job-form-template');
+
+    if (!addButton || !removeButton || !totalForms || !tableBody || !template) return;
+
+    const updateRemoveButton = () => {
+      const formCount = parseInt(totalForms.value, 10);
+      removeButton.disabled = formCount <= 1;
+      removeButton.style.opacity = formCount <= 1 ? '0.55' : '1';
+      removeButton.style.cursor = formCount <= 1 ? 'not-allowed' : 'pointer';
+    };
+
+    addButton.addEventListener('click', function () {
+      const formIndex = parseInt(totalForms.value, 10);
+      const clone = document.importNode(template.content, true);
+
+      clone.querySelectorAll('input, select, textarea, label').forEach(field => {
+        if (field.name) field.name = field.name.replace('__prefix__', formIndex);
+        if (field.id) field.id = field.id.replace('__prefix__', formIndex);
+        if (field.htmlFor) field.htmlFor = field.htmlFor.replace('__prefix__', formIndex);
+      });
+
+      clone.querySelectorAll('input').forEach(input => {
+        if (input.type === 'checkbox') {
+          input.checked = false;
+        } else if (input.type !== 'hidden') {
+          input.value = '';
+        }
+      });
+
+      tableBody.appendChild(clone);
+      totalForms.value = formIndex + 1;
+      updateRemoveButton();
+    });
+
+    removeButton.addEventListener('click', function () {
+      const formCount = parseInt(totalForms.value, 10);
+      if (formCount <= 1) return;
+
+      const rows = tableBody.querySelectorAll('tr');
+      const lastRow = rows[rows.length - 1];
+      if (!lastRow) return;
+
+      tableBody.removeChild(lastRow);
+      totalForms.value = formCount - 1;
+      updateRemoveButton();
+    });
+
+    updateRemoveButton();
+  });
+</script>
 {% endblock %}

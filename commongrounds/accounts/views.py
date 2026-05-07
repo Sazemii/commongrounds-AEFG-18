@@ -42,7 +42,7 @@ class ProfileUpdateView(LoginRequiredMixin, UpdateView):
         return self.request.user.profile
 
     def get_success_url(self):
-        return self.object.get_absolute_url()
+        return self.object.get_absolute_url() + '?saved=1'
 
 
 class PermissionDeniedView(TemplateView):

@@ -4,6 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}Common Grounds{% endblock %}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@700;800&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script>
       tailwind.config = {
         theme: {
@@ -21,6 +22,10 @@
       }
     </script>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+      body { font-family: 'Poppins', sans-serif; }
+      h1, h2, h3, h4, h5, h6 { font-family: 'Montserrat', sans-serif; }
+    </style>
     {% block styles %}{% endblock %}
   </head>
   <body class="bg-white">

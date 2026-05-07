@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %} My Transactions - Common Grounds {% endblock %}
+{% block page_heading %}My Transactions{% endblock %}
+
+{% block content %}
+
+<h3>My Purchases</h3>
+{% regroup purchases by product.owner as transactions_by_seller %}
+
+{% for seller in transactions_by_seller %}
+<h4>Seller: {{ seller.grouper }}</h4>
+<ul>
+    {% for transaction in seller.list %}
+    <li>
+        {% if transaction.product.product_image %}
+        <img src="{{ transaction.product.product_image.url }}" alt="{{ transaction.product.name }}"
+            style="max-width: 30px; vertical-align: middle;">
+        {% endif %}
+        {{ transaction.product.name }} - {{ transaction.amount }} units - Status: {{ transaction.status }}
+    </li>
+    {% endfor %}
+</ul>
+{% empty %}
+<p>No purchases found.</p>
+{% endfor %}
+
+<hr>
+
+<h3>My Sales</h3>
+{% regroup sales by buyer as transactions_by_buyer %}
+
+{% for buyer in transactions_by_buyer %}
+<h4>Buyer: {{ buyer.grouper }}</h4>
+<ul>
+    {% for transaction in buyer.list %}
+    <li>
+        {% if transaction.product.product_image %}
+        <img src="{{ transaction.product.product_image.url }}" alt="{{ transaction.product.name }}"
+            style="max-width: 30px; vertical-align: middle;">
+        {% endif %}
+        {{ transaction.product.name }} - {{ transaction.amount }} units - Status: {{ transaction.status }}
+    </li>
+    {% endfor %}
+</ul>
+{% empty %}
+<p>No sales found.</p>
+{% endfor %}
+
+<br>
+<a href="{% url 'merchstore:cart' %}">Back to Cart</a><br>
+<a href="{% url 'merchstore:product-list' %}">Back to Merchstore List</a>
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block title %} My Cart - Common Grounds {% endblock %}
+{% block page_heading %}My Cart{% endblock %}
+
+{% block content %}
+{% regroup transactions by product.owner as transactions_by_seller %}
+
+{% for seller in transactions_by_seller %}
+<h3>Seller: {{ seller.grouper }}</h3>
+<ul>
+    {% for transaction in seller.list %}
+    <li>
+        {% if transaction.product.product_image %}
+        <img src="{{ transaction.product.product_image.url }}" alt="{{ transaction.product.name }}"
+            style="max-width: 30px; vertical-align: middle;">
+        {% endif %}
+        {{ transaction.product.name }} - {{ transaction.amount }} units - Status: {{ transaction.status }}
+    </li>
+    {% endfor %}
+</ul>
+{% empty %}
+<p>No transactions in cart.</p>
+{% endfor %}
+
+{% if transactions %}
+<form method="post">
+    {% csrf_token %}
+    <input type="submit" value="Checkout">
+</form>
+{% endif %}
+
+<br>
+<a href="{% url 'merchstore:transactions_list' %}">View My Purchases</a><br>
+<a href="{% url 'merchstore:product-list' %}">Back to Merchstore List</a>
+{% endblock %}

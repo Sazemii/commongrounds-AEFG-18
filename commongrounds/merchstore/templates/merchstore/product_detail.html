@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block title %} Merch Store - Common Grounds {% endblock %}
+{% block page_heading %}{{ product.name }}{% endblock %}
+
+{% block content %}
+{% if product.product_image %}
+    <img src="{{ product.product_image.url }}" alt="{{ product.name }}" style="max-width: 300px;">
+{% endif %}
+<p><strong>Description:</strong> {{ product.description }}</p>
+<p><strong>Price: </strong> {{ product.price }}</p>
+<p><strong>Stock: </strong> {{ product.stock }}</p>
+<p><strong>Status: </strong> {{ product.status }}</p>
+<p><strong>Owner: </strong> {{ product.owner }}</p>
+
+{% if product.owner != user.profile %}
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Buy" {% if product.stock == 0 %}disabled{% endif %}>
+</form>
+{% endif %}
+
+{% if user.profile == product.owner %}
+<p><a href="{% url 'merchstore:product-update' pk=product.pk %}">Edit Product</a></p>
+{% endif %}
+
+<br>
+<a href="{% url 'merchstore:product-list' %}">Back to Merchstore List</a>
+{% endblock %}

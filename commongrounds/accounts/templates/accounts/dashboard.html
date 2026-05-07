@@ -1,0 +1,220 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Dashboard | {{ request.user.profile }}{% endblock %}
+{% block page_heading %}{% endblock %}
+
+{% block styles %}
+<style>
+  main > h2:empty { display: none; }
+
+  .fade-in { opacity: 0; animation: db-fade .5s ease forwards; }
+  @keyframes db-fade { to { opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) { .fade-in { animation: none; opacity: 1; } }
+
+  /* ── Hero ─────────────────────────────────────────── */
+  .db-hero {
+    border-radius: 1.25rem;
+    padding: 2rem 2rem 1.75rem;
+    background:
+      radial-gradient(800px 300px at 10% 0%, rgba(100,116,139,0.07), transparent 60%),
+      #ffffff;
+    border: 1px solid rgba(15,23,42,0.07);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.05);
+    margin-bottom: 2rem;
+  }
+  .db-eyebrow {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    font-size: 0.68rem; font-weight: 700; letter-spacing: 0.12em;
+    text-transform: uppercase; color: #475569;
+    background: #f1f5f9; border: 1px solid #e2e8f0;
+    padding: 0.25rem 0.6rem; border-radius: 9999px;
+    margin-bottom: 0.6rem;
+  }
+  .db-hero h1 {
+    font-size: clamp(1.5rem, 5vw, 2.25rem);
+    font-weight: 800; letter-spacing: -0.02em; color: #0f172a;
+  }
+  .db-hero p { margin-top: 0.4rem; font-size: 0.9rem; color: #64748b; }
+
+  /* ── Section ──────────────────────────────────────── */
+  .db-section { margin-top: 2rem; }
+  .db-section-head {
+    display: flex; align-items: center; gap: 0.65rem;
+    margin-bottom: 0.85rem;
+  }
+  .db-section-chip {
+    display: inline-flex; align-items: center; gap: 0.3rem;
+    font-size: 0.68rem; font-weight: 700; letter-spacing: 0.1em;
+    text-transform: uppercase; padding: 0.2rem 0.6rem;
+    border-radius: 9999px;
+  }
+  .db-section-title {
+    font-size: 0.78rem; font-weight: 700;
+    letter-spacing: 0.14em; text-transform: uppercase; color: #475569;
+  }
+  .db-section-count { font-size: 0.75rem; color: #94a3b8; margin-left: auto; }
+
+  /* Hub accent chips */
+  .chip-events    { background: #fef1e6; color: #964503; border: 1px solid #fdc79b; }
+  .chip-books     { background: #e6f5fe; color: #055b94; border: 1px solid #9cd6fc; }
+  .chip-commissions { background: #f3e7fe; color: #4f0792; border: 1px solid #ce9efa; }
+  .chip-merch     { background: #e8fdef; color: #0c8d39; border: 1px solid #a1f7bf; }
+  .chip-diy       { background: #fef8e6; color: #947005; border: 1px solid #fbe49d; }
+
+  /* ── Row cards ────────────────────────────────────── */
+  .db-list { display: flex; flex-direction: column; gap: 0.6rem; }
+
+  .db-row {
+    display: flex; align-items: center; gap: 1rem;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.85rem;
+    padding: 0.85rem 1.1rem;
+    text-decoration: none; color: inherit;
+    transition: border-color .18s, box-shadow .18s, transform .18s;
+  }
+  .db-row:hover {
+    border-color: #cbd5e1;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+    transform: translateY(-1px);
+  }
+  .db-row-avatar {
+    flex-shrink: 0; width: 40px; height: 40px;
+    border-radius: 0.6rem;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 1rem; font-weight: 800; color: #fff;
+  }
+  .avatar-events      { background: linear-gradient(135deg, #fa7305, #964503); }
+  .avatar-books       { background: linear-gradient(135deg, #0897f7, #055b94); }
+  .avatar-commissions { background: linear-gradient(135deg, #830bf4, #350561); }
+  .avatar-merch       { background: linear-gradient(135deg, #10bc4c, #085e26); }
+  .avatar-diy         { background: linear-gradient(135deg, #eab308, #624b04); }
+
+  .db-row-info { flex: 1; min-width: 0; }
+  .db-row-title {
+    font-size: 0.92rem; font-weight: 700; color: #0f172a;
+    white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+  }
+  .db-row-meta { font-size: 0.75rem; color: #94a3b8; margin-top: 0.15rem; }
+  .db-row-arrow {
+    font-size: 0.78rem; font-weight: 700; color: #cbd5e1;
+    transition: color .18s;
+  }
+  .db-row:hover .db-row-arrow { color: #64748b; }
+
+  /* Empty state */
+  .db-empty {
+    text-align: center; padding: 1.5rem 1rem;
+    border: 1px dashed #e2e8f0; border-radius: 0.85rem;
+    font-size: 0.85rem; color: #94a3b8;
+  }
+
+  /* ── Coming soon ──────────────────────────────────── */
+  .db-soon {
+    padding: 1rem 1.25rem;
+    background: #f8fafc;
+    border: 1px dashed #e2e8f0;
+    border-radius: 0.85rem;
+    font-size: 0.82rem; color: #94a3b8;
+    font-style: italic;
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+
+{# ── Hero ── #}
+<div class="db-hero fade-in">
+  <span class="db-eyebrow">My Dashboard</span>
+  <h1>{{ request.user.profile.display_name|default:request.user.username }}</h1>
+  <p>Everything you've contributed to Common Grounds, in one place.</p>
+</div>
+
+{# ── Events Organized ── #}
+<section class="db-section fade-in">
+  <div class="db-section-head">
+    <span class="db-section-chip chip-events">Events</span>
+    <span class="db-section-title">Organized</span>
+    <span class="db-section-count">{{ events|length }}</span>
+  </div>
+  <div class="db-list">
+    {% for event in events %}
+      <a href="{% url 'localevents:event_detail' event.pk %}" class="db-row">
+        <div class="db-row-avatar avatar-events">{{ event.title|slice:":1"|upper }}</div>
+        <div class="db-row-info">
+          <div class="db-row-title">{{ event.title }}</div>
+          <div class="db-row-meta">{{ event.location }} &nbsp;·&nbsp; {{ event.start_time|date:"M d, Y" }} &nbsp;·&nbsp; {{ event.status }}</div>
+        </div>
+        <span class="db-row-arrow">→</span>
+      </a>
+    {% empty %}
+      <div class="db-empty">No events organized yet.</div>
+    {% endfor %}
+  </div>
+</section>
+
+{# ── Books Contributed ── #}
+<section class="db-section fade-in">
+  <div class="db-section-head">
+    <span class="db-section-chip chip-books">Books</span>
+    <span class="db-section-title">Contributed</span>
+    <span class="db-section-count">{{ books|length }}</span>
+  </div>
+  <div class="db-list">
+    {% for book in books %}
+      <a href="{% url 'bookclub:book-detail' book.pk %}" class="db-row">
+        <div class="db-row-avatar avatar-books">{{ book.title|slice:":1"|upper }}</div>
+        <div class="db-row-info">
+          <div class="db-row-title">{{ book.title }}</div>
+          <div class="db-row-meta">by {{ book.author }} &nbsp;·&nbsp; {{ book.genre.name|default:"—" }} &nbsp;·&nbsp; {{ book.publication_year }}</div>
+        </div>
+        <span class="db-row-arrow">→</span>
+      </a>
+    {% empty %}
+      <div class="db-empty">No books contributed yet.</div>
+    {% endfor %}
+  </div>
+</section>
+
+{# ── Commissions Created ── #}
+<section class="db-section fade-in">
+  <div class="db-section-head">
+    <span class="db-section-chip chip-commissions">Commissions</span>
+    <span class="db-section-title">Created</span>
+    <span class="db-section-count">{{ commissions|length }}</span>
+  </div>
+  <div class="db-list">
+    {% for commission in commissions %}
+      <a href="{% url 'commissions:commission_detail' commission.pk %}" class="db-row">
+        <div class="db-row-avatar avatar-commissions">{{ commission.title|slice:":1"|upper }}</div>
+        <div class="db-row-info">
+          <div class="db-row-title">{{ commission.title }}</div>
+          <div class="db-row-meta">{{ commission.type.name|default:"—" }} &nbsp;·&nbsp; {{ commission.status }} &nbsp;·&nbsp; {{ commission.created_on|date:"M d, Y" }}</div>
+        </div>
+        <span class="db-row-arrow">→</span>
+      </a>
+    {% empty %}
+      <div class="db-empty">No commissions created yet.</div>
+    {% endfor %}
+  </div>
+</section>
+
+{# ── Products Sold (placeholder) ── #}
+<section class="db-section fade-in">
+  <div class="db-section-head">
+    <span class="db-section-chip chip-merch">Merch</span>
+    <span class="db-section-title">Products Sold</span>
+  </div>
+  <div class="db-soon">Coming soon — merch store integration in progress.</div>
+</section>
+
+{# ── Projects Created (placeholder) ── #}
+<section class="db-section fade-in">
+  <div class="db-section-head">
+    <span class="db-section-chip chip-diy">DIY</span>
+    <span class="db-section-title">Projects Created</span>
+  </div>
+  <div class="db-soon">Coming soon — DIY projects integration in progress.</div>
+</section>
+
+{% endblock %}

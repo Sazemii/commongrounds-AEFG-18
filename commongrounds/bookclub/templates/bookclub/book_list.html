@@ -1,58 +1,421 @@
 {% extends 'base.html' %}
+{% load static %}
 
-{% block title %}Book Club - Books{% endblock %}
-{% block page_heading %}Books{% endblock %}
+{% block title %}Book Club | Common Grounds{% endblock %}
+{% block page_heading %}{% endblock %}
+
+{% block styles %}
+<style>
+  /* hide the empty h2 wrapper from base.html */
+  main > h2:empty { display: none; }
+
+  :root {
+    --books-50:  #faf6f1;
+    --books-100: #f1e4d2;
+    --books-200: #e2c9a8;
+    --books-300: #cda87a;
+    --books-400: #b5874f;
+    --books-500: #8b5a2b;
+    --books-600: #6f4622;
+    --books-700: #523319;
+    --books-800: #3a2310;
+    --books-900: #1f1308;
+  }
+
+  /* ── Hero ─────────────────────────────────────────── */
+  .bc-hero {
+    position: relative;
+    overflow: hidden;
+    border-radius: 1.25rem;
+    padding: 1.75rem 1.25rem 1.5rem;
+    background:
+      radial-gradient(900px 360px at 12% 0%, rgba(139,90,43,0.10), transparent 60%),
+      radial-gradient(700px 320px at 100% 100%, rgba(139,90,43,0.06), transparent 60%),
+      #ffffff;
+    border: 1px solid rgba(139,90,43,0.12);
+    box-shadow:
+      0 2px 4px rgba(0,0,0,0.04),
+      0 6px 16px rgba(0,0,0,0.05),
+      0 16px 40px rgba(0,0,0,0.04);
+  }
+  .bc-hero-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--books-700);
+    background: var(--books-50);
+    border: 1px solid var(--books-100);
+    padding: 0.3rem 0.65rem;
+    border-radius: 9999px;
+  }
+  .bc-hero-eyebrow::before {
+    content: '';
+    width: 6px; height: 6px; border-radius: 9999px;
+    background: var(--books-500);
+    box-shadow: 0 0 0 4px rgba(139,90,43,0.18);
+  }
+  .bc-hero h1 {
+    font-size: clamp(1.5rem, 6vw, 2.75rem);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    font-weight: 800;
+    color: #0f172a;
+    margin-top: 0;
+  }
+  .bc-hero p.sub {
+    margin-top: 0.75rem;
+    max-width: 38rem;
+    color: #475569;
+    font-size: 0.95rem;
+    line-height: 1.55;
+  }
+  @media (min-width: 640px) {
+    .bc-hero { padding: 3rem 2rem 2.75rem; }
+    .bc-hero p.sub { font-size: 1rem; }
+  }
+
+  /* Two-column hero layout */
+  .bc-hero-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    align-items: center;
+  }
+  .bc-hero-art {
+    display: none;
+    justify-content: center;
+    align-items: center;
+  }
+  .bc-hero-art img {
+    width: 100%;
+    max-width: 320px;
+    height: auto;
+    display: block;
+  }
+  @media (min-width: 768px) {
+    .bc-hero-grid { grid-template-columns: 1fr 1fr; }
+    .bc-hero-art { display: flex; }
+  }
+
+  /* ── Buttons ──────────────────────────────────────── */
+  .btn-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.6rem 1.05rem;
+    border-radius: 9999px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #fff;
+    background: var(--books-500);
+    box-shadow:
+      0 1px 2px rgba(139,90,43,0.20),
+      0 6px 16px rgba(139,90,43,0.18);
+    transition: transform .18s ease, box-shadow .18s ease, background .18s;
+  }
+  .btn-primary:hover {
+    transform: translateY(-1px);
+    background: var(--books-600);
+    box-shadow:
+      0 2px 4px rgba(139,90,43,0.22),
+      0 12px 28px rgba(139,90,43,0.22);
+  }
+  .btn-primary:active { transform: translateY(0); }
+  .btn-primary svg { width: 14px; height: 14px; }
+
+  .btn-ghost {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.55rem 0.95rem;
+    border-radius: 9999px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #334155;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    transition: border-color .18s ease, color .18s, background .18s;
+  }
+  .btn-ghost:hover {
+    color: var(--books-700);
+    border-color: var(--books-200);
+    background: var(--books-50);
+  }
+
+  /* ── Section ──────────────────────────────────────── */
+  .section { margin-top: 2.5rem; }
+  .section-head {
+    display: flex; align-items: baseline; justify-content: space-between;
+    margin-bottom: 1rem;
+  }
+  .section-title {
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: #475569;
+  }
+  .section-title .accent { color: var(--books-600); }
+  .section-meta { font-size: 0.78rem; color: #94a3b8; }
+
+  /* ── Cards ────────────────────────────────────────── */
+  .grid-books {
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0,1fr));
+    gap: 1.1rem;
+  }
+  @media (min-width: 640px)  { .grid-books { grid-template-columns: repeat(2, minmax(0,1fr)); } }
+  @media (min-width: 900px)  { .grid-books { grid-template-columns: repeat(3, minmax(0,1fr)); } }
+  @media (min-width: 1200px) { .grid-books { grid-template-columns: repeat(4, minmax(0,1fr)); } }
+
+  .book-card {
+    position: relative;
+    display: flex; flex-direction: column;
+    background: #fff;
+    border: 1px solid rgba(15,23,42,0.06);
+    border-radius: 1rem;
+    overflow: hidden;
+    text-decoration: none;
+    color: inherit;
+    transition:
+      transform .25s cubic-bezier(.22,.61,.36,1),
+      box-shadow .25s cubic-bezier(.22,.61,.36,1),
+      border-color .25s;
+    box-shadow:
+      0 1px 2px rgba(0,0,0,0.03),
+      0 6px 16px rgba(0,0,0,0.05),
+      0 16px 40px rgba(0,0,0,0.03);
+    opacity: 0;
+    transform: translateY(8px);
+    animation: bc-rise .55s cubic-bezier(.22,.61,.36,1) forwards;
+  }
+  .book-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(139,90,43,0.25);
+    box-shadow:
+      0 4px 8px rgba(0,0,0,0.05),
+      0 12px 28px rgba(0,0,0,0.08),
+      0 28px 56px rgba(0,0,0,0.06);
+  }
+
+  /* Spine: the colored side bar */
+  .book-spine {
+    position: relative;
+    height: 132px;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.30), rgba(255,255,255,0) 40%),
+      linear-gradient(135deg, var(--books-500), var(--books-700));
+    color: #fff;
+    padding: 1rem 1.05rem 0.9rem;
+    display: flex; flex-direction: column; justify-content: space-between;
+    overflow: hidden;
+  }
+  /* hub palette rotation by genre, applied via inline class below */
+  .book-card.spine-1 .book-spine { background: linear-gradient(180deg, rgba(255,255,255,0.22), rgba(255,255,255,0) 40%), linear-gradient(135deg, #8b5a2b, #3a2310); }
+  .book-card.spine-2 .book-spine { background: linear-gradient(180deg, rgba(255,255,255,0.22), rgba(255,255,255,0) 40%), linear-gradient(135deg, #6f4622, #1f1308); }
+  .book-card.spine-3 .book-spine { background: linear-gradient(180deg, rgba(255,255,255,0.22), rgba(255,255,255,0) 40%), linear-gradient(135deg, #b5874f, #6f4622); }
+  .book-card.spine-4 .book-spine { background: linear-gradient(180deg, rgba(255,255,255,0.22), rgba(255,255,255,0) 40%), linear-gradient(135deg, #523319, #2a1a0c); }
+  .book-card.spine-5 .book-spine { background: linear-gradient(180deg, rgba(255,255,255,0.22), rgba(255,255,255,0) 40%), linear-gradient(135deg, #a06b35, #523319); }
+  .book-card.spine-6 .book-spine { background: linear-gradient(180deg, rgba(255,255,255,0.22), rgba(255,255,255,0) 40%), linear-gradient(135deg, #cda87a, #6f4622); }
+
+  .book-spine::after {
+    /* faint vertical "shelf line" running along the right edge */
+    content: '';
+    position: absolute;
+    top: 0; bottom: 0; right: 14px;
+    width: 1px;
+    background: rgba(255,255,255,0.18);
+  }
+  .book-genre {
+    font-size: 0.66rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    font-weight: 700;
+    opacity: 0.85;
+  }
+  .book-year {
+    font-size: 0.85rem;
+    font-weight: 600;
+    opacity: 0.85;
+    align-self: flex-end;
+  }
+  .book-body {
+    padding: 1rem 1.05rem 1.1rem;
+    flex: 1;
+    display: flex; flex-direction: column;
+  }
+  .book-title {
+    font-size: 1.02rem;
+    font-weight: 700;
+    color: #0f172a;
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+  }
+  .book-author {
+    margin-top: 0.2rem;
+    font-size: 0.82rem;
+    color: #64748b;
+  }
+  .book-synopsis {
+    margin-top: 0.65rem;
+    font-size: 0.82rem;
+    color: #475569;
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  .book-foot {
+    margin-top: 0.95rem;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .badge {
+    display: inline-flex; align-items: center; gap: 0.35rem;
+    font-size: 0.7rem; font-weight: 600;
+    padding: 0.22rem 0.55rem;
+    border-radius: 9999px;
+  }
+  .badge-avail {
+    color: #047857;
+    background: #ecfdf5;
+    border: 1px solid #a7f3d0;
+  }
+  .badge-out {
+    color: #b91c1c;
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+  }
+  .badge::before {
+    content: ''; width: 6px; height: 6px; border-radius: 9999px;
+    background: currentColor;
+  }
+  .arrow {
+    font-size: 0.78rem; font-weight: 700;
+    color: var(--books-600);
+    display: inline-flex; align-items: center; gap: 0.2rem;
+    transition: gap .18s ease, color .18s;
+  }
+  .book-card:hover .arrow { gap: 0.45rem; color: var(--books-700); }
+
+  /* Empty state */
+  .empty {
+    text-align: center;
+    padding: 3rem 1rem;
+    border: 1px dashed #e2e8f0;
+    border-radius: 1rem;
+    color: #64748b;
+  }
+
+  /* ── Animations ───────────────────────────────────── */
+  @keyframes bc-rise {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes bc-fade {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+  .fade-in { opacity: 0; animation: bc-fade .6s ease forwards; }
+
+  /* Respect motion preferences */
+  @media (prefers-reduced-motion: reduce) {
+    .book-card, .fade-in { animation: none; opacity: 1; transform: none; }
+  }
+</style>
+{% endblock %}
 
 {% block content %}
-<p><a href="{% url 'bookclub:book-create' %}">Add a new book</a></p>
+
+{# ── Hero ─────────────────────────────────────────── #}
+<section class="bc-hero fade-in">
+  <div class="bc-hero-grid">
+    <div class="bc-hero-content">
+      <h1>Read together. Lend generously.</h1>
+      <p class="sub">
+        A small, well-kept shelf maintained by the community. Borrow what catches your eye,
+        leave a note when you're done, and keep the rotation going.
+      </p>
+      <div class="mt-7 flex flex-wrap gap-2.5">
+        <a href="{% url 'bookclub:book-create' %}" class="btn-primary">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+          Contribute a book
+        </a>
+        <a href="#all-books" class="btn-ghost">Browse the shelf</a>
+      </div>
+    </div>
+    <div class="bc-hero-art" aria-hidden="true">
+      <img src="{% static 'img/book-club-reading.svg' %}" alt="">
+    </div>
+  </div>
+</section>
 
 {% if user.is_authenticated %}
   {% if contributed_books %}
-    <h3>Books you contributed</h3>
-    <ul>
-      {% for book in contributed_books %}
-        <li>
-          <a href="{{ book.get_absolute_url }}">{{ book.title }}</a>
-          - {{ book.author }} ({{ book.publication_year }})
-        </li>
-      {% endfor %}
-    </ul>
+    <section class="section">
+      <div class="section-head">
+        <div class="section-title">Your <span class="accent">contributions</span></div>
+        <div class="section-meta">{{ contributed_books|length }} book{{ contributed_books|length|pluralize }}</div>
+      </div>
+      <div class="grid-books">
+        {% for book in contributed_books %}
+          {% include 'bookclub/_book_card.html' with book=book idx=forloop.counter0 %}
+        {% endfor %}
+      </div>
+    </section>
   {% endif %}
 
   {% if bookmarked_books %}
-    <h3>Books you bookmarked</h3>
-    <ul>
-      {% for book in bookmarked_books %}
-        <li>
-          <a href="{{ book.get_absolute_url }}">{{ book.title }}</a>
-          - {{ book.author }} ({{ book.publication_year }})
-        </li>
-      {% endfor %}
-    </ul>
+    <section class="section">
+      <div class="section-head">
+        <div class="section-title">Your <span class="accent">bookmarks</span></div>
+        <div class="section-meta">{{ bookmarked_books|length }} saved</div>
+      </div>
+      <div class="grid-books">
+        {% for book in bookmarked_books %}
+          {% include 'bookclub/_book_card.html' with book=book idx=forloop.counter0 %}
+        {% endfor %}
+      </div>
+    </section>
   {% endif %}
 
   {% if reviewed_books %}
-    <h3>Books you reviewed</h3>
-    <ul>
-      {% for book in reviewed_books %}
-        <li>
-          <a href="{{ book.get_absolute_url }}">{{ book.title }}</a>
-          - {{ book.author }} ({{ book.publication_year }})
-        </li>
-      {% endfor %}
-    </ul>
+    <section class="section">
+      <div class="section-head">
+        <div class="section-title">You've <span class="accent">reviewed</span></div>
+        <div class="section-meta">{{ reviewed_books|length }} review{{ reviewed_books|length|pluralize }}</div>
+      </div>
+      <div class="grid-books">
+        {% for book in reviewed_books %}
+          {% include 'bookclub/_book_card.html' with book=book idx=forloop.counter0 %}
+        {% endfor %}
+      </div>
+    </section>
   {% endif %}
 {% endif %}
 
-<h3>All Books</h3>
-<ul>
-  {% for book in all_books %}
-    <li>
-      <a href="{{ book.get_absolute_url }}">{{ book.title }}</a>
-      - {{ book.author }} ({{ book.publication_year }})
-    </li>
-  {% empty %}
-    <li>No books available.</li>
-  {% endfor %}
-</ul>
+<section class="section" id="all-books">
+  <div class="section-head">
+    <div class="section-title">The <span class="accent">shelf</span></div>
+    <div class="section-meta">{{ all_books|length }} title{{ all_books|length|pluralize }}</div>
+  </div>
+
+  {% if all_books %}
+    <div class="grid-books">
+      {% for book in all_books %}
+        {% include 'bookclub/_book_card.html' with book=book idx=forloop.counter0 %}
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty">
+      <p class="text-base font-medium text-slate-700">The shelf is empty.</p>
+      <p class="mt-1 text-sm">Be the first to <a style="color: var(--books-600)" class="font-semibold underline-offset-2 hover:underline" href="{% url 'bookclub:book-create' %}">contribute a book</a>.</p>
+    </div>
+  {% endif %}
+</section>
+
 {% endblock %}

@@ -1,16 +1,98 @@
 {% extends 'base.html' %}
 
 {% block title %}Book Contributor Dashboard | Common Grounds{% endblock %}
-{% block page_heading %}Book Contributor Dashboard{% endblock %}
+{% block page_heading %}{% endblock %}
+
+{% block styles %}
+<style>
+  main > h2:empty { display: none; }
+
+  :root {
+    --acc-50:  #f1f5f9; --acc-100: #e2e8f0;
+    --acc-600: #334155; --acc-700: #1e293b; --acc-800: #0f172a;
+    --books-500: #8b5a2b; --books-600: #6f4622; --books-700: #523319;
+  }
+
+  .dash-hero {
+    padding: 1.75rem 1.5rem;
+    border-radius: 1.1rem;
+    background:
+      radial-gradient(700px 280px at 0% 0%, rgba(139,90,43,0.10), transparent 60%),
+      #fff;
+    border: 1px solid rgba(15,23,42,0.06);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.04), 0 6px 16px rgba(0,0,0,0.05);
+    opacity: 0; transform: translateY(8px);
+    animation: rise .55s cubic-bezier(.22,.61,.36,1) forwards;
+  }
+  .dash-eyebrow {
+    font-size: 0.72rem; letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--books-700); font-weight: 700;
+  }
+  .dash-title {
+    margin-top: 0.55rem;
+    font-size: clamp(1.4rem, 3vw, 1.9rem);
+    font-weight: 800; letter-spacing: -0.02em; color: #0f172a;
+  }
+  .dash-sub { color: #64748b; font-size: 0.95rem; margin-top: 0.4rem; }
+
+  .section { margin-top: 2rem; }
+  .section-title {
+    font-size: 0.78rem; letter-spacing: 0.16em; text-transform: uppercase;
+    color: #475569; font-weight: 700; margin-bottom: 0.85rem;
+  }
+  .section-title .accent { color: var(--books-600); }
+
+  .book-list { display: grid; gap: 0.65rem; }
+  .book-row {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0.85rem 1rem;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.75rem;
+    transition: transform .18s, border-color .18s, box-shadow .18s;
+    opacity: 0; transform: translateY(6px);
+    animation: rise .5s cubic-bezier(.22,.61,.36,1) forwards;
+  }
+  .book-row:hover {
+    transform: translateY(-2px);
+    border-color: rgba(139,90,43,0.25);
+    box-shadow: 0 6px 16px rgba(139,90,43,0.06);
+  }
+  .book-row .name { font-size: 0.95rem; font-weight: 600; color: #0f172a; }
+  .book-row .arrow { font-size: 0.78rem; font-weight: 700; color: var(--books-600); }
+
+  .empty {
+    text-align: center; padding: 1.75rem 1rem; color: #94a3b8;
+    border: 1px dashed #e2e8f0; border-radius: 0.85rem;
+  }
+
+  @keyframes rise { to { opacity: 1; transform: translateY(0); } }
+  @media (prefers-reduced-motion: reduce) {
+    .dash-hero, .book-row { animation: none; opacity: 1; transform: none; }
+  }
+</style>
+{% endblock %}
 
 {% block content %}
-<p>Welcome, {{ user.profile.display_name }}.</p>
-<h3>Books you contributed</h3>
-<ul>
-{% for book in books %}
-  <li>{{ book }}</li>
-{% empty %}
-  <li>No books yet.</li>
-{% endfor %}
-</ul>
+<div class="dash-hero">
+  <div class="dash-eyebrow">Book Contributor</div>
+  <h1 class="dash-title">Welcome, {{ user.profile.display_name }}.</h1>
+  <p class="dash-sub">Here's everything you've added to the shelf.</p>
+</div>
+
+<section class="section">
+  <div class="section-title">Books you <span class="accent">contributed</span></div>
+  {% if books %}
+    <div class="book-list">
+      {% for book in books %}
+        <a href="{{ book.get_absolute_url }}" class="book-row" style="animation-delay: {% widthratio forloop.counter0 1 50 %}ms;">
+          <span class="name">{{ book }}</span>
+          <span class="arrow">Open →</span>
+        </a>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty">No books yet.</div>
+  {% endif %}
+</section>
 {% endblock %}

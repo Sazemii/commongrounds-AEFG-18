@@ -1,0 +1,24 @@
+{# Reusable book card. Expects: book, idx (for stagger + spine variant) #}
+{% with spine_n=idx|add:1 %}
+<a href="{{ book.get_absolute_url }}"
+   class="book-card spine-{% if spine_n|divisibleby:6 %}6{% elif spine_n|divisibleby:5 %}5{% elif spine_n|divisibleby:4 %}4{% elif spine_n|divisibleby:3 %}3{% elif spine_n|divisibleby:2 %}2{% else %}1{% endif %}"
+   style="animation-delay: {% widthratio idx 1 40 %}ms;">
+  <div class="book-spine">
+    <span class="book-genre">{{ book.genre|default:"Uncategorized" }}</span>
+    <span class="book-year">{{ book.publication_year }}</span>
+  </div>
+  <div class="book-body">
+    <p class="book-title">{{ book.title }}</p>
+    <p class="book-author">by {{ book.author }}</p>
+    {% if book.synopsis %}<p class="book-synopsis">{{ book.synopsis }}</p>{% endif %}
+    <div class="book-foot">
+      {% if book.available_to_borrow %}
+        <span class="badge badge-avail">Available</span>
+      {% else %}
+        <span class="badge badge-out">Borrowed</span>
+      {% endif %}
+      <span class="arrow">Open →</span>
+    </div>
+  </div>
+</a>
+{% endwith %}

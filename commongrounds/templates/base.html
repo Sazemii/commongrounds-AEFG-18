@@ -1,13 +1,15 @@
 <!doctype html>
 <html lang="en">
   <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>{% block title %}Common Grounds{% endblock %}</title>
     <script>
       tailwind.config = {
         theme: {
           extend: {
             colors: {
-              books: '#0897f7',
+              books: '#8b5a2b',
               events: '#fa7305',
               merch: '#10bc4c',
               diy: '#eab308',
@@ -23,7 +25,7 @@
   </head>
   <body class="bg-white">
     {% include 'components/nav.html' %}
-    <main class="pt-24 max-w-screen-xl mx-auto px-4">
+    <main class="pt-28 sm:pt-32 lg:pt-36 max-w-screen-xl mx-auto px-4">
         <h2 class="text-2xl font-semibold mb-4">{% block page_heading %}{% endblock %}</h2>
         <div id="content">{% block content %}{% endblock %}</div>
     </main>

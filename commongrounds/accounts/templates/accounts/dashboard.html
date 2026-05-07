@@ -215,12 +215,21 @@
   </div>
   <div class="db-stat stat-merch">
     <span class="db-stat-label">Products</span>
+<<<<<<< HEAD
     <span class="db-stat-num">—</span>
     <span class="db-stat-sub">sold</span>
   </div>
   <div class="db-stat stat-diy">
     <span class="db-stat-label">Projects</span>
     <span class="db-stat-num">—</span>
+=======
+    <span class="db-stat-num">{{ products|length }}</span>
+    <span class="db-stat-sub">listed</span>
+  </div>
+  <div class="db-stat stat-diy">
+    <span class="db-stat-label">Projects</span>
+    <span class="db-stat-num">{{ projects|length }}</span>
+>>>>>>> backup-diy-projects
     <span class="db-stat-sub">created</span>
   </div>
 </div>
@@ -291,6 +300,7 @@
   </div>
 </section>
 
+<<<<<<< HEAD
 {# ── Products Sold (placeholder) ── #}
 <section class="db-section fade-in">
   <div class="db-section-head">
@@ -305,6 +315,50 @@
     <div class="db-section-title"><span class="accent-diy">Projects</span> you created</div>
   </div>
   <div class="db-soon">Coming soon — DIY projects integration in progress.</div>
+=======
+{# ── Products Listed ── #}
+<section class="db-section fade-in">
+  <div class="db-section-head">
+    <div class="db-section-title"><span class="accent-merch">Products</span> you listed</div>
+    <div class="db-section-count">{{ products|length }} product{{ products|length|pluralize }}</div>
+  </div>
+  <div class="db-list">
+    {% for product in products %}
+      <a href="{% url 'merchstore:item_detail' product.pk %}" class="db-row" style="animation-delay: {{ forloop.counter0|stringformat:'d' }}0ms">
+        <div class="db-row-avatar avatar-merch">{{ product.name|slice:":1"|upper }}</div>
+        <div class="db-row-info">
+          <div class="db-row-title">{{ product.name }}</div>
+          <div class="db-row-meta">{{ product.product_type.name|default:"—" }} &nbsp;·&nbsp; ₱{{ product.price }} &nbsp;·&nbsp; {{ product.stock }} in stock &nbsp;·&nbsp; {{ product.status }}</div>
+        </div>
+        <span class="db-view-btn">Click to view</span>
+      </a>
+    {% empty %}
+      <div class="db-empty">No products listed yet.</div>
+    {% endfor %}
+  </div>
+</section>
+
+{# ── Projects Created ── #}
+<section class="db-section fade-in">
+  <div class="db-section-head">
+    <div class="db-section-title"><span class="accent-diy">Projects</span> you created</div>
+    <div class="db-section-count">{{ projects|length }} project{{ projects|length|pluralize }}</div>
+  </div>
+  <div class="db-list">
+    {% for project in projects %}
+      <a href="{% url 'diyprojects:project-detail' project.pk %}" class="db-row" style="animation-delay: {{ forloop.counter0|stringformat:'d' }}0ms">
+        <div class="db-row-avatar avatar-diy">{{ project.title|slice:":1"|upper }}</div>
+        <div class="db-row-info">
+          <div class="db-row-title">{{ project.title }}</div>
+          <div class="db-row-meta">{{ project.category.name|default:"—" }} &nbsp;·&nbsp; {{ project.created_on|date:"M d, Y" }}</div>
+        </div>
+        <span class="db-view-btn">Click to view</span>
+      </a>
+    {% empty %}
+      <div class="db-empty">No projects created yet.</div>
+    {% endfor %}
+  </div>
+>>>>>>> backup-diy-projects
 </section>
 
 {% endblock %}

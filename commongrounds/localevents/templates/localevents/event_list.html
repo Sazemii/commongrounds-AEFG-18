@@ -1,178 +1,397 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %}Local Events{% endblock %}
-
-{% block page_heading %}
-<div class="flex items-center justify-between mb-2">
-    <div>
-        <h2 class="text-3xl font-extrabold tracking-tight text-slate-900">Local Events</h2>
-        <p class="text-sm text-slate-400 mt-1">Browse all events or create your own.</p>
-    </div>
-    {% if user.is_authenticated and user.profile.role == 'Event Organizer' %}
-        <a href="{% url 'localevents:event_add' %}"
-           class="inline-flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold bg-orange-100 text-orange-700 border border-orange-200 hover:bg-orange-200 transition-colors">
-            + Create Event
-        </a>
-    {% endif %}
-</div>
-{% endblock %}
+{% block title %}Local Events | Common Grounds{% endblock %}
+{% block page_heading %}{% endblock %}
 
 {% block styles %}
 <style>
-  .event-card {
-    border-radius: 1rem;
-    border: 1.5px solid rgba(255,255,255,0.7);
-    background: #fff0e6;
+  main > h2:empty { display: none; }
+
+  :root {
+    --ev-50:  #fff8f2;
+    --ev-100: #ffe8d0;
+    --ev-200: #ffc89a;
+    --ev-300: #ffa363;
+    --ev-400: #fb8533;
+    --ev-500: #fa7305;
+    --ev-600: #c85c04;
+    --ev-700: #964503;
+    --ev-800: #642e02;
+    --ev-900: #321701;
+  }
+
+  /* ── Hero ─────────────────────────────────────────── */
+  .ev-hero {
+    position: relative;
     overflow: hidden;
-    text-decoration: none;
-    display: flex;
-    flex-direction: column;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border-radius: 1.25rem;
+    padding: 1.75rem 1.25rem 1.5rem;
+    background:
+      radial-gradient(900px 360px at 12% 0%, rgba(250,115,5,0.09), transparent 60%),
+      radial-gradient(700px 320px at 100% 100%, rgba(250,115,5,0.05), transparent 60%),
+      #ffffff;
+    border: 1px solid rgba(250,115,5,0.12);
     box-shadow:
       0 2px 4px rgba(0,0,0,0.04),
-      0 6px 16px rgba(0,0,0,0.06),
+      0 6px 16px rgba(0,0,0,0.05),
       0 16px 40px rgba(0,0,0,0.04);
   }
+  .ev-hero-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ev-700);
+    background: var(--ev-50);
+    border: 1px solid var(--ev-100);
+    padding: 0.3rem 0.65rem;
+    border-radius: 9999px;
+  }
+  .ev-hero-eyebrow::before {
+    content: '';
+    width: 6px; height: 6px; border-radius: 9999px;
+    background: var(--ev-500);
+    box-shadow: 0 0 0 4px rgba(250,115,5,0.18);
+  }
+  .ev-hero h1 {
+    font-size: clamp(1.5rem, 6vw, 2.75rem);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    font-weight: 800;
+    color: #0f172a;
+    margin-top: 0.75rem;
+  }
+  .ev-hero p.sub {
+    margin-top: 0.75rem;
+    max-width: 38rem;
+    color: #475569;
+    font-size: 0.95rem;
+    line-height: 1.55;
+  }
+  @media (min-width: 640px) {
+    .ev-hero { padding: 3rem 2rem 2.75rem; }
+    .ev-hero p.sub { font-size: 1rem; }
+  }
+
+  .ev-hero-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    align-items: center;
+  }
+  .ev-hero-art {
+    display: none;
+    justify-content: center;
+    align-items: center;
+  }
+  .ev-hero-art img {
+    width: 100%;
+    max-width: 280px;
+    height: auto;
+    display: block;
+  }
+  @media (min-width: 768px) {
+    .ev-hero-grid { grid-template-columns: 1fr 1fr; }
+    .ev-hero-art { display: flex; }
+  }
+
+  /* ── Buttons ──────────────────────────────────────── */
+  .btn-ev-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.6rem 1.05rem;
+    border-radius: 9999px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #fff;
+    background: var(--ev-500);
+    box-shadow:
+      0 1px 2px rgba(250,115,5,0.20),
+      0 6px 16px rgba(250,115,5,0.18);
+    transition: transform .18s ease, box-shadow .18s ease, background .18s;
+    text-decoration: none;
+  }
+  .btn-ev-primary:hover {
+    transform: translateY(-1px);
+    background: var(--ev-600);
+    box-shadow:
+      0 2px 4px rgba(250,115,5,0.22),
+      0 12px 28px rgba(250,115,5,0.22);
+  }
+  .btn-ev-primary svg { width: 14px; height: 14px; }
+
+  .btn-ev-ghost {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.55rem 0.95rem;
+    border-radius: 9999px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #334155;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    transition: border-color .18s ease, color .18s, background .18s;
+    text-decoration: none;
+  }
+  .btn-ev-ghost:hover {
+    color: var(--ev-700);
+    border-color: var(--ev-200);
+    background: var(--ev-50);
+  }
+
+  /* ── Section ──────────────────────────────────────── */
+  .section { margin-top: 2.5rem; }
+  .section-head {
+    display: flex; align-items: baseline; justify-content: space-between;
+    margin-bottom: 1rem;
+  }
+  .section-title {
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: #475569;
+  }
+  .section-title .accent { color: var(--ev-600); }
+  .section-meta { font-size: 0.78rem; color: #94a3b8; }
+
+  /* ── Cards grid ───────────────────────────────────── */
+  .grid-events {
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0,1fr));
+    gap: 1.1rem;
+  }
+  @media (min-width: 640px)  { .grid-events { grid-template-columns: repeat(2, minmax(0,1fr)); } }
+  @media (min-width: 900px)  { .grid-events { grid-template-columns: repeat(3, minmax(0,1fr)); } }
+  @media (min-width: 1200px) { .grid-events { grid-template-columns: repeat(4, minmax(0,1fr)); } }
+
+  /* ── Event card ───────────────────────────────────── */
+  .event-card {
+    position: relative;
+    display: flex; flex-direction: column;
+    background: #fff;
+    border: 1px solid rgba(15,23,42,0.06);
+    border-radius: 1rem;
+    overflow: hidden;
+    text-decoration: none;
+    color: inherit;
+    transition:
+      transform .25s cubic-bezier(.22,.61,.36,1),
+      box-shadow .25s cubic-bezier(.22,.61,.36,1),
+      border-color .25s;
+    box-shadow:
+      0 1px 2px rgba(0,0,0,0.03),
+      0 6px 16px rgba(0,0,0,0.05),
+      0 16px 40px rgba(0,0,0,0.03);
+    opacity: 0;
+    transform: translateY(8px);
+    animation: ev-rise .55s cubic-bezier(.22,.61,.36,1) forwards;
+  }
   .event-card:hover {
-    transform: translateY(-3px);
+    transform: translateY(-4px);
+    border-color: rgba(250,115,5,0.25);
     box-shadow:
       0 4px 8px rgba(0,0,0,0.05),
       0 12px 28px rgba(0,0,0,0.08),
       0 28px 56px rgba(0,0,0,0.06);
   }
-  .event-card figure img {
-    width: 100%;
-    height: 180px;
+
+  /* Image area */
+  .event-img {
+    position: relative;
+    height: 148px;
+    overflow: hidden;
+    background: var(--ev-100);
+  }
+  .event-img img {
+    width: 100%; height: 100%;
     object-fit: cover;
+    transition: transform .35s ease;
   }
-  .card-body {
-    padding: 1rem 1.25rem 1.25rem;
-    display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
-    flex: 1;
-  }
-  .status-badge {
-    display: inline-flex;
-    align-items: center;
-    padding: 0.15rem 0.6rem;
+  .event-card:hover .event-img img { transform: scale(1.04); }
+
+  /* Status pill overlaid on image */
+  .ev-status {
+    position: absolute;
+    top: 0.6rem; right: 0.6rem;
+    display: inline-flex; align-items: center; gap: 0.3rem;
+    font-size: 0.65rem; font-weight: 700;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    padding: 0.2rem 0.55rem;
     border-radius: 9999px;
-    font-size: 0.7rem;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    white-space: nowrap;
+    backdrop-filter: blur(6px);
   }
-  .status-available { background: #dcfce7; color: #15803d; }
-  .status-full      { background: #fee2e2; color: #b91c1c; }
-  .status-done      { background: #e2e8f0; color: #475569; }
-  .status-cancelled { background: #fef9c3; color: #a16207; }
+  .ev-status::before {
+    content: ''; width: 5px; height: 5px; border-radius: 9999px;
+    background: currentColor;
+  }
+  .status-available { background: rgba(220,252,231,0.92); color: #15803d; }
+  .status-full      { background: rgba(254,226,226,0.92); color: #b91c1c; }
+  .status-done      { background: rgba(226,232,240,0.92); color: #475569; }
+  .status-cancelled { background: rgba(254,249,195,0.92); color: #a16207; }
+
+  /* Card body */
+  .event-body {
+    padding: 0.9rem 1rem 1rem;
+    flex: 1;
+    display: flex; flex-direction: column;
+  }
+  .event-category {
+    font-size: 0.66rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--ev-600);
+    margin-bottom: 0.3rem;
+  }
+  .event-title {
+    font-size: 0.98rem;
+    font-weight: 700;
+    color: #0f172a;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+  }
+  .event-meta {
+    margin-top: 0.55rem;
+    display: flex; flex-direction: column; gap: 0.2rem;
+    font-size: 0.78rem;
+    color: #64748b;
+  }
+  .event-foot {
+    margin-top: 0.85rem;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .ev-capacity {
+    font-size: 0.72rem; color: #94a3b8;
+  }
+  .arrow {
+    font-size: 0.78rem; font-weight: 700;
+    color: var(--ev-600);
+    display: inline-flex; align-items: center; gap: 0.2rem;
+    transition: gap .18s ease, color .18s;
+  }
+  .event-card:hover .arrow { gap: 0.45rem; color: var(--ev-700); }
+
+  /* Empty state */
+  .empty {
+    text-align: center;
+    padding: 2.5rem 1rem;
+    border: 1px dashed #e2e8f0;
+    border-radius: 1rem;
+    color: #64748b;
+    grid-column: 1 / -1;
+  }
+
+  /* ── Animations ───────────────────────────────────── */
+  @keyframes ev-rise {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes ev-fade {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+  .fade-in { opacity: 0; animation: ev-fade .6s ease forwards; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .event-card, .fade-in { animation: none; opacity: 1; transform: none; }
+  }
 </style>
 {% endblock %}
 
 {% block content %}
 
-
-{# ── Macro: event card ── #}
-{# Used inline in each section below #}
+{# ── Hero ─────────────────────────────────────────── #}
+<section class="ev-hero fade-in">
+  <div class="ev-hero-grid">
+    <div class="ev-hero-content">
+      <span class="ev-hero-eyebrow">Local Events</span>
+      <h1>Find your next<br>great experience.</h1>
+      <p class="sub">
+        Discover events happening in your community — from meetups to workshops.
+        Sign up in seconds, or organize one yourself.
+      </p>
+      <div class="mt-7 flex flex-wrap gap-2.5">
+        {% if user.is_authenticated and user.profile.role == 'Event Organizer' %}
+          <a href="{% url 'localevents:event_add' %}" class="btn-ev-primary">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+            Create an event
+          </a>
+        {% endif %}
+        <a href="#all-events" class="btn-ev-ghost">Browse all events</a>
+      </div>
+    </div>
+    <div class="ev-hero-art" aria-hidden="true">
+      <img src="{% static 'img/local-events-icon.svg' %}" alt="">
+    </div>
+  </div>
+</section>
 
 {% if user.is_authenticated %}
 
-    {# ── Events You Organized ── #}
-    <section class="mb-10">
-        <h3 class="text-sm font-semibold uppercase tracking-widest text-slate-400 mb-4">Events You Organized</h3>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {% for event in organized_events %}
-                <a href="{{ event.get_absolute_url }}" class="event-card">
-                    <figure>
-                        {% if event.event_image %}
-                            <img src="{{ event.event_image.url }}" alt="{{ event.title }}">
-                        {% else %}
-                            <img src="{% static 'img/No_Image_Available.jpg' %}" alt="No image">
-                        {% endif %}
-                    </figure>
-                    <div class="card-body">
-                        <div class="flex items-start justify-between gap-2">
-                            <p class="text-base font-bold text-slate-900 leading-snug">{{ event.title }}</p>
-                            <span class="status-badge status-{{ event.status|lower }}">{{ event.status }}</span>
-                        </div>
-                        {% if event.category %}<span class="text-xs font-medium text-events">{{ event.category }}</span>{% endif %}
-                        <p class="text-xs text-slate-500">📍 {{ event.location }}</p>
-                        <p class="text-xs text-slate-500">🗓 {{ event.start_time|date:"M d, Y · g:i A" }}</p>
-                        <p class="text-xs text-slate-400 mt-auto pt-1">{{ event.signups.count }} / {{ event.event_capacity }} signed up</p>
-                    </div>
-                </a>
-            {% empty %}
-                <div class="col-span-3 text-sm text-slate-400">
-                    You haven't organized any events yet.
-                    {% if user.profile.role == 'Event Organizer' %}
-                        <a href="{% url 'localevents:event_add' %}" class="ml-1 font-semibold text-events underline underline-offset-2 hover:text-orange-600 transition-colors">Create one now →</a>
-                    {% endif %}
-                </div>
-            {% endfor %}
+  {# ── Events You Organized ── #}
+  <section class="section">
+    <div class="section-head">
+      <div class="section-title">Events you <span class="accent">organized</span></div>
+      <div class="section-meta">{{ organized_events|length }} event{{ organized_events|length|pluralize }}</div>
+    </div>
+    <div class="grid-events">
+      {% for event in organized_events %}
+        {% include 'localevents/_event_card.html' with event=event idx=forloop.counter0 %}
+      {% empty %}
+        <div class="empty">
+          <p class="text-base font-medium text-slate-700">No events organized yet.</p>
+          {% if user.profile.role == 'Event Organizer' %}
+            <p class="mt-1 text-sm">
+              <a style="color: var(--ev-600)" class="font-semibold underline-offset-2 hover:underline" href="{% url 'localevents:event_add' %}">Create your first event →</a>
+            </p>
+          {% endif %}
         </div>
-    </section>
+      {% endfor %}
+    </div>
+  </section>
 
-    {# ── Events You're Attending ── #}
-    <section class="mb-10">
-        <h3 class="text-sm font-semibold uppercase tracking-widest text-slate-400 mb-4">Events You're Attending</h3>
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-            {% for event in signed_up_events %}
-                <a href="{{ event.get_absolute_url }}" class="event-card">
-                    <figure>
-                        {% if event.event_image %}
-                            <img src="{{ event.event_image.url }}" alt="{{ event.title }}">
-                        {% else %}
-                            <img src="{% static 'img/No_Image_Available.jpg' %}" alt="No image">
-                        {% endif %}
-                    </figure>
-                    <div class="card-body">
-                        <div class="flex items-start justify-between gap-2">
-                            <p class="text-base font-bold text-slate-900 leading-snug">{{ event.title }}</p>
-                            <span class="status-badge status-{{ event.status|lower }}">{{ event.status }}</span>
-                        </div>
-                        {% if event.category %}<span class="text-xs font-medium text-events">{{ event.category }}</span>{% endif %}
-                        <p class="text-xs text-slate-500">📍 {{ event.location }}</p>
-                        <p class="text-xs text-slate-500">🗓 {{ event.start_time|date:"M d, Y · g:i A" }}</p>
-                        <p class="text-xs text-slate-400 mt-auto pt-1">{{ event.signups.count }} / {{ event.event_capacity }} signed up</p>
-                    </div>
-                </a>
-            {% empty %}
-                <p class="col-span-3 text-sm text-slate-400">You haven't signed up for any events yet. Explore the events in the section below.</p>
-            {% endfor %}
+  {# ── Events You're Attending ── #}
+  <section class="section">
+    <div class="section-head">
+      <div class="section-title">Events you're <span class="accent">attending</span></div>
+      <div class="section-meta">{{ signed_up_events|length }} event{{ signed_up_events|length|pluralize }}</div>
+    </div>
+    <div class="grid-events">
+      {% for event in signed_up_events %}
+        {% include 'localevents/_event_card.html' with event=event idx=forloop.counter0 %}
+      {% empty %}
+        <div class="empty">
+          <p class="text-base font-medium text-slate-700">You haven't signed up for any events yet.</p>
+          <p class="mt-1 text-sm text-slate-400">Explore the events in the section below.</p>
         </div>
-    </section>
+      {% endfor %}
+    </div>
+  </section>
 
 {% endif %}
 
 {# ── All Events ── #}
-<section class="mb-8" id="all-events">
-    <h3 class="text-sm font-semibold uppercase tracking-widest text-slate-400 mb-4">All Events</h3>
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 pb-8">
-        {% for event in events %}
-            <a href="{{ event.get_absolute_url }}" class="event-card">
-                <figure>
-                    {% if event.event_image %}
-                        <img src="{{ event.event_image.url }}" alt="{{ event.title }}">
-                    {% else %}
-                        <img src="{% static 'img/No_Image_Available.jpg' %}" alt="No image">
-                    {% endif %}
-                </figure>
-                <div class="card-body">
-                    <div class="flex items-start justify-between gap-2">
-                        <p class="text-base font-bold text-slate-900 leading-snug">{{ event.title }}</p>
-                        <span class="status-badge status-{{ event.status|lower }}">{{ event.status }}</span>
-                    </div>
-                    {% if event.category %}<span class="text-xs font-medium text-events">{{ event.category }}</span>{% endif %}
-                    <p class="text-xs text-slate-500">📍 {{ event.location }}</p>
-                    <p class="text-xs text-slate-500">🗓 {{ event.start_time|date:"M d, Y · g:i A" }}</p>
-                    <p class="text-xs text-slate-400 mt-auto pt-1">{{ event.signups.count }} / {{ event.event_capacity }} signed up</p>
-                </div>
-            </a>
-        {% empty %}
-            <p class="text-sm text-slate-400 col-span-3">No other events available right now.</p>
-        {% endfor %}
-    </div>
+<section class="section" id="all-events">
+  <div class="section-head">
+    <div class="section-title">All <span class="accent">events</span></div>
+    <div class="section-meta">{{ events|length }} event{{ events|length|pluralize }}</div>
+  </div>
+  <div class="grid-events">
+    {% for event in events %}
+      {% include 'localevents/_event_card.html' with event=event idx=forloop.counter0 %}
+    {% empty %}
+      <div class="empty">
+        <p class="text-base font-medium text-slate-700">No events available right now.</p>
+        <p class="mt-1 text-sm text-slate-400">Check back soon — something's always cooking.</p>
+      </div>
+    {% endfor %}
+  </div>
 </section>
 
 {% endblock %}

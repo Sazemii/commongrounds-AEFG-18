@@ -1,0 +1,28 @@
+{% load static %}
+{# Reusable event card. Expects: event, idx (for stagger animation) #}
+<a href="{{ event.get_absolute_url }}"
+   class="event-card"
+   style="animation-delay: {% widthratio idx 1 40 %}ms;">
+  <div class="event-img">
+    {% if event.event_image %}
+      <img src="{{ event.event_image.url }}" alt="{{ event.title }}">
+    {% else %}
+      <img src="{% static 'img/No_Image_Available.jpg' %}" alt="No image available">
+    {% endif %}
+    <span class="ev-status status-{{ event.status|lower }}">{{ event.status }}</span>
+  </div>
+  <div class="event-body">
+    {% if event.category %}
+      <p class="event-category">{{ event.category }}</p>
+    {% endif %}
+    <p class="event-title">{{ event.title }}</p>
+    <div class="event-meta">
+      <span>📍 {{ event.location }}</span>
+      <span>🗓 {{ event.start_time|date:"M d, Y · g:i A" }}</span>
+    </div>
+    <div class="event-foot">
+      <span class="ev-capacity">{{ event.signups.count }} / {{ event.event_capacity }} signed up</span>
+      <span class="arrow">Open →</span>
+    </div>
+  </div>
+</a>

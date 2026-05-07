@@ -215,21 +215,12 @@
   </div>
   <div class="db-stat stat-merch">
     <span class="db-stat-label">Products</span>
-<<<<<<< HEAD
-    <span class="db-stat-num">—</span>
-    <span class="db-stat-sub">sold</span>
-  </div>
-  <div class="db-stat stat-diy">
-    <span class="db-stat-label">Projects</span>
-    <span class="db-stat-num">—</span>
-=======
     <span class="db-stat-num">{{ products|length }}</span>
     <span class="db-stat-sub">listed</span>
   </div>
   <div class="db-stat stat-diy">
     <span class="db-stat-label">Projects</span>
     <span class="db-stat-num">{{ projects|length }}</span>
->>>>>>> backup-diy-projects
     <span class="db-stat-sub">created</span>
   </div>
 </div>
@@ -300,22 +291,6 @@
   </div>
 </section>
 
-<<<<<<< HEAD
-{# ── Products Sold (placeholder) ── #}
-<section class="db-section fade-in">
-  <div class="db-section-head">
-    <div class="db-section-title"><span class="accent-merch">Products</span> you sold</div>
-  </div>
-  <div class="db-soon">Coming soon — merch store integration in progress.</div>
-</section>
-
-{# ── Projects Created (placeholder) ── #}
-<section class="db-section fade-in">
-  <div class="db-section-head">
-    <div class="db-section-title"><span class="accent-diy">Projects</span> you created</div>
-  </div>
-  <div class="db-soon">Coming soon — DIY projects integration in progress.</div>
-=======
 {# ── Products Listed ── #}
 <section class="db-section fade-in">
   <div class="db-section-head">
@@ -358,7 +333,6 @@
       <div class="db-empty">No projects created yet.</div>
     {% endfor %}
   </div>
->>>>>>> backup-diy-projects
 </section>
 
 {% endblock %}

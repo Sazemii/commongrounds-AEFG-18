@@ -1,123 +1,285 @@
 {% extends 'base.html' %}
+{% load static %}
+{% block title %}{% if form.instance.pk %}Edit Commission{% else %}Post a Commission{% endif %} | Commissions{% endblock %}
+{% block page_heading %}{% endblock %}
 
-{% block title %}
-    {% if form.instance.pk %}Edit Commission{% else %}Post New Commission{% endif %}
+{% block styles %}
+<style>
+  main > h2:empty { display: none; }
+
+  :root {
+    --cm-50:  #f3e7fe;
+    --cm-100: #e6cefd;
+    --cm-200: #ce9efa;
+    --cm-300: #b56df8;
+    --cm-400: #9c3cf6;
+    --cm-500: #830bf4;
+    --cm-600: #6909c3;
+    --cm-700: #4f0792;
+    --cm-800: #350561;
+    --cm-900: #1a0231;
+  }
+
+  .fade-in { opacity: 0; animation: cm-fade .5s ease forwards; }
+  @keyframes cm-fade { to { opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) { .fade-in { animation: none; opacity: 1; } }
+
+  .back-link {
+    display: inline-flex; align-items: center; gap: 0.35rem;
+    font-size: 0.82rem; font-weight: 600; color: #64748b;
+    text-decoration: none; margin-bottom: 1.25rem;
+    transition: color .18s;
+  }
+  .back-link:hover { color: var(--cm-600); }
+
+  /* ── Form wrap ────────────────────────────────────── */
+  .cm-form-wrap { max-width: 760px; margin: 0 auto; }
+
+  .cm-form-hero {
+    border-radius: 1.25rem;
+    padding: 2rem 2rem 1.75rem;
+    background:
+      radial-gradient(800px 300px at 10% 0%, rgba(131,11,244,0.08), transparent 60%),
+      #ffffff;
+    border: 1px solid rgba(131,11,244,0.12);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.06);
+    margin-bottom: 1.5rem;
+  }
+
+  .cm-form-eyebrow {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    font-size: 0.68rem; font-weight: 700; letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--cm-700); background: var(--cm-50);
+    border: 1px solid var(--cm-100);
+    padding: 0.25rem 0.6rem; border-radius: 9999px;
+    margin-bottom: 0.6rem;
+  }
+  .cm-form-eyebrow::before {
+    content: ''; width: 5px; height: 5px; border-radius: 9999px;
+    background: var(--cm-500); box-shadow: 0 0 0 3px rgba(131,11,244,0.18);
+  }
+
+  .cm-form-title {
+    font-size: clamp(1.4rem, 5vw, 2rem);
+    font-weight: 800; letter-spacing: -0.02em;
+    color: #0f172a; line-height: 1.2;
+  }
+  .cm-form-sub {
+    margin-top: 0.4rem;
+    font-size: 0.88rem; color: #64748b;
+  }
+
+  /* ── Form card ────────────────────────────────────── */
+  .cm-form-card {
+    background: #fff;
+    border: 1px solid rgba(15,23,42,0.06);
+    border-radius: 1rem;
+    padding: 1.75rem;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.03), 0 6px 16px rgba(0,0,0,0.05);
+    margin-bottom: 1.25rem;
+  }
+  .cm-form-card-title {
+    font-size: 0.72rem; font-weight: 700; letter-spacing: 0.14em;
+    text-transform: uppercase; color: #94a3b8;
+    margin-bottom: 1.25rem;
+  }
+
+  .cm-field { margin-bottom: 1.1rem; }
+  .cm-field label {
+    display: block;
+    font-size: 0.78rem; font-weight: 700;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    color: #475569; margin-bottom: 0.35rem;
+  }
+  .cm-field input:not([type="checkbox"]),
+  .cm-field select,
+  .cm-field textarea {
+    width: 100%;
+    padding: 0.6rem 0.85rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.6rem;
+    font-size: 0.92rem; color: #0f172a;
+    background: #fff;
+    transition: border-color .18s, box-shadow .18s;
+    outline: none;
+  }
+  .cm-field input:focus,
+  .cm-field select:focus,
+  .cm-field textarea:focus {
+    border-color: var(--cm-400);
+    box-shadow: 0 0 0 3px rgba(131,11,244,0.12);
+  }
+  .cm-field input:disabled { background: #f8fafc; color: #94a3b8; }
+  .cm-field textarea { min-height: 110px; resize: vertical; }
+  .cm-field .errorlist {
+    margin: 0.3rem 0 0; padding: 0; list-style: none;
+    font-size: 0.78rem; color: #b91c1c;
+  }
+
+  /* ── Jobs table ───────────────────────────────────── */
+  .cm-jobs-table { width: 100%; border-collapse: collapse; font-size: 0.88rem; }
+  .cm-jobs-table th {
+    font-size: 0.7rem; font-weight: 700; letter-spacing: 0.1em;
+    text-transform: uppercase; color: #94a3b8;
+    padding: 0 0.5rem 0.6rem; text-align: left;
+  }
+  .cm-jobs-table td { padding: 0.4rem 0.5rem; vertical-align: top; }
+  .cm-jobs-table td input,
+  .cm-jobs-table td select {
+    width: 100%;
+    padding: 0.45rem 0.65rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.5rem;
+    font-size: 0.88rem; color: #0f172a;
+    outline: none;
+    transition: border-color .18s, box-shadow .18s;
+  }
+  .cm-jobs-table td input:focus,
+  .cm-jobs-table td select:focus {
+    border-color: var(--cm-400);
+    box-shadow: 0 0 0 3px rgba(131,11,244,0.10);
+  }
+  .cm-jobs-table td .errorlist {
+    padding: 0; list-style: none;
+    font-size: 0.75rem; color: #b91c1c; margin-top: 0.2rem;
+  }
+
+  /* ── Actions ──────────────────────────────────────── */
+  .cm-form-actions { display: flex; gap: 0.75rem; margin-top: 1.5rem; flex-wrap: wrap; }
+
+  .btn-cm-primary {
+    display: inline-flex; align-items: center; gap: 0.45rem;
+    padding: 0.65rem 1.4rem;
+    border-radius: 9999px; font-size: 0.88rem; font-weight: 600;
+    color: #fff; background: var(--cm-500); border: none; cursor: pointer;
+    box-shadow: 0 1px 2px rgba(131,11,244,0.20), 0 6px 16px rgba(131,11,244,0.18);
+    transition: transform .18s, box-shadow .18s, background .18s;
+    text-decoration: none;
+  }
+  .btn-cm-primary:hover {
+    transform: translateY(-1px); background: var(--cm-600);
+    box-shadow: 0 2px 4px rgba(131,11,244,0.22), 0 12px 28px rgba(131,11,244,0.22);
+  }
+  .btn-cm-ghost {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    padding: 0.6rem 1.2rem;
+    border-radius: 9999px; font-size: 0.88rem; font-weight: 600;
+    color: #334155; background: #fff; border: 1px solid #e2e8f0;
+    transition: border-color .18s, color .18s, background .18s;
+    text-decoration: none;
+  }
+  .btn-cm-ghost:hover {
+    color: var(--cm-700); border-color: var(--cm-200); background: var(--cm-50);
+  }
+</style>
 {% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-    <h1>{% if form.instance.pk %}Edit Commission{% else %}Post New Commission{% endif %}</h1>
-    
-    <form method="post" novalidate>
-        {% csrf_token %}
-        
-        <div class="card mb-4">
-            <div class="card-body">
-                <h5 class="card-title">Commission Details</h5>
-            
-                <div class="form-group">
-                    <label>Maker (You)</label>
-                    <input type="text" class="form-control" value="{{ request.user.profile.user.username }}" disabled>
-                </div>
-                
-                <div class="form-group">
-                    <label for="{{ form.title.id_for_label }}">Title *</label>
-                    <input type="text" name="{{ form.title.name }}" class="form-control {% if form.title.errors %}is-invalid{% endif %}" value="{{ form.title.value|default:'' }}">
-                    {% if form.title.errors %}
-                        <div class="invalid-feedback d-block">{{ form.title.errors }}</div>
-                    {% endif %}
-                </div>
-                
-                <div class="form-group">
-                    <label for="{{ form.description.id_for_label }}">Description *</label>
-                    <textarea name="{{ form.description.name }}" class="form-control {% if form.description.errors %}is-invalid{% endif %}" rows="4">{{ form.description.value|default:'' }}</textarea>
-                    {% if form.description.errors %}
-                        <div class="invalid-feedback d-block">{{ form.description.errors }}</div>
-                    {% endif %}
-                </div>
-                
-                <div class="form-group">
-                    <label for="{{ form.type.id_for_label }}">Type *</label>
-                    {{ form.type }}
-                    {% if form.type.errors %}
-                        <div class="text-danger">{{ form.type.errors }}</div>
-                    {% endif %}
-                </div>
-                
-                <div class="form-group">
-                    <label for="{{ form.people_required.id_for_label }}">People Required *</label>
-                    <input type="number" name="{{ form.people_required.name }}" class="form-control {% if form.people_required.errors %}is-invalid{% endif %}" value="{{ form.people_required.value|default:'' }}">
-                    {% if form.people_required.errors %}
-                        <div class="invalid-feedback d-block">{{ form.people_required.errors }}</div>
-                    {% endif %}
-                </div>
-                
-                <div class="form-group">
-                    <label for="{{ form.status.id_for_label }}">Status *</label>
-                    {{ form.status }}
-                    {% if form.status.errors %}
-                        <div class="text-danger">{{ form.status.errors }}</div>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-        
-        <div class="card mb-4">
-            <div class="card-body">
-                <h5 class="card-title">Jobs</h5>
-                
-                {{ job_formset.management_form }}
-                
-                <table class="table">
-                    <thead>
-                        <tr>
-                            <th>Role</th>
-                            <th>Manpower Required</th>
-                            <th>Status</th>
-                            <th>Delete</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for form in job_formset %}
-                            <tr>
-                                <td>
-                                    {{ form.role }}
-                                    {% if form.role.errors %}
-                                        <div class="text-danger">{{ form.role.errors }}</div>
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    {{ form.manpower_required }}
-                                    {% if form.manpower_required.errors %}
-                                        <div class="text-danger">{{ form.manpower_required.errors }}</div>
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    {{ form.status }}
-                                    {% if form.status.errors %}
-                                        <div class="text-danger">{{ form.status.errors }}</div>
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    {{ form.DELETE }}
-                                </td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-                
-                {% if job_formset.non_form_errors %}
-                    <div class="alert alert-danger">
-                        {{ job_formset.non_form_errors }}
-                    </div>
-                {% endif %}
-            </div>
-        </div>
+<div class="cm-form-wrap fade-in">
 
-        <button type="submit" class="btn btn-primary">
-            {% if form.instance.pk %}Update{% else %}Post{% endif %}
-        </button>
-        <a href="{% url 'commissions:commission_list' %}" class="btn btn-secondary">Cancel</a>
-    </form>
+  <a href="{% url 'commissions:commission_list' %}" class="back-link">← Back to Commissions</a>
+
+  {# ── Header ── #}
+  <div class="cm-form-hero">
+    <span class="cm-form-eyebrow">{% if form.instance.pk %}Editing{% else %}New Commission{% endif %}</span>
+    <h1 class="cm-form-title">
+      {% if form.instance.pk %}Edit "{{ form.instance.title }}"{% else %}Post a new commission{% endif %}
+    </h1>
+    <p class="cm-form-sub">
+      {% if form.instance.pk %}Update the details below and save your changes.{% else %}Fill in the details and add the roles you need to build your team.{% endif %}
+    </p>
+  </div>
+
+  <form method="post" novalidate>
+    {% csrf_token %}
+
+    {# ── Commission Details ── #}
+    <div class="cm-form-card">
+      <div class="cm-form-card-title">Commission Details</div>
+
+      <div class="cm-field">
+        <label>Maker (You)</label>
+        <input type="text" value="{{ request.user.profile.user.username }}" disabled>
+      </div>
+
+      <div class="cm-field">
+        <label for="{{ form.title.id_for_label }}">Title *</label>
+        <input type="text" name="{{ form.title.name }}" id="{{ form.title.id_for_label }}" value="{{ form.title.value|default:'' }}">
+        {% if form.title.errors %}<ul class="errorlist">{% for e in form.title.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+      </div>
+
+      <div class="cm-field">
+        <label for="{{ form.description.id_for_label }}">Description *</label>
+        <textarea name="{{ form.description.name }}" id="{{ form.description.id_for_label }}">{{ form.description.value|default:'' }}</textarea>
+        {% if form.description.errors %}<ul class="errorlist">{% for e in form.description.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+      </div>
+
+      <div class="cm-field">
+        <label for="{{ form.type.id_for_label }}">Type *</label>
+        {{ form.type }}
+        {% if form.type.errors %}<ul class="errorlist">{% for e in form.type.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+      </div>
+
+      <div class="cm-field">
+        <label for="{{ form.people_required.id_for_label }}">People Required *</label>
+        <input type="number" name="{{ form.people_required.name }}" id="{{ form.people_required.id_for_label }}" value="{{ form.people_required.value|default:'' }}">
+        {% if form.people_required.errors %}<ul class="errorlist">{% for e in form.people_required.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+      </div>
+
+      <div class="cm-field">
+        <label for="{{ form.status.id_for_label }}">Status *</label>
+        {{ form.status }}
+        {% if form.status.errors %}<ul class="errorlist">{% for e in form.status.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+      </div>
+    </div>
+
+    {# ── Jobs ── #}
+    <div class="cm-form-card">
+      <div class="cm-form-card-title">Roles / Jobs</div>
+      {{ job_formset.management_form }}
+      <table class="cm-jobs-table">
+        <thead>
+          <tr>
+            <th>Role</th>
+            <th>Manpower</th>
+            <th>Status</th>
+            <th>Delete</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for job_form in job_formset %}
+            <tr>
+              <td>
+                {{ job_form.id }}
+                {{ job_form.role }}
+                {% if job_form.role.errors %}<ul class="errorlist">{% for e in job_form.role.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+              </td>
+              <td>
+                {{ job_form.manpower_required }}
+                {% if job_form.manpower_required.errors %}<ul class="errorlist">{% for e in job_form.manpower_required.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+              </td>
+              <td>
+                {{ job_form.status }}
+                {% if job_form.status.errors %}<ul class="errorlist">{% for e in job_form.status.errors %}<li>{{ e }}</li>{% endfor %}</ul>{% endif %}
+              </td>
+              <td style="text-align: center; padding-top: 0.6rem;">{{ job_form.DELETE }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+      {% if job_formset.non_form_errors %}
+        <p style="font-size: 0.82rem; color: #b91c1c; margin-top: 0.75rem;">{{ job_formset.non_form_errors }}</p>
+      {% endif %}
+    </div>
+
+    <div class="cm-form-actions">
+      <button type="submit" class="btn-cm-primary">
+        {% if form.instance.pk %}Save Changes{% else %}Post Commission{% endif %}
+      </button>
+      <a href="{% url 'commissions:commission_list' %}" class="btn-cm-ghost">Cancel</a>
+    </div>
+  </form>
+
 </div>
 {% endblock %}

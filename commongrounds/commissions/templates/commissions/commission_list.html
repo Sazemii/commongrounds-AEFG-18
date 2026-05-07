@@ -1,79 +1,447 @@
 {% extends 'base.html' %}
+{% load static %}
+{% block title %}Commission Requests | Common Grounds{% endblock %}
+{% block page_heading %}{% endblock %}
 
-{% block title %}Commission Requests{% endblock %}
+{% block styles %}
+<style>
+  main > h2:empty { display: none; }
+
+  :root {
+    --cm-50:  #f3e7fe;
+    --cm-100: #e6cefd;
+    --cm-200: #ce9efa;
+    --cm-300: #b56df8;
+    --cm-400: #9c3cf6;
+    --cm-500: #830bf4;
+    --cm-600: #6909c3;
+    --cm-700: #4f0792;
+    --cm-800: #350561;
+    --cm-900: #1a0231;
+    --cm-950: #120222;
+  }
+
+  /* ── Hero ─────────────────────────────────────────── */
+  .cm-hero {
+    position: relative;
+    overflow: hidden;
+    border-radius: 1.25rem;
+    padding: 1.75rem 1.25rem 1.5rem;
+    background:
+      radial-gradient(900px 360px at 12% 0%, rgba(131,11,244,0.09), transparent 60%),
+      radial-gradient(700px 320px at 100% 100%, rgba(131,11,244,0.05), transparent 60%),
+      #ffffff;
+    border: 1px solid rgba(131,11,244,0.12);
+    box-shadow:
+      0 2px 4px rgba(0,0,0,0.04),
+      0 6px 16px rgba(0,0,0,0.05),
+      0 16px 40px rgba(0,0,0,0.04);
+  }
+  .cm-hero-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--cm-700);
+    background: var(--cm-50);
+    border: 1px solid var(--cm-100);
+    padding: 0.3rem 0.65rem;
+    border-radius: 9999px;
+  }
+  .cm-hero-eyebrow::before {
+    content: '';
+    width: 6px; height: 6px; border-radius: 9999px;
+    background: var(--cm-500);
+    box-shadow: 0 0 0 4px rgba(131,11,244,0.18);
+  }
+  .cm-hero h1 {
+    font-size: clamp(1.5rem, 6vw, 2.75rem);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    font-weight: 800;
+    color: #0f172a;
+    margin-top: 0.75rem;
+  }
+  .cm-hero p.sub {
+    margin-top: 0.75rem;
+    max-width: 38rem;
+    color: #475569;
+    font-size: 0.95rem;
+    line-height: 1.55;
+  }
+  @media (min-width: 640px) {
+    .cm-hero { padding: 3rem 2rem 2.75rem; }
+    .cm-hero p.sub { font-size: 1rem; }
+  }
+
+  .cm-hero-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    align-items: center;
+  }
+  .cm-hero-art {
+    display: none;
+    justify-content: center;
+    align-items: center;
+  }
+  .cm-hero-art img {
+    width: 100%;
+    max-width: 280px;
+    height: auto;
+    display: block;
+  }
+  @media (min-width: 768px) {
+    .cm-hero-grid { grid-template-columns: 1fr 1fr; }
+    .cm-hero-art { display: flex; }
+  }
+
+  /* ── Buttons ──────────────────────────────────────── */
+  .btn-cm-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    padding: 0.6rem 1.05rem;
+    border-radius: 9999px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #fff;
+    background: var(--cm-500);
+    box-shadow:
+      0 1px 2px rgba(131,11,244,0.20),
+      0 6px 16px rgba(131,11,244,0.18);
+    transition: transform .18s ease, box-shadow .18s ease, background .18s;
+    text-decoration: none;
+  }
+  .btn-cm-primary:hover {
+    transform: translateY(-1px);
+    background: var(--cm-600);
+    box-shadow:
+      0 2px 4px rgba(131,11,244,0.22),
+      0 12px 28px rgba(131,11,244,0.22);
+  }
+  .btn-cm-primary svg { width: 14px; height: 14px; }
+
+  .btn-cm-ghost {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.55rem 0.95rem;
+    border-radius: 9999px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #334155;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    transition: border-color .18s ease, color .18s, background .18s;
+    text-decoration: none;
+  }
+  .btn-cm-ghost:hover {
+    color: var(--cm-700);
+    border-color: var(--cm-200);
+    background: var(--cm-50);
+  }
+
+  /* ── Section ──────────────────────────────────────── */
+  .section { margin-top: 2.5rem; }
+  .section-head {
+    display: flex; align-items: baseline; justify-content: space-between;
+    margin-bottom: 1rem;
+  }
+  .section-title {
+    font-size: 0.78rem;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: #475569;
+  }
+  .section-title .accent { color: var(--cm-600); }
+  .section-meta { font-size: 0.78rem; color: #94a3b8; }
+
+  /* ── Cards grid ───────────────────────────────────── */
+  .grid-commissions {
+    display: grid;
+    grid-template-columns: repeat(1, minmax(0,1fr));
+    gap: 1.1rem;
+  }
+  @media (min-width: 640px)  { .grid-commissions { grid-template-columns: repeat(2, minmax(0,1fr)); } }
+  @media (min-width: 900px)  { .grid-commissions { grid-template-columns: repeat(3, minmax(0,1fr)); } }
+  @media (min-width: 1200px) { .grid-commissions { grid-template-columns: repeat(4, minmax(0,1fr)); } }
+
+  /* ── Commission card ──────────────────────────────── */
+  .commission-card {
+    position: relative;
+    display: flex; flex-direction: column;
+    background: #fff;
+    border: 1px solid rgba(15,23,42,0.06);
+    border-radius: 1rem;
+    overflow: hidden;
+    text-decoration: none;
+    color: inherit;
+    transition:
+      transform .25s cubic-bezier(.22,.61,.36,1),
+      box-shadow .25s cubic-bezier(.22,.61,.36,1),
+      border-color .25s;
+    box-shadow:
+      0 1px 2px rgba(0,0,0,0.03),
+      0 6px 16px rgba(0,0,0,0.05),
+      0 16px 40px rgba(0,0,0,0.03);
+    opacity: 0;
+    transform: translateY(8px);
+    animation: cm-rise .55s cubic-bezier(.22,.61,.36,1) forwards;
+  }
+  .commission-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(131,11,244,0.25);
+    box-shadow:
+      0 4px 8px rgba(0,0,0,0.05),
+      0 12px 28px rgba(0,0,0,0.08),
+      0 28px 56px rgba(0,0,0,0.06);
+  }
+
+  /* Card gradient image area */
+  .cm-card-img {
+    position: relative;
+    height: 120px;
+    overflow: hidden;
+    display: flex; flex-direction: column; justify-content: space-between;
+    padding: 0.85rem 1rem;
+    color: #fff;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0) 40%),
+      linear-gradient(135deg, var(--cm-500), var(--cm-800));
+    transition: filter .3s ease;
+  }
+  .commission-card:hover .cm-card-img { filter: brightness(1.08); }
+  .cm-card-img-type {
+    font-size: 0.62rem; letter-spacing: 0.14em; text-transform: uppercase;
+    font-weight: 700; opacity: 0.85;
+  }
+  .cm-card-img-status {
+    align-self: flex-end;
+  }
+  .cm-card-img .cm-status {
+    background: rgba(255,255,255,0.2);
+    color: #fff;
+    backdrop-filter: blur(4px);
+  }
+  .cm-card-img .cm-status::before { background: #fff; }
+
+  /* Card body */
+  .cm-card-body {
+    padding: 1rem 1rem 1.1rem;
+    flex: 1;
+    display: flex; flex-direction: column;
+  }
+  .cm-card-type {
+    font-size: 0.66rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    font-weight: 700;
+    color: var(--cm-600);
+    margin-bottom: 0.3rem;
+  }
+  .cm-card-title {
+    font-size: 0.98rem;
+    font-weight: 700;
+    color: #0f172a;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+  }
+  .cm-card-desc {
+    margin-top: 0.4rem;
+    font-size: 0.8rem;
+    color: #64748b;
+    line-height: 1.5;
+    flex: 1;
+  }
+  .cm-card-foot {
+    margin-top: 0.85rem;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+
+  /* Status pill */
+  .cm-status {
+    display: inline-flex; align-items: center; gap: 0.3rem;
+    font-size: 0.65rem; font-weight: 700;
+    letter-spacing: 0.08em; text-transform: uppercase;
+    padding: 0.2rem 0.55rem;
+    border-radius: 9999px;
+  }
+  .cm-status::before {
+    content: ''; width: 5px; height: 5px; border-radius: 9999px;
+    background: currentColor;
+  }
+  .status-open { background: rgba(220,252,231,0.92); color: #15803d; }
+  .status-full { background: rgba(254,226,226,0.92); color: #b91c1c; }
+
+  .arrow {
+    font-size: 0.78rem; font-weight: 700;
+    color: var(--cm-600);
+    display: inline-flex; align-items: center; gap: 0.2rem;
+    transition: gap .18s ease, color .18s;
+  }
+  .commission-card:hover .arrow { gap: 0.45rem; color: var(--cm-700); }
+
+  /* Empty state */
+  .empty {
+    text-align: center;
+    padding: 2.5rem 1rem;
+    border: 1px dashed #e2e8f0;
+    border-radius: 1rem;
+    color: #64748b;
+    grid-column: 1 / -1;
+  }
+
+  /* ── Animations ───────────────────────────────────── */
+  @keyframes cm-rise {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes cm-fade {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+  .fade-in { opacity: 0; animation: cm-fade .6s ease forwards; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .commission-card, .fade-in { animation: none; opacity: 1; transform: none; }
+  }
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-    <h1>Commission Requests</h1>
-    
-    {% if user.is_authenticated %}
-        <a href="{% url 'commissions:commission_add' %}" class="btn btn-primary mb-3">Post New Commission</a>
-    {% endif %}
-    
-    {% if user.is_authenticated and created_commissions %}
-        <h3 class="mt-4">Commissions I Created</h3>
-        <div class="row">
-            {% for commission in created_commissions %}
-                <div class="col-md-6 mb-3">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ commission.title }}</h5>
-                            <p class="card-text">{{ commission.description|truncatewords:20 }}</p>
-                            <p><strong>Type:</strong> {{ commission.type.name }}</p>
-                            <p><strong>People Needed:</strong> {{ commission.people_required }}</p>
-                            <p><strong>Status:</strong> <span class="badge badge-info">{{ commission.status }}</span></p>
-                            <a href="{% url 'commissions:commission_detail' commission.pk %}" class="btn btn-info btn-sm">View</a>
-                        </div>
-                    </div>
-                </div>
-            {% endfor %}
-        </div>
-    {% endif %}
-    
-    {% if user.is_authenticated and applied_commissions %}
-        <h3 class="mt-4">Commissions I Applied To</h3>
-        <div class="row">
-            {% for commission in applied_commissions %}
-                <div class="col-md-6 mb-3">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ commission.title }}</h5>
-                            <p class="card-text">{{ commission.description|truncatewords:20 }}</p>
-                            <p><strong>Type:</strong> {{ commission.type.name }}</p>
-                            <p><strong>People Needed:</strong> {{ commission.people_required }}</p>
-                            <p><strong>Status:</strong> <span class="badge badge-info">{{ commission.status }}</span></p>
-                            <p><small>Posted by: {{ commission.maker.user.username }}</small></p>
-                            <a href="{% url 'commissions:commission_detail' commission.pk %}" class="btn btn-info btn-sm">View</a>
-                        </div>
-                    </div>
-                </div>
-            {% endfor %}
-        </div>
-    {% endif %}
 
-    <h3 class="mt-4">All Commissions</h3>
-    {% if commissions %}
-        <div class="row">
-            {% for commission in commissions %}
-                <div class="col-md-6 mb-3">
-                    <div class="card">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ commission.title }}</h5>
-                            <p class="card-text">{{ commission.description|truncatewords:20 }}</p>
-                            <p><strong>Type:</strong> {{ commission.type.name }}</p>
-                            <p><strong>People Needed:</strong> {{ commission.people_required }}</p>
-                            <p><strong>Status:</strong> <span class="badge badge-info">{{ commission.status }}</span></p>
-                            <p><small>Posted by: {{ commission.maker.user.username }}</small></p>
-                            <a href="{% url 'commissions:commission_detail' commission.pk %}" class="btn btn-info btn-sm">View</a>
-                        </div>
-                    </div>
-                </div>
-            {% empty %}
-                <p>No other commissions available.</p>
-            {% endfor %}
+{# ── Hero ─────────────────────────────────────────── #}
+<section class="cm-hero fade-in">
+  <div class="cm-hero-grid">
+    <div class="cm-hero-content">
+      <span class="cm-hero-eyebrow">Commission Requests</span>
+      <h1>Find your next<br>collaboration.</h1>
+      <p class="sub">
+        Browse open commissions from creators looking for collaborators —
+        or post your own and build your dream team.
+      </p>
+      <div class="mt-7 flex flex-wrap gap-2.5">
+        {% if user.is_authenticated and user.profile.role == 'Commission Maker' %}
+          <a href="{% url 'commissions:commission_add' %}" class="btn-cm-primary">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+            Post a commission
+          </a>
+        {% endif %}
+        <a href="#all-commissions" class="btn-cm-ghost">Browse all</a>
+      </div>
+    </div>
+    <div class="cm-hero-art" aria-hidden="true">
+      <img src="{% static 'img/commissions-icon.svg' %}" alt="">
+    </div>
+  </div>
+</section>
+
+{% if user.is_authenticated %}
+
+  {# ── Commissions I Created ── #}
+  <section class="section">
+    <div class="section-head">
+      <div class="section-title">Commissions I <span class="accent">created</span></div>
+      <div class="section-meta">{{ created_commissions|length }} commission{{ created_commissions|length|pluralize }}</div>
+    </div>
+    <div class="grid-commissions">
+      {% for commission in created_commissions %}
+        <a href="{% url 'commissions:commission_detail' commission.pk %}" class="commission-card" style="animation-delay: {{ forloop.counter0|stringformat:'d' }}0ms">
+          <div class="cm-card-img">
+            <div class="cm-card-img-type">{{ commission.type.name|default:"Commission" }}</div>
+            <div class="cm-card-img-status">
+              <span class="cm-status status-{{ commission.status|lower }}">{{ commission.status }}</span>
+            </div>
+          </div>
+          <div class="cm-card-body">
+            <div class="cm-card-title">{{ commission.title }}</div>
+            <div class="cm-card-desc">{{ commission.description|truncatewords:18 }}</div>
+            <div class="cm-card-foot">
+              <span style="font-size:0.75rem; color:#94a3b8;">👥 {{ commission.people_required }} needed</span>
+              <span class="arrow">View →</span>
+            </div>
+          </div>
+        </a>
+      {% empty %}
+        <div class="empty">
+          <p class="text-base font-medium text-slate-700">You haven't posted any commissions yet.</p>
+          {% if user.profile.role == 'Commission Maker' %}
+            <p class="mt-1 text-sm">
+              <a style="color: var(--cm-600)" class="font-semibold underline-offset-2 hover:underline" href="{% url 'commissions:commission_add' %}">Post your first commission →</a>
+            </p>
+          {% endif %}
         </div>
-    {% else %}
-        <p>No commissions available.</p>
-    {% endif %}
-</div>
+      {% endfor %}
+    </div>
+  </section>
+
+  {# ── Commissions I Applied To ── #}
+  <section class="section">
+    <div class="section-head">
+      <div class="section-title">Commissions I <span class="accent">applied to</span></div>
+      <div class="section-meta">{{ applied_commissions|length }} commission{{ applied_commissions|length|pluralize }}</div>
+    </div>
+    <div class="grid-commissions">
+      {% for commission in applied_commissions %}
+        <a href="{% url 'commissions:commission_detail' commission.pk %}" class="commission-card" style="animation-delay: {{ forloop.counter0|stringformat:'d' }}0ms">
+          <div class="cm-card-img">
+            <div class="cm-card-img-type">{{ commission.type.name|default:"Commission" }}</div>
+            <div class="cm-card-img-status">
+              <span class="cm-status status-{{ commission.status|lower }}">{{ commission.status }}</span>
+            </div>
+          </div>
+          <div class="cm-card-body">
+            <div class="cm-card-title">{{ commission.title }}</div>
+            <div class="cm-card-desc">{{ commission.description|truncatewords:18 }}</div>
+            <div class="cm-card-foot">
+              <span style="font-size:0.75rem; color:#94a3b8;">👥 {{ commission.people_required }} needed</span>
+              <span class="arrow">View →</span>
+            </div>
+          </div>
+        </a>
+      {% empty %}
+        <div class="empty">
+          <p class="text-base font-medium text-slate-700">You haven't applied to any commissions yet.</p>
+          <p class="mt-1 text-sm text-slate-400">Explore the commissions below.</p>
+        </div>
+      {% endfor %}
+    </div>
+  </section>
+
+{% endif %}
+
+{# ── All Commissions ── #}
+<section class="section" id="all-commissions">
+  <div class="section-head">
+    <div class="section-title">All <span class="accent">commissions</span></div>
+    <div class="section-meta">{{ commissions|length }} commission{{ commissions|length|pluralize }}</div>
+  </div>
+  <div class="grid-commissions">
+    {% for commission in commissions %}
+      <a href="{% url 'commissions:commission_detail' commission.pk %}" class="commission-card" style="animation-delay: {{ forloop.counter0|stringformat:'d' }}0ms">
+        <div class="cm-card-bar"></div>
+        <div class="cm-card-body">
+          <div class="cm-card-type">{{ commission.type.name|default:"—" }}</div>
+          <div class="cm-card-title">{{ commission.title }}</div>
+          <div class="cm-card-desc">{{ commission.description|truncatewords:18 }}</div>
+          <div class="cm-card-foot">
+            <span class="cm-status status-{{ commission.status|lower }}">{{ commission.status }}</span>
+            <span class="arrow">View →</span>
+          </div>
+        </div>
+      </a>
+    {% empty %}
+      <div class="empty">
+        <p class="text-base font-medium text-slate-700">No commissions available right now.</p>
+        <p class="mt-1 text-sm text-slate-400">Check back soon — something's always in the works.</p>
+      </div>
+    {% endfor %}
+  </div>
+</section>
+
 {% endblock %}

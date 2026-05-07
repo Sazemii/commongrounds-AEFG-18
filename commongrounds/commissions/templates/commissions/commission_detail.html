@@ -1,68 +1,291 @@
 {% extends 'base.html' %}
+{% load static %}
+{% block title %}{{ commission.title }} | Commissions{% endblock %}
+{% block page_heading %}{% endblock %}
 
-{% block title %}{{ commission.title }}{% endblock %}
+{% block styles %}
+<style>
+  main > h2:empty { display: none; }
+
+  :root {
+    --cm-50:  #f3e7fe;
+    --cm-100: #e6cefd;
+    --cm-200: #ce9efa;
+    --cm-300: #b56df8;
+    --cm-400: #9c3cf6;
+    --cm-500: #830bf4;
+    --cm-600: #6909c3;
+    --cm-700: #4f0792;
+    --cm-800: #350561;
+    --cm-900: #1a0231;
+  }
+
+  .fade-in { opacity: 0; animation: cm-fade .5s ease forwards; }
+  @keyframes cm-fade { to { opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) { .fade-in { animation: none; opacity: 1; } }
+
+  /* ── Back link ────────────────────────────────────── */
+  .back-link {
+    display: inline-flex; align-items: center; gap: 0.35rem;
+    font-size: 0.82rem; font-weight: 600; color: #64748b;
+    text-decoration: none; margin-bottom: 1.25rem;
+    transition: color .18s;
+  }
+  .back-link:hover { color: var(--cm-600); }
+
+  /* ── Main layout ──────────────────────────────────── */
+  .cm-detail-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    margin-top: 0.5rem;
+  }
+  @media (min-width: 900px) {
+    .cm-detail-grid { grid-template-columns: 300px 1fr; gap: 2.5rem; }
+  }
+
+  /* ── Gradient cover panel (like book club) ────────── */
+  .cm-cover {
+    position: relative;
+    border-radius: 1rem;
+    overflow: hidden;
+    color: #fff;
+    padding: 1.5rem 1.4rem;
+    display: flex; flex-direction: column; justify-content: space-between;
+    min-height: 320px;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.14), rgba(255,255,255,0) 35%),
+      linear-gradient(135deg, var(--cm-500), var(--cm-800));
+    box-shadow:
+      0 2px 4px rgba(0,0,0,0.05),
+      0 12px 28px rgba(0,0,0,0.08),
+      0 28px 56px rgba(0,0,0,0.06);
+    opacity: 0;
+    transform: translateY(8px);
+    animation: cm-rise .55s cubic-bezier(.22,.61,.36,1) .05s forwards;
+  }
+  @keyframes cm-rise { to { opacity: 1; transform: translateY(0); } }
+
+  .cm-cover-type {
+    font-size: 0.68rem; letter-spacing: 0.16em; text-transform: uppercase;
+    font-weight: 700; opacity: 0.85;
+  }
+  .cm-cover-title {
+    font-size: 1.4rem; font-weight: 800; line-height: 1.15; letter-spacing: -0.01em;
+  }
+  .cm-cover-maker {
+    margin-top: 0.4rem; font-size: 0.85rem; opacity: 0.85;
+  }
+  .cm-cover-date { font-size: 0.82rem; opacity: 0.7; }
+
+  /* ── Content card ─────────────────────────────────── */
+  .cm-card {
+    background: #fff;
+    border: 1px solid rgba(15,23,42,0.06);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.03), 0 6px 16px rgba(0,0,0,0.05);
+  }
+
+  .cm-eyebrow {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    font-size: 0.68rem; font-weight: 700; letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--cm-700); background: var(--cm-50);
+    border: 1px solid var(--cm-100);
+    padding: 0.25rem 0.6rem; border-radius: 9999px;
+    margin-bottom: 0.75rem;
+  }
+  .cm-eyebrow::before {
+    content: ''; width: 5px; height: 5px; border-radius: 9999px;
+    background: var(--cm-500); box-shadow: 0 0 0 3px rgba(131,11,244,0.18);
+  }
+
+  .cm-title {
+    font-size: clamp(1.4rem, 5vw, 2.25rem);
+    font-weight: 800; letter-spacing: -0.02em;
+    color: #0f172a; line-height: 1.15;
+  }
+
+  .cm-meta-row {
+    display: flex; flex-wrap: wrap; gap: 0.75rem 1.25rem;
+    margin-top: 1rem;
+    font-size: 0.85rem; color: #475569;
+  }
+  .cm-meta-item { display: flex; align-items: center; gap: 0.4rem; }
+
+  .cm-section-label {
+    font-size: 0.7rem; font-weight: 700; letter-spacing: 0.14em;
+    text-transform: uppercase; color: #94a3b8;
+    margin-top: 1.5rem; margin-bottom: 0.5rem;
+  }
+  .cm-description {
+    font-size: 0.92rem; color: #334155; line-height: 1.65;
+  }
+
+  /* ── Jobs list ────────────────────────────────────── */
+  .cm-jobs { display: flex; flex-direction: column; gap: 0.85rem; margin-top: 0.5rem; }
+
+  .cm-job-card {
+    background: var(--cm-50);
+    border: 1px solid var(--cm-100);
+    border-radius: 0.75rem;
+    padding: 1rem 1.1rem;
+  }
+  .cm-job-role {
+    font-size: 0.92rem; font-weight: 700; color: #0f172a;
+  }
+  .cm-job-meta {
+    font-size: 0.8rem; color: #64748b; margin-top: 0.25rem;
+  }
+
+  /* ── Sidebar ──────────────────────────────────────── */
+  .cm-sidebar { display: flex; flex-direction: column; gap: 1rem; }
+
+  .cm-stat-card {
+    background: #fff;
+    border: 1px solid rgba(15,23,42,0.06);
+    border-radius: 1rem;
+    padding: 1.25rem 1.5rem;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.03), 0 6px 16px rgba(0,0,0,0.05);
+  }
+
+  .status-badge {
+    display: inline-flex; align-items: center; gap: 0.3rem;
+    font-size: 0.68rem; font-weight: 700; letter-spacing: 0.08em;
+    text-transform: uppercase; padding: 0.25rem 0.6rem; border-radius: 9999px;
+  }
+  .status-badge::before {
+    content: ''; width: 5px; height: 5px; border-radius: 9999px; background: currentColor;
+  }
+  .status-open { background: rgba(220,252,231,0.9); color: #15803d; }
+  .status-full { background: rgba(254,226,226,0.9); color: #b91c1c; }
+
+  /* ── Action buttons ───────────────────────────────── */
+  .btn-cm-primary {
+    display: inline-flex; align-items: center; justify-content: center; gap: 0.45rem;
+    width: 100%; padding: 0.7rem 1rem;
+    border-radius: 9999px; font-size: 0.88rem; font-weight: 600;
+    color: #fff; background: var(--cm-500); border: none; cursor: pointer;
+    box-shadow: 0 1px 2px rgba(131,11,244,0.20), 0 6px 16px rgba(131,11,244,0.18);
+    transition: transform .18s, box-shadow .18s, background .18s;
+    text-decoration: none;
+  }
+  .btn-cm-primary:hover:not(:disabled) {
+    transform: translateY(-1px); background: var(--cm-600);
+    box-shadow: 0 2px 4px rgba(131,11,244,0.22), 0 12px 28px rgba(131,11,244,0.22);
+  }
+  .btn-cm-primary:disabled {
+    background: #e2e8f0; color: #94a3b8;
+    box-shadow: none; cursor: not-allowed;
+  }
+  .btn-cm-ghost {
+    display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem;
+    width: 100%; padding: 0.65rem 1rem;
+    border-radius: 9999px; font-size: 0.88rem; font-weight: 600;
+    color: #334155; background: #fff; border: 1px solid #e2e8f0; cursor: pointer;
+    transition: border-color .18s, color .18s, background .18s;
+    text-decoration: none;
+  }
+  .btn-cm-ghost:hover {
+    color: var(--cm-700); border-color: var(--cm-200); background: var(--cm-50);
+  }
+
+  .applied-badge {
+    display: inline-flex; align-items: center; gap: 0.35rem;
+    width: 100%; justify-content: center;
+    padding: 0.6rem 1rem; border-radius: 9999px;
+    font-size: 0.85rem; font-weight: 600;
+    background: rgba(220,252,231,0.9); color: #15803d;
+    border: 1px solid rgba(134,239,172,0.5);
+  }
+</style>
+{% endblock %}
 
 {% block content %}
-<div class="container mt-5">
-    <div class="row">
-        <div class="col-md-8">
-            <h1>{{ commission.title }}</h1>
-            
-            {% if is_owner %}
-                <a href="{% url 'commissions:commission_edit' commission.pk %}" class="btn btn-warning mb-3">Edit Commission</a>
-            {% endif %}
-            
-            <div class="card mb-4">
-                <div class="card-body">
-                    <h5 class="card-title">Details</h5>
-                    <p><strong>Description:</strong> {{ commission.description }}</p>
-                    <p><strong>Type:</strong> {{ commission.type.name }}</p>
-                    <p><strong>Posted by:</strong> {{ commission.maker.user.username }}</p>
-                    <p><strong>Status:</strong> <span class="badge badge-info">{{ commission.status }}</span></p>
-                    <p><strong>People Required:</strong> {{ commission.people_required }}</p>
-                    <p><small>Created: {{ commission.created_on }}</small></p>
-                </div>
-            </div>
-            
-            <div class="alert alert-info">
-                <strong>Total Manpower Required:</strong> {{ total_manpower }}<br>
-                <strong>Open Manpower:</strong> {{ open_manpower }}
-            </div>
-            
-            <h3 class="mt-4">Jobs</h3>
-            {% if jobs %}
-                {% for job in jobs %}
-                    <div class="card mb-3">
-                        <div class="card-body">
-                            <h5 class="card-title">{{ job.role }}</h5>
-                            <p><strong>Description:</strong> {{ job.description }}</p>
-                            <p><strong>Manpower Required:</strong> {{ job.manpower_required }}</p>
-                            <p><strong>Status:</strong> <span class="badge badge-secondary">{{ job.status }}</span></p>
-                            
-                            {% if job.user_applied %}
-                                <p class="mt-3"><span class="badge badge-success">You have applied</span></p>
-                            {% elif can_apply %}
-                                <form method="post" class="mt-3">
-                                    {% csrf_token %}
-                                    <input type="hidden" name="job_id" value="{{ job.id }}">
-                                    <button
-                                        type="submit"
-                                        class="btn btn-success"
-                                        {% if job.is_full %}disabled{% endif %}
-                                    >
-                                        Apply to Job
-                                    </button>
-                                </form>
-                            {% else %}
-                                <p class="mt-3"><a href="{% url 'login' %}">Log in to apply</a></p>
-                            {% endif %}
-                        </div>
-                    </div>
-                {% endfor %}
-            {% else %}
-                <p>No jobs posted for this commission yet.</p>
-            {% endif %}
-        </div>
+
+<a href="{% url 'commissions:commission_list' %}" class="back-link fade-in">← Back to Commissions</a>
+
+<div class="cm-detail-grid">
+
+  {# ── Left: gradient cover panel ── #}
+  <div class="cm-cover">
+    <div>
+      <div class="cm-cover-type">{{ commission.type.name|default:"Commission" }}</div>
     </div>
+    <div>
+      <div class="cm-cover-title">{{ commission.title }}</div>
+      <div class="cm-cover-maker">by {{ commission.maker.user.username }}</div>
+    </div>
+    <div class="cm-cover-date">Posted {{ commission.created_on|date:"M d, Y" }}</div>
+  </div>
+
+  {# ── Right: content ── #}
+  <div class="fade-in">
+
+    {# Meta + description #}
+    <div class="cm-card">
+      {% if commission.type %}
+        <span class="cm-eyebrow">{{ commission.type.name }}</span>
+      {% endif %}
+      <h1 class="cm-title">{{ commission.title }}</h1>
+
+      <div class="cm-meta-row">
+        <span class="cm-meta-item">👥 {{ commission.people_required }} people needed</span>
+        <span class="cm-stat-card" style="padding: 0.2rem 0.75rem; display:inline-flex; align-items:center;">
+          <span class="status-badge status-{{ commission.status|lower }}">{{ commission.status }}</span>
+        </span>
+      </div>
+
+      <dl style="display:grid; grid-template-columns: max-content 1fr; gap: 0.5rem 1.5rem; margin-top: 1.25rem;">
+        <dt style="font-size:0.72rem; letter-spacing:0.12em; text-transform:uppercase; color:#94a3b8; font-weight:600; padding-top:2px;">Open spots</dt>
+        <dd style="font-size:0.92rem; color:#1e293b;">{{ open_manpower }} / {{ total_manpower }}</dd>
+        <dt style="font-size:0.72rem; letter-spacing:0.12em; text-transform:uppercase; color:#94a3b8; font-weight:600; padding-top:2px;">Posted by</dt>
+        <dd style="font-size:0.92rem; color:#1e293b;">{{ commission.maker.user.username }}</dd>
+      </dl>
+
+      <p class="cm-section-label">About this commission</p>
+      <p class="cm-description">{{ commission.description }}</p>
+
+      {% if is_owner %}
+        <div style="margin-top: 1.25rem;">
+          <a href="{% url 'commissions:commission_edit' commission.pk %}" class="btn-cm-primary" style="width: auto; padding: 0.6rem 1.2rem;">Edit Commission</a>
+        </div>
+      {% endif %}
+    </div>
+
+    {# ── Jobs ── #}
+    <div class="cm-card" style="margin-top: 1.25rem;">
+      <p class="cm-section-label" style="margin-top: 0;">Open roles</p>
+      <div class="cm-jobs">
+        {% for job in jobs %}
+          <div class="cm-job-card">
+            <div class="cm-job-role">{{ job.role }}</div>
+            <div class="cm-job-meta">{{ job.manpower_required }} person{{ job.manpower_required|pluralize }} needed &nbsp;·&nbsp; <span class="status-badge status-{{ job.status|lower }}">{{ job.status }}</span></div>
+
+            <div style="margin-top: 0.75rem;">
+              {% if job.user_applied %}
+                <span class="applied-badge">✓ You have applied</span>
+              {% elif can_apply %}
+                <form method="post">
+                  {% csrf_token %}
+                  <input type="hidden" name="job_id" value="{{ job.id }}">
+                  <button type="submit" class="btn-cm-primary" {% if job.is_full %}disabled{% endif %}>
+                    {% if job.is_full %}Role Full{% else %}Apply to Role{% endif %}
+                  </button>
+                </form>
+              {% else %}
+                <a href="{% url 'login' %}" class="btn-cm-ghost" style="width: auto; padding: 0.5rem 1rem;">Log in to apply</a>
+              {% endif %}
+            </div>
+          </div>
+        {% empty %}
+          <p style="font-size: 0.88rem; color: #94a3b8;">No roles posted for this commission yet.</p>
+        {% endfor %}
+      </div>
+    </div>
+
+  </div>
 </div>
+
 {% endblock %}

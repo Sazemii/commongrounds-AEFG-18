@@ -1,13 +1,68 @@
 {% extends 'base.html' %}
 
-{% block content %}
-<h1>{{ commission.title }}</h1>
-<p>{{ commission.description }}</p>
-<br>
-<p><strong>Category:</strong> {{commission.category}} </p>
-<p><strong>People Required:</strong> {{ commission.people_required }}</p>
-<p><strong>Created:</strong> {{ commission.created_on }}</p>
-<p><strong>Last Updated:</strong> {{ commission.updated_on }}</p>
+{% block title %}{{ commission.title }}{% endblock %}
 
-<a href="{% url 'commissions:commission_list' %}">Back to Requests</a>
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-8">
+            <h1>{{ commission.title }}</h1>
+            
+            {% if is_owner %}
+                <a href="{% url 'commissions:commission_edit' commission.pk %}" class="btn btn-warning mb-3">Edit Commission</a>
+            {% endif %}
+            
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Details</h5>
+                    <p><strong>Description:</strong> {{ commission.description }}</p>
+                    <p><strong>Type:</strong> {{ commission.type.name }}</p>
+                    <p><strong>Posted by:</strong> {{ commission.maker.user.username }}</p>
+                    <p><strong>Status:</strong> <span class="badge badge-info">{{ commission.status }}</span></p>
+                    <p><strong>People Required:</strong> {{ commission.people_required }}</p>
+                    <p><small>Created: {{ commission.created_on }}</small></p>
+                </div>
+            </div>
+            
+            <div class="alert alert-info">
+                <strong>Total Manpower Required:</strong> {{ total_manpower }}<br>
+                <strong>Open Manpower:</strong> {{ open_manpower }}
+            </div>
+            
+            <h3 class="mt-4">Jobs</h3>
+            {% if jobs %}
+                {% for job in jobs %}
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ job.role }}</h5>
+                            <p><strong>Description:</strong> {{ job.description }}</p>
+                            <p><strong>Manpower Required:</strong> {{ job.manpower_required }}</p>
+                            <p><strong>Status:</strong> <span class="badge badge-secondary">{{ job.status }}</span></p>
+                            
+                            {% if job.user_applied %}
+                                <p class="mt-3"><span class="badge badge-success">You have applied</span></p>
+                            {% elif can_apply %}
+                                <form method="post" class="mt-3">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="job_id" value="{{ job.id }}">
+                                    <button
+                                        type="submit"
+                                        class="btn btn-success"
+                                        {% if job.is_full %}disabled{% endif %}
+                                    >
+                                        Apply to Job
+                                    </button>
+                                </form>
+                            {% else %}
+                                <p class="mt-3"><a href="{% url 'login' %}">Log in to apply</a></p>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            {% else %}
+                <p>No jobs posted for this commission yet.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
 {% endblock %}

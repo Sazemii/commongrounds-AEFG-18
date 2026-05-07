@@ -1,21 +1,79 @@
 {% extends 'base.html' %}
 
-{% block content %}
-<h1>Commission Requests</h1>
+{% block title %}Commission Requests{% endblock %}
 
-{% if commissions %}
-    <div class="commission-list">
-        <ul>
-        {% for commission in commissions %}
-            <li>
-                <a href="{% url 'commissions:commission_detail' commission.pk %}">
-                    {{ commission.title }}
-                </a>
-            </li>
-        {% endfor %}
-        </ul>
-    </div>
-{% else %}
-    <p>No commission requests available.</p>
-{% endif %}
+{% block content %}
+<div class="container mt-5">
+    <h1>Commission Requests</h1>
+    
+    {% if user.is_authenticated %}
+        <a href="{% url 'commissions:commission_add' %}" class="btn btn-primary mb-3">Post New Commission</a>
+    {% endif %}
+    
+    {% if user.is_authenticated and created_commissions %}
+        <h3 class="mt-4">Commissions I Created</h3>
+        <div class="row">
+            {% for commission in created_commissions %}
+                <div class="col-md-6 mb-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ commission.title }}</h5>
+                            <p class="card-text">{{ commission.description|truncatewords:20 }}</p>
+                            <p><strong>Type:</strong> {{ commission.type.name }}</p>
+                            <p><strong>People Needed:</strong> {{ commission.people_required }}</p>
+                            <p><strong>Status:</strong> <span class="badge badge-info">{{ commission.status }}</span></p>
+                            <a href="{% url 'commissions:commission_detail' commission.pk %}" class="btn btn-info btn-sm">View</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+    
+    {% if user.is_authenticated and applied_commissions %}
+        <h3 class="mt-4">Commissions I Applied To</h3>
+        <div class="row">
+            {% for commission in applied_commissions %}
+                <div class="col-md-6 mb-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ commission.title }}</h5>
+                            <p class="card-text">{{ commission.description|truncatewords:20 }}</p>
+                            <p><strong>Type:</strong> {{ commission.type.name }}</p>
+                            <p><strong>People Needed:</strong> {{ commission.people_required }}</p>
+                            <p><strong>Status:</strong> <span class="badge badge-info">{{ commission.status }}</span></p>
+                            <p><small>Posted by: {{ commission.maker.user.username }}</small></p>
+                            <a href="{% url 'commissions:commission_detail' commission.pk %}" class="btn btn-info btn-sm">View</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <h3 class="mt-4">All Commissions</h3>
+    {% if commissions %}
+        <div class="row">
+            {% for commission in commissions %}
+                <div class="col-md-6 mb-3">
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="card-title">{{ commission.title }}</h5>
+                            <p class="card-text">{{ commission.description|truncatewords:20 }}</p>
+                            <p><strong>Type:</strong> {{ commission.type.name }}</p>
+                            <p><strong>People Needed:</strong> {{ commission.people_required }}</p>
+                            <p><strong>Status:</strong> <span class="badge badge-info">{{ commission.status }}</span></p>
+                            <p><small>Posted by: {{ commission.maker.user.username }}</small></p>
+                            <a href="{% url 'commissions:commission_detail' commission.pk %}" class="btn btn-info btn-sm">View</a>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <p>No other commissions available.</p>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p>No commissions available.</p>
+    {% endif %}
+</div>
 {% endblock %}

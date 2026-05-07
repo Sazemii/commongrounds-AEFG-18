@@ -1,18 +1,311 @@
 {% extends 'base.html' %}
+{% load static %}
 
-{% block title %}DIY Projects - Projects{% endblock %}
+{% block title %}DIY Projects | Common Grounds{% endblock %}
+{% block page_heading %}{% endblock %}
+
+{% block styles %}
+<style>
+  main > h2:empty { display: none; }
+
+  :root {
+    --diy-50:  #fefce8;
+    --diy-100: #fef9c3;
+    --diy-200: #fef08a;
+    --diy-300: #fde047;
+    --diy-400: #facc15;
+    --diy-500: #eab308;
+    --diy-600: #ca8a04;
+    --diy-700: #a16207;
+    --diy-800: #854d0e;
+    --diy-900: #713f12;
+  }
+
+  .dy-hero {
+    position: relative;
+    overflow: hidden;
+    border-radius: 1.25rem;
+    padding: 1.75rem 1.25rem 1.5rem;
+    background:
+      radial-gradient(900px 360px at 12% 0%, rgba(234,179,8,0.12), transparent 60%),
+      radial-gradient(700px 320px at 100% 100%, rgba(234,179,8,0.08), transparent 60%),
+      #ffffff;
+    border: 1px solid rgba(234,179,8,0.18);
+    box-shadow:
+      0 2px 4px rgba(0,0,0,0.04),
+      0 6px 16px rgba(0,0,0,0.05),
+      0 16px 40px rgba(0,0,0,0.04);
+  }
+  .dy-hero-eyebrow {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    font-size: 0.7rem; font-weight: 700; letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--diy-700);
+    background: var(--diy-50);
+    border: 1px solid var(--diy-100);
+    padding: 0.3rem 0.65rem; border-radius: 9999px;
+  }
+  .dy-hero-eyebrow::before {
+    content: ''; width: 6px; height: 6px; border-radius: 9999px;
+    background: var(--diy-500);
+    box-shadow: 0 0 0 4px rgba(234,179,8,0.20);
+  }
+  .dy-hero h1 {
+    font-size: clamp(1.5rem, 6vw, 2.75rem);
+    line-height: 1.1; letter-spacing: -0.02em; font-weight: 800;
+    color: #0f172a; margin-top: 0;
+  }
+  .dy-hero p.sub {
+    margin-top: 0.75rem; max-width: 38rem;
+    color: #475569; font-size: 0.95rem; line-height: 1.55;
+  }
+  @media (min-width: 640px) {
+    .dy-hero { padding: 3rem 2rem 2.75rem; }
+    .dy-hero p.sub { font-size: 1rem; }
+  }
+
+  .dy-hero-grid {
+    display: grid; grid-template-columns: 1fr; gap: 2rem; align-items: center;
+  }
+  .dy-hero-art { display: none; justify-content: center; align-items: center; }
+  .dy-hero-art img { width: 100%; max-width: 360px; height: auto; display: block; }
+  @media (min-width: 768px) {
+    .dy-hero-grid { grid-template-columns: 1fr 1fr; }
+    .dy-hero-art { display: flex; }
+  }
+
+  .btn-primary {
+    display: inline-flex; align-items: center; gap: 0.45rem;
+    padding: 0.6rem 1.05rem; border-radius: 9999px;
+    font-size: 0.85rem; font-weight: 600; color: #fff;
+    background: var(--diy-500);
+    box-shadow: 0 1px 2px rgba(234,179,8,0.22), 0 6px 16px rgba(234,179,8,0.20);
+    transition: transform .18s, box-shadow .18s, background .18s;
+  }
+  .btn-primary:hover {
+    transform: translateY(-1px); background: var(--diy-600);
+    box-shadow: 0 2px 4px rgba(234,179,8,0.24), 0 12px 28px rgba(234,179,8,0.24);
+  }
+  .btn-primary:active { transform: translateY(0); }
+  .btn-primary svg { width: 14px; height: 14px; }
+
+  .btn-ghost {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    padding: 0.55rem 0.95rem; border-radius: 9999px;
+    font-size: 0.85rem; font-weight: 600; color: #334155;
+    background: #fff; border: 1px solid #e2e8f0;
+    transition: border-color .18s, color .18s, background .18s;
+  }
+  .btn-ghost:hover {
+    color: var(--diy-700); border-color: var(--diy-200); background: var(--diy-50);
+  }
+
+  .section { margin-top: 2.5rem; }
+  .section-head {
+    display: flex; align-items: baseline; justify-content: space-between;
+    margin-bottom: 1rem;
+  }
+  .section-title {
+    font-size: 0.78rem; font-weight: 700; letter-spacing: 0.16em;
+    text-transform: uppercase; color: #475569;
+  }
+  .section-title .accent { color: var(--diy-600); }
+  .section-meta { font-size: 0.78rem; color: #94a3b8; }
+
+  .grid-projects {
+    display: grid; grid-template-columns: repeat(1, minmax(0,1fr)); gap: 1.1rem;
+  }
+  @media (min-width: 640px)  { .grid-projects { grid-template-columns: repeat(2, minmax(0,1fr)); } }
+  @media (min-width: 900px)  { .grid-projects { grid-template-columns: repeat(3, minmax(0,1fr)); } }
+  @media (min-width: 1200px) { .grid-projects { grid-template-columns: repeat(4, minmax(0,1fr)); } }
+
+  .project-card {
+    position: relative;
+    display: flex; flex-direction: column;
+    background: #fff;
+    border: 1px solid rgba(15,23,42,0.06);
+    border-radius: 1rem; overflow: hidden;
+    text-decoration: none; color: inherit;
+    transition: transform .25s cubic-bezier(.22,.61,.36,1),
+                box-shadow .25s cubic-bezier(.22,.61,.36,1),
+                border-color .25s;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.03), 0 6px 16px rgba(0,0,0,0.05),
+                0 16px 40px rgba(0,0,0,0.03);
+    opacity: 0; transform: translateY(8px);
+    animation: dy-rise .55s cubic-bezier(.22,.61,.36,1) forwards;
+  }
+  .project-card:hover {
+    transform: translateY(-4px);
+    border-color: rgba(234,179,8,0.30);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.05), 0 12px 28px rgba(0,0,0,0.08),
+                0 28px 56px rgba(0,0,0,0.06);
+  }
+
+  .project-banner {
+    position: relative;
+    height: 132px;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.30), rgba(255,255,255,0) 40%),
+      linear-gradient(135deg, var(--diy-400), var(--diy-700));
+    color: #1f1308;
+    padding: 1rem 1.05rem 0.9rem;
+    display: flex; flex-direction: column; justify-content: space-between;
+    overflow: hidden;
+  }
+  .project-card.tile-1 .project-banner { background: linear-gradient(180deg, rgba(255,255,255,0.22), rgba(255,255,255,0) 40%), linear-gradient(135deg, #facc15, #854d0e); }
+  .project-card.tile-2 .project-banner { background: linear-gradient(180deg, rgba(255,255,255,0.22), rgba(255,255,255,0) 40%), linear-gradient(135deg, #eab308, #713f12); }
+  .project-card.tile-3 .project-banner { background: linear-gradient(180deg, rgba(255,255,255,0.22), rgba(255,255,255,0) 40%), linear-gradient(135deg, #fde047, #a16207); }
+  .project-card.tile-4 .project-banner { background: linear-gradient(180deg, rgba(255,255,255,0.22), rgba(255,255,255,0) 40%), linear-gradient(135deg, #ca8a04, #4a2e08); }
+  .project-card.tile-5 .project-banner { background: linear-gradient(180deg, rgba(255,255,255,0.22), rgba(255,255,255,0) 40%), linear-gradient(135deg, #fef08a, #a16207); }
+  .project-card.tile-6 .project-banner { background: linear-gradient(180deg, rgba(255,255,255,0.22), rgba(255,255,255,0) 40%), linear-gradient(135deg, #f59e0b, #713f12); }
+
+  .project-banner::after {
+    content: ''; position: absolute; top: 0; bottom: 0; right: 14px;
+    width: 1px; background: rgba(255,255,255,0.25);
+  }
+  .project-cat {
+    font-size: 0.66rem; letter-spacing: 0.14em; text-transform: uppercase;
+    font-weight: 700; opacity: 0.9;
+  }
+  .project-date { font-size: 0.85rem; font-weight: 600; opacity: 0.85; align-self: flex-end; }
+
+  .project-body {
+    padding: 1rem 1.05rem 1.1rem;
+    flex: 1; display: flex; flex-direction: column;
+  }
+  .project-title {
+    font-size: 1.02rem; font-weight: 700; color: #0f172a;
+    line-height: 1.25; letter-spacing: -0.01em;
+  }
+  .project-by { margin-top: 0.2rem; font-size: 0.82rem; color: #64748b; }
+  .project-desc {
+    margin-top: 0.65rem; font-size: 0.82rem; color: #475569; line-height: 1.5;
+    display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;
+  }
+  .project-foot {
+    margin-top: 0.95rem;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+  .badge {
+    display: inline-flex; align-items: center; gap: 0.35rem;
+    font-size: 0.7rem; font-weight: 600;
+    padding: 0.22rem 0.55rem; border-radius: 9999px;
+    color: var(--diy-700);
+    background: var(--diy-50);
+    border: 1px solid var(--diy-100);
+  }
+  .arrow {
+    font-size: 0.78rem; font-weight: 700; color: var(--diy-600);
+    display: inline-flex; align-items: center; gap: 0.2rem;
+    transition: gap .18s, color .18s;
+  }
+  .project-card:hover .arrow { gap: 0.45rem; color: var(--diy-700); }
+
+  .empty {
+    text-align: center; padding: 3rem 1rem;
+    border: 1px dashed #e2e8f0; border-radius: 1rem; color: #64748b;
+  }
+
+  @keyframes dy-rise {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes dy-fade { from { opacity: 0; } to { opacity: 1; } }
+  .fade-in { opacity: 0; animation: dy-fade .6s ease forwards; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .project-card, .fade-in { animation: none; opacity: 1; transform: none; }
+  }
+</style>
+{% endblock %}
 
 {% block content %}
-<h1>Projects</h1>
-<ul>
-    {% for project in object_list %}
-    <li>
-        <a href="{{ project.get_absolute_url }}">
-            <h3>{{ project.title }}</h3>
+
+<section class="dy-hero fade-in">
+  <div class="dy-hero-grid">
+    <div>
+      <span class="dy-hero-eyebrow">DIY Projects</span>
+      <h1 class="mt-4">Build something with your hands.</h1>
+      <p class="sub">
+        Tutorials, tinkering, and weekend builds shared by the community.
+        Pick up materials, follow the steps, and post your own when you're ready.
+      </p>
+      <div class="mt-7 flex flex-wrap gap-2.5">
+        <a href="{% url 'diyprojects:project-create' %}" class="btn-primary">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+          Create a project
         </a>
-    </li>
-    {% empty %}
-    <li>No projects available.</li>
-    {% endfor %}
-</ul>
+        <a href="#all-projects" class="btn-ghost">Browse all</a>
+      </div>
+    </div>
+    <div class="dy-hero-art" aria-hidden="true">
+      <img src="{% static 'img/diy-sculpt.svg' %}" alt="">
+    </div>
+  </div>
+</section>
+
+{% if user.is_authenticated %}
+  {% if created_projects %}
+    <section class="section">
+      <div class="section-head">
+        <div class="section-title">Your <span class="accent">creations</span></div>
+        <div class="section-meta">{{ created_projects|length }} project{{ created_projects|length|pluralize }}</div>
+      </div>
+      <div class="grid-projects">
+        {% for project in created_projects %}
+          {% include 'diyprojects/_project_card.html' with project=project idx=forloop.counter0 %}
+        {% endfor %}
+      </div>
+    </section>
+  {% endif %}
+
+  {% if favorited_projects %}
+    <section class="section">
+      <div class="section-head">
+        <div class="section-title">Your <span class="accent">favorites</span></div>
+        <div class="section-meta">{{ favorited_projects|length }} saved</div>
+      </div>
+      <div class="grid-projects">
+        {% for project in favorited_projects %}
+          {% include 'diyprojects/_project_card.html' with project=project idx=forloop.counter0 %}
+        {% endfor %}
+      </div>
+    </section>
+  {% endif %}
+
+  {% if reviewed_projects %}
+    <section class="section">
+      <div class="section-head">
+        <div class="section-title">You've <span class="accent">reviewed</span></div>
+        <div class="section-meta">{{ reviewed_projects|length }} review{{ reviewed_projects|length|pluralize }}</div>
+      </div>
+      <div class="grid-projects">
+        {% for project in reviewed_projects %}
+          {% include 'diyprojects/_project_card.html' with project=project idx=forloop.counter0 %}
+        {% endfor %}
+      </div>
+    </section>
+  {% endif %}
+{% endif %}
+
+<section class="section" id="all-projects">
+  <div class="section-head">
+    <div class="section-title">All <span class="accent">projects</span></div>
+    <div class="section-meta">{{ all_projects|length }} project{{ all_projects|length|pluralize }}</div>
+  </div>
+
+  {% if all_projects %}
+    <div class="grid-projects">
+      {% for project in all_projects %}
+        {% include 'diyprojects/_project_card.html' with project=project idx=forloop.counter0 %}
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty">
+      <p class="text-base font-medium text-slate-700">Nothing here yet.</p>
+      <p class="mt-1 text-sm">Be the first to <a style="color: var(--diy-600)" class="font-semibold underline-offset-2 hover:underline" href="{% url 'diyprojects:project-create' %}">share a project</a>.</p>
+    </div>
+  {% endif %}
+</section>
+
 {% endblock %}

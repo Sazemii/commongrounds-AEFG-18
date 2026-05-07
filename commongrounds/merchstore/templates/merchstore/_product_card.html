@@ -1,0 +1,29 @@
+{# Reusable product card. Expects: product, idx #}
+{% with tile_n=idx|add:1 %}
+<a href="{{ product.get_absolute_url }}"
+   class="product-card tile-{% if tile_n|divisibleby:6 %}6{% elif tile_n|divisibleby:5 %}5{% elif tile_n|divisibleby:4 %}4{% elif tile_n|divisibleby:3 %}3{% elif tile_n|divisibleby:2 %}2{% else %}1{% endif %}"
+   style="animation-delay: {% widthratio idx 1 40 %}ms;">
+  <div class="product-banner">
+    {% if product.product_image %}
+      <img src="{{ product.product_image.url }}" alt="" class="product-img">
+    {% else %}
+      <span class="product-cat">{{ product.product_type|default:"Merch" }}</span>
+    {% endif %}
+  </div>
+  <div class="product-body">
+    <p class="product-title">{{ product.name }}</p>
+    <p class="product-by">by {{ product.owner|default:"Unknown" }}</p>
+    {% if product.description %}<p class="product-desc">{{ product.description }}</p>{% endif %}
+    <div class="product-foot">
+      <span class="price">₱{{ product.price }}</span>
+      {% if product.stock == 0 %}
+        <span class="badge badge-out">Out of stock</span>
+      {% elif product.status == 'On sale' %}
+        <span class="badge badge-sale">On sale</span>
+      {% else %}
+        <span class="badge">{{ product.stock }} in stock</span>
+      {% endif %}
+    </div>
+  </div>
+</a>
+{% endwith %}

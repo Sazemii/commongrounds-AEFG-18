@@ -1,0 +1,20 @@
+{# Reusable project card. Expects: project, idx (for stagger + tile variant) #}
+{% with tile_n=idx|add:1 %}
+<a href="{{ project.get_absolute_url }}"
+   class="project-card tile-{% if tile_n|divisibleby:6 %}6{% elif tile_n|divisibleby:5 %}5{% elif tile_n|divisibleby:4 %}4{% elif tile_n|divisibleby:3 %}3{% elif tile_n|divisibleby:2 %}2{% else %}1{% endif %}"
+   style="animation-delay: {% widthratio idx 1 40 %}ms;">
+  <div class="project-banner">
+    <span class="project-cat">{{ project.category|default:"Uncategorized" }}</span>
+    <span class="project-date">{{ project.created_on|date:"M Y" }}</span>
+  </div>
+  <div class="project-body">
+    <p class="project-title">{{ project.title }}</p>
+    <p class="project-by">by {{ project.creator|default:"Unknown" }}</p>
+    {% if project.description %}<p class="project-desc">{{ project.description }}</p>{% endif %}
+    <div class="project-foot">
+      <span class="badge">{{ project.favorites.count }} favorite{{ project.favorites.count|pluralize }}</span>
+      <span class="arrow">Open →</span>
+    </div>
+  </div>
+</a>
+{% endwith %}

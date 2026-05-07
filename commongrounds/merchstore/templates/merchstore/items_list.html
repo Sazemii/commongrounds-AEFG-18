@@ -1,15 +1,77 @@
 {% extends "base.html" %}
+{% load static %}
 
-{% block title %} Merch Store - Common Grounds {% endblock %}
-{% block page_heading %}List of Merch{% endblock %}
+{% block title %}Merch Store | Common Grounds{% endblock %}
+{% block page_heading %}{% endblock %}
+
+{% block styles %}{% include 'merchstore/_theme.html' %}{% endblock %}
 
 {% block content %}
 
-<ul>
-    {% for product in products %}
-    <li>
-        <a href="{{ product.get_absolute_url }}">{{ product.name }}</a> - PHP {{ product.price }}
-    </li>
-    {% endfor %}
-</ul>
+<section class="ms-hero fade-in">
+  <div class="ms-hero-grid">
+    <div>
+      <span class="ms-hero-eyebrow">Merch Store</span>
+      <h1 class="mt-4">Goods made by the community.</h1>
+      <p class="sub">
+        Browse handmade pieces, prints, and one-off finds posted by sellers
+        in the Common Grounds community. Buy directly, fill your cart, and
+        keep the rotation going.
+      </p>
+      <div class="mt-7 flex flex-wrap gap-2.5">
+        {% if user.is_authenticated %}
+          <a href="{% url 'merchstore:item_create' %}" class="btn-primary">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+            List a product
+          </a>
+          <a href="{% url 'merchstore:cart' %}" class="btn-ghost">View cart</a>
+          <a href="{% url 'merchstore:transactions' %}" class="btn-ghost">My sales</a>
+        {% else %}
+          <a href="#all-products" class="btn-primary">Browse all</a>
+          <a href="{% url 'login' %}" class="btn-ghost">Sign in to sell</a>
+        {% endif %}
+      </div>
+    </div>
+    <div class="ms-hero-art" aria-hidden="true">
+      <img src="{% static 'img/merchstore-illustration.svg' %}" alt="">
+    </div>
+  </div>
+</section>
+
+{% if user.is_authenticated and user_products %}
+  <section class="section">
+    <div class="section-head">
+      <div class="section-title">Your <span class="accent">products</span></div>
+      <div class="section-meta">{{ user_products|length }} listing{{ user_products|length|pluralize }}</div>
+    </div>
+    <div class="grid-products">
+      {% for product in user_products %}
+        {% include 'merchstore/_product_card.html' with product=product idx=forloop.counter0 %}
+      {% endfor %}
+    </div>
+  </section>
+{% endif %}
+
+<section class="section" id="all-products">
+  <div class="section-head">
+    <div class="section-title">All <span class="accent">products</span></div>
+    <div class="section-meta">{{ all_products|length }} item{{ all_products|length|pluralize }}</div>
+  </div>
+
+  {% if all_products %}
+    <div class="grid-products">
+      {% for product in all_products %}
+        {% include 'merchstore/_product_card.html' with product=product idx=forloop.counter0 %}
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty">
+      <p class="text-base font-medium text-slate-700">Nothing here yet.</p>
+      {% if user.is_authenticated %}
+        <p class="mt-1 text-sm">Be the first to <a style="color: var(--merch-600)" class="font-semibold underline-offset-2 hover:underline" href="{% url 'merchstore:item_create' %}">list a product</a>.</p>
+      {% endif %}
+    </div>
+  {% endif %}
+</section>
+
 {% endblock %}

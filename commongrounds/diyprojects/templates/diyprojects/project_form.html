@@ -1,0 +1,116 @@
+{% extends 'base.html' %}
+
+{% block title %}
+  {% if object %}Edit {{ object.title }}{% else %}Create a Project{% endif %} | DIY Projects
+{% endblock %}
+{% block page_heading %}{% endblock %}
+
+{% block styles %}
+<style>
+  main > h2:empty { display: none; }
+
+  :root {
+    --diy-50: #fefce8; --diy-100: #fef9c3; --diy-200: #fef08a;
+    --diy-500: #eab308; --diy-600: #ca8a04; --diy-700: #a16207;
+  }
+
+  .crumb {
+    display: inline-flex; align-items: center; gap: 0.35rem;
+    font-size: 0.78rem; font-weight: 600; color: #64748b;
+    transition: color .18s, gap .18s;
+  }
+  .crumb:hover { color: var(--diy-700); gap: 0.5rem; }
+  .crumb svg { width: 14px; height: 14px; }
+
+  .form-shell {
+    max-width: 640px; margin: 1rem auto 0; padding: 2rem;
+    background: #fff;
+    border: 1px solid rgba(15,23,42,0.06);
+    border-radius: 1.1rem;
+    box-shadow:
+      0 2px 4px rgba(0,0,0,0.04),
+      0 6px 16px rgba(0,0,0,0.05),
+      0 16px 40px rgba(0,0,0,0.04);
+    opacity: 0; transform: translateY(8px);
+    animation: rise .55s cubic-bezier(.22,.61,.36,1) forwards;
+  }
+  .form-eyebrow {
+    font-size: 0.72rem; letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--diy-700); font-weight: 700;
+  }
+  .form-title {
+    margin-top: 0.6rem; font-size: 1.6rem; font-weight: 800;
+    letter-spacing: -0.02em; color: #0f172a;
+  }
+  .form-sub { color: #64748b; font-size: 0.92rem; margin-top: 0.35rem; }
+
+  form { margin-top: 1.5rem; }
+  form p { margin-bottom: 1rem; }
+  form label {
+    display: block; font-size: 0.75rem; font-weight: 600;
+    color: #475569; letter-spacing: 0.04em; margin-bottom: 0.35rem;
+    text-transform: uppercase;
+  }
+  form input[type=text], form input[type=number], form input[type=date],
+  form textarea, form select {
+    width: 100%; padding: 0.6rem 0.8rem; border-radius: 0.65rem;
+    border: 1px solid #e2e8f0; font-size: 0.92rem;
+    color: #0f172a; background: #fff;
+    transition: border-color .18s, box-shadow .18s;
+  }
+  form input:focus, form textarea:focus, form select:focus {
+    outline: none; border-color: var(--diy-500);
+    box-shadow: 0 0 0 3px rgba(234,179,8,0.20);
+  }
+  form textarea { min-height: 120px; resize: vertical; }
+  .helptext { color: #94a3b8; font-size: 0.75rem; }
+  ul.errorlist { color: #b91c1c; font-size: 0.78rem; list-style: none; padding: 0; margin: 0 0 0.4rem; }
+
+  .form-actions { display: flex; align-items: center; gap: 0.6rem; margin-top: 1.25rem; }
+  .btn-primary {
+    display: inline-flex; align-items: center; gap: 0.45rem;
+    padding: 0.65rem 1.15rem; border-radius: 9999px;
+    font-size: 0.88rem; font-weight: 600; color: #fff;
+    background: var(--diy-500); border: 0; cursor: pointer;
+    box-shadow: 0 1px 2px rgba(234,179,8,0.22), 0 6px 16px rgba(234,179,8,0.20);
+    transition: transform .18s, background .18s, box-shadow .18s;
+  }
+  .btn-primary:hover { transform: translateY(-1px); background: var(--diy-600); }
+  .btn-cancel { font-size: 0.85rem; font-weight: 600; color: #64748b; transition: color .18s; }
+  .btn-cancel:hover { color: #0f172a; }
+
+  @keyframes rise { to { opacity: 1; transform: translateY(0); } }
+  @media (prefers-reduced-motion: reduce) { .form-shell { animation: none; opacity: 1; transform: none; } }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<a href="{% url 'diyprojects:project-list' %}" class="crumb">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+  Back to projects
+</a>
+
+<div class="form-shell">
+  <div class="form-eyebrow">{% if object %}Edit{% else %}Create{% endif %}</div>
+  <h1 class="form-title">{% if object %}Edit "{{ object.title }}"{% else %}Share a project{% endif %}</h1>
+  <p class="form-sub">{% if object %}Tweak the details. Updates are immediately visible to everyone.{% else %}Walk people through what you built and what they'll need to make their own.{% endif %}</p>
+
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <div class="form-actions">
+      <button type="submit" class="btn-primary">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/>
+          <polyline points="17 21 17 13 7 13 7 21"/>
+          <polyline points="7 3 7 8 15 8"/>
+        </svg>
+        Save
+      </button>
+      <a href="{% url 'diyprojects:project-list' %}" class="btn-cancel">Cancel</a>
+    </div>
+  </form>
+</div>
+
+{% endblock %}

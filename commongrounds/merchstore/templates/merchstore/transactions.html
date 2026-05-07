@@ -1,0 +1,87 @@
+{% extends "base.html" %}
+
+{% block title %}Sales | Merch Store{% endblock %}
+{% block page_heading %}{% endblock %}
+
+{% block styles %}
+{% include 'merchstore/_theme.html' %}
+<style>
+  .group-card {
+    background: #fff;
+    border: 1px solid rgba(15,23,42,0.06);
+    border-radius: 1rem;
+    padding: 1.25rem 1.4rem;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.03), 0 6px 16px rgba(0,0,0,0.05);
+  }
+  .group-head {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 0.85rem;
+  }
+  .group-name {
+    font-size: 0.78rem; letter-spacing: 0.14em; text-transform: uppercase;
+    color: var(--merch-700); font-weight: 700;
+  }
+  .tx-row {
+    display: grid; grid-template-columns: 1fr auto auto auto; gap: 1rem;
+    align-items: center;
+    padding: 0.7rem 0; border-top: 1px dashed #e2e8f0;
+  }
+  .tx-row:first-of-type { border-top: 0; }
+  .tx-name { font-weight: 600; color: #0f172a; font-size: 0.95rem; }
+  .tx-meta { font-size: 0.78rem; color: #94a3b8; }
+  .tx-amount { font-size: 0.85rem; color: #475569; }
+  .tx-status {
+    font-size: 0.7rem; font-weight: 600; padding: 0.2rem 0.55rem;
+    border-radius: 9999px;
+    color: var(--merch-700); background: var(--merch-50); border: 1px solid var(--merch-100);
+  }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<a href="{% url 'merchstore:items_list' %}" class="crumb">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+  Back to merch
+</a>
+
+<section class="ms-hero fade-in mt-4">
+  <div>
+    <span class="ms-hero-eyebrow">Your sales</span>
+    <h1 class="mt-4">Buyers who picked up your products.</h1>
+    <p class="sub">Grouped by buyer. Track who bought what and where each order is in the fulfilment flow.</p>
+  </div>
+</section>
+
+{% if has_transactions %}
+  <div class="section" style="display: grid; gap: 1rem;">
+    {% for buyer, transactions in groups.items %}
+      <div class="group-card">
+        <div class="group-head">
+          <div class="group-name">{{ buyer|default:"Unknown buyer" }}</div>
+          <div class="text-xs text-slate-400">{{ transactions|length }} item{{ transactions|length|pluralize }}</div>
+        </div>
+        {% for tx in transactions %}
+          <div class="tx-row">
+            <div>
+              <div class="tx-name">
+                <a href="{% url 'merchstore:item_detail' tx.product.pk %}" class="hover:underline">{{ tx.product.name }}</a>
+              </div>
+              <div class="tx-meta">{{ tx.created_on|date:"M d, Y" }}</div>
+            </div>
+            <div class="tx-amount">x{{ tx.amount }}</div>
+            <div class="tx-amount">₱{{ tx.product.price }}</div>
+            <span class="tx-status">{{ tx.status }}</span>
+          </div>
+        {% endfor %}
+      </div>
+    {% endfor %}
+  </div>
+{% else %}
+  <div class="empty section">
+    <p class="text-base font-medium text-slate-700">No sales yet.</p>
+    <p class="mt-1 text-sm">When someone picks up your product they'll show up here.</p>
+  </div>
+{% endif %}
+
+{% endblock %}

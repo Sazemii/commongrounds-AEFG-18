@@ -223,12 +223,7 @@
   .cm-card-img-status {
     align-self: flex-end;
   }
-  .cm-card-img .cm-status {
-    background: rgba(255,255,255,0.2);
-    color: #fff;
-    backdrop-filter: blur(4px);
-  }
-  .cm-card-img .cm-status::before { background: #fff; }
+  .cm-card-img .cm-status { color: rgba(255,255,255,0.9); }
 
   /* Card body */
   .cm-card-body {
@@ -263,20 +258,13 @@
     display: flex; align-items: center; justify-content: space-between;
   }
 
-  /* Status pill */
+  /* Status */
   .cm-status {
-    display: inline-flex; align-items: center; gap: 0.3rem;
     font-size: 0.65rem; font-weight: 700;
     letter-spacing: 0.08em; text-transform: uppercase;
-    padding: 0.2rem 0.55rem;
-    border-radius: 9999px;
   }
-  .cm-status::before {
-    content: ''; width: 5px; height: 5px; border-radius: 9999px;
-    background: currentColor;
-  }
-  .status-open { background: rgba(220,252,231,0.92); color: #15803d; }
-  .status-full { background: rgba(254,226,226,0.92); color: #b91c1c; }
+  .status-open { color: #15803d; }
+  .status-full { color: #b91c1c; }
 
   .arrow {
     font-size: 0.78rem; font-weight: 700;
@@ -319,7 +307,7 @@
 <section class="cm-hero fade-in">
   <div class="cm-hero-grid">
     <div class="cm-hero-content">
-      <span class="cm-hero-eyebrow">Commission Requests</span>
+      <span style="font-size:0.7rem;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:var(--cm-700);">Commission Requests</span>
       <h1>Find your next<br>collaboration.</h1>
       <p class="sub">
         Browse open commissions from creators looking for collaborators —

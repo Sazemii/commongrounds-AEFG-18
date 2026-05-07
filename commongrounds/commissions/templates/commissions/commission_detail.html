@@ -88,17 +88,11 @@
   }
 
   .cm-eyebrow {
-    display: inline-flex; align-items: center; gap: 0.4rem;
+    display: block;
     font-size: 0.68rem; font-weight: 700; letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: var(--cm-700); background: var(--cm-50);
-    border: 1px solid var(--cm-100);
-    padding: 0.25rem 0.6rem; border-radius: 9999px;
+    color: var(--cm-700);
     margin-bottom: 0.75rem;
-  }
-  .cm-eyebrow::before {
-    content: ''; width: 5px; height: 5px; border-radius: 9999px;
-    background: var(--cm-500); box-shadow: 0 0 0 3px rgba(131,11,244,0.18);
   }
 
   .cm-title {
@@ -173,15 +167,11 @@
   }
 
   .status-badge {
-    display: inline-flex; align-items: center; gap: 0.3rem;
     font-size: 0.68rem; font-weight: 700; letter-spacing: 0.08em;
-    text-transform: uppercase; padding: 0.25rem 0.6rem; border-radius: 9999px;
+    text-transform: uppercase;
   }
-  .status-badge::before {
-    content: ''; width: 5px; height: 5px; border-radius: 9999px; background: currentColor;
-  }
-  .status-open { background: rgba(220,252,231,0.9); color: #15803d; }
-  .status-full { background: rgba(254,226,226,0.9); color: #b91c1c; }
+  .status-open { color: #15803d; }
+  .status-full { color: #b91c1c; }
 
   /* ── Action buttons ───────────────────────────────── */
   .btn-cm-primary {
@@ -214,11 +204,8 @@
   }
 
   .applied-badge {
-    display: inline-flex; align-items: center; gap: 0.3rem;
-    padding: 0.45rem 0.9rem; border-radius: 9999px;
     font-size: 0.82rem; font-weight: 600;
-    background: rgba(220,252,231,0.9); color: #15803d;
-    border: 1px solid rgba(134,239,172,0.5);
+    color: #15803d;
     white-space: nowrap;
   }
 </style>
@@ -254,9 +241,7 @@
 
       <div class="cm-meta-row">
         <span class="cm-meta-item">👥 {{ commission.people_required }} people needed</span>
-        <span class="cm-stat-card" style="padding: 0.2rem 0.75rem; display:inline-flex; align-items:center;">
-          <span class="status-badge status-{{ commission.status|lower }}">{{ commission.status }}</span>
-        </span>
+        <span class="status-badge status-{{ commission.status|lower }}">{{ commission.status }}</span>
       </div>
 
       <dl style="display:grid; grid-template-columns: max-content 1fr; gap: 0.5rem 1.5rem; margin-top: 1.25rem;">

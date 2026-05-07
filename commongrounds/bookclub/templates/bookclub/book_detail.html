@@ -111,18 +111,9 @@
     max-width: 38rem;
   }
 
-  .chip {
-    display: inline-flex; align-items: center; gap: 0.4rem;
-    padding: 0.3rem 0.7rem;
-    border-radius: 9999px;
-    font-size: 0.75rem;
-    font-weight: 600;
-  }
-  .chip-avail { color: #047857; background: #ecfdf5; border: 1px solid #a7f3d0; }
-  .chip-out   { color: #b91c1c; background: #fef2f2; border: 1px solid #fecaca; }
-  .chip::before {
-    content: ''; width: 6px; height: 6px; border-radius: 9999px; background: currentColor;
-  }
+  .chip { font-size: 0.75rem; font-weight: 600; }
+  .chip-avail { color: #047857; }
+  .chip-out   { color: #b91c1c; }
 
   .actions { margin-top: 1.5rem; display: flex; flex-wrap: wrap; gap: 0.6rem; }
   .btn-primary, .btn-ghost, .btn-outline {

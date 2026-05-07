@@ -64,17 +64,11 @@
   }
 
   .ev-eyebrow {
-    display: inline-flex; align-items: center; gap: 0.4rem;
+    display: block;
     font-size: 0.68rem; font-weight: 700; letter-spacing: 0.12em;
     text-transform: uppercase;
-    color: var(--ev-700); background: var(--ev-50);
-    border: 1px solid var(--ev-100);
-    padding: 0.25rem 0.6rem; border-radius: 9999px;
+    color: var(--ev-700);
     margin-bottom: 0.75rem;
-  }
-  .ev-eyebrow::before {
-    content: ''; width: 5px; height: 5px; border-radius: 9999px;
-    background: var(--ev-500); box-shadow: 0 0 0 3px rgba(250,115,5,0.18);
   }
 
   .ev-title {
@@ -103,9 +97,7 @@
   }
   .ev-organizer-tag {
     font-size: 0.78rem; font-weight: 600;
-    background: var(--ev-50); color: var(--ev-700);
-    border: 1px solid var(--ev-100);
-    padding: 0.2rem 0.6rem; border-radius: 9999px;
+    color: var(--ev-700);
   }
 
   /* ── Sidebar card ─────────────────────────────────── */
@@ -120,17 +112,13 @@
   }
 
   .status-badge {
-    display: inline-flex; align-items: center; gap: 0.3rem;
     font-size: 0.68rem; font-weight: 700; letter-spacing: 0.08em;
-    text-transform: uppercase; padding: 0.25rem 0.6rem; border-radius: 9999px;
+    text-transform: uppercase;
   }
-  .status-badge::before {
-    content: ''; width: 5px; height: 5px; border-radius: 9999px; background: currentColor;
-  }
-  .status-available { background: rgba(220,252,231,0.9); color: #15803d; }
-  .status-full      { background: rgba(254,226,226,0.9); color: #b91c1c; }
-  .status-done      { background: rgba(226,232,240,0.9); color: #475569; }
-  .status-cancelled { background: rgba(254,249,195,0.9); color: #a16207; }
+  .status-available { color: #15803d; }
+  .status-full      { color: #b91c1c; }
+  .status-done      { color: #475569; }
+  .status-cancelled { color: #a16207; }
 
   .capacity-bar-wrap {
     margin-top: 0.75rem;

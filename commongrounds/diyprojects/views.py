@@ -85,7 +85,6 @@ class ProjectCreateView(LoginRequiredMixin, RoleRequiredMixin, CreateView):
 
     def form_valid(self, form):
         response = super().form_valid(form)
-        self.object.organizer.add(self.request.user.profile)
         return response
 
 

@@ -9,6 +9,8 @@ from django.db.models import Avg
 from accounts.mixins import RoleRequiredMixin
 from accounts.models import Profile
 
+from .forms import ProjectForm, ReviewRatingForm
+
 from .models import ProjectCategory, Project, Favorite, ProjectReview, ProjectRating
 
 
@@ -58,6 +60,12 @@ class ProjectDetailView(DetailView):
         if user.is_authenticated:
             profile = user.profile
             context['is_creator'] = project.creator == profile
+            context['already_favorited'] = project.favorites.filter(
+                profile=profile).exists()
+            context['review_rating_form'] = ReviewRatingForm()
+        else:
+            context['is_creator'] = False
+            context['already_favorited'] = False
 
     def post(self, request, *args, **kwargs):
         self.object = self.get_object()
@@ -66,46 +74,44 @@ class ProjectDetailView(DetailView):
                 project=self.object,
                 profile=request.user.profile
             )
-
         return redirect(self.object.get_absolute_url())
 
 
 class ProjectCreateView(LoginRequiredMixin, RoleRequiredMixin, CreateView):
     model = Project
     template_name = 'diyprojects/project_form.html'
+    form_class = ProjectForm
+    required_role = ROLE_PROJECT_CREATOR
 
 
 class ProjectUpdateView(LoginRequiredMixin, RoleRequiredMixin, UpdateView):
     model = Project
     template_name = 'diyprojects/project_form.html'
+    form_class = ProjectForm
+    required_role = ROLE_PROJECT_CREATOR
 
 
-class ProjectRatingView(View):
-    template_name = 'diyprojects/project_review_rating_form.html'
-
+class ProjectReviewRatingView(View):
     def post(self, request, pk):
         project = get_object_or_404(Project, pk=pk)
-        score = request.POST.get('score')
-        if score and request.user.is_authenticated:
+        if not request.user.is_authenticated:
+            return redirect('login')
+
+        form = ReviewRatingForm(request.POST, request.FILES)
+        if form.is_valid():
+            profile = request.user.profile
+
             ProjectRating.objects.update_or_create(
                 project=project,
-                profile=request.user.profile,
-                defaults={'score': score}
+                profile=profile,
+                defaults={'score': form.cleaned_data['score']}
             )
-        return redirect(project.get_absolute_url())
 
-
-class ProjectReviewView(View):
-    template_name = 'diyprojects/project_review_rating_form.html'
-
-    def post(self, request, pk):
-        project = get_object_or_404(Project, pk=pk)
-        comment = request.POST.get('comment', '').strip()
-        if comment and request.user.is_authenticated:
             ProjectReview.objects.create(
                 project=project,
-                reviewer=request.user.profile,
-                comment=comment,
-                image=request.FILES.get('image')
+                reviewer=profile,
+                comment=form.cleaned_data['comment'],
+                image=form.cleaned_data.get('image')
             )
+
         return redirect(project.get_absolute_url())

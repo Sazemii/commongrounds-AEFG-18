@@ -97,6 +97,7 @@
 
   @keyframes rise { to { opacity: 1; transform: translateY(0); } }
   @media (prefers-reduced-motion: reduce) { .auth-shell { animation: none; opacity: 1; transform: none; } }
+
 </style>
 {% endblock %}
 
@@ -112,7 +113,11 @@
     <dt>Role</dt>    <dd>{{ object.get_role_display }}</dd>
   </dl>
 
-  <form method="post">
+  {% if request.GET.saved %}
+    <p style="margin-top:1.25rem; font-size:0.85rem; font-weight:600; color:#15803d;">✓ Profile saved successfully.</p>
+  {% endif %}
+
+  <form method="post" id="profile-form">
     {% csrf_token %}
     {{ form.as_p }}
     <div class="form-actions">
@@ -128,4 +133,5 @@
     </div>
   </form>
 </div>
+
 {% endblock %}

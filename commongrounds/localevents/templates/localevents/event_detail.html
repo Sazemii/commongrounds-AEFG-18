@@ -1,51 +1,263 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %}{{ event.title }}{% endblock %}
-{% block page_heading %}{{ event.title }}{% endblock %}
+{% block title %}{{ event.title }} | Local Events{% endblock %}
+{% block page_heading %}{% endblock %}
+
+{% block styles %}
+<style>
+  main > h2:empty { display: none; }
+
+  :root {
+    --ev-50:  #fff8f2;
+    --ev-100: #ffe8d0;
+    --ev-200: #ffc89a;
+    --ev-300: #ffa363;
+    --ev-400: #fb8533;
+    --ev-500: #fa7305;
+    --ev-600: #c85c04;
+    --ev-700: #964503;
+    --ev-800: #642e02;
+    --ev-900: #321701;
+  }
+
+  .fade-in { opacity: 0; animation: ev-fade .5s ease forwards; }
+  @keyframes ev-fade { to { opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) { .fade-in { animation: none; opacity: 1; } }
+
+  /* ── Back link ────────────────────────────────────── */
+  .back-link {
+    display: inline-flex; align-items: center; gap: 0.35rem;
+    font-size: 0.82rem; font-weight: 600; color: #64748b;
+    text-decoration: none; margin-bottom: 1.25rem;
+    transition: color .18s;
+  }
+  .back-link:hover { color: var(--ev-600); }
+
+  /* ── Hero image ───────────────────────────────────── */
+  .ev-detail-img {
+    width: 100%; height: 280px;
+    object-fit: cover;
+    border-radius: 1.25rem;
+    border: 1px solid rgba(15,23,42,0.06);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.07);
+  }
+  @media (min-width: 640px) { .ev-detail-img { height: 360px; } }
+
+  /* ── Main layout ──────────────────────────────────── */
+  .ev-detail-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+  }
+  @media (min-width: 768px) {
+    .ev-detail-grid { grid-template-columns: 1fr 320px; gap: 2rem; }
+  }
+
+  /* ── Content card ─────────────────────────────────── */
+  .ev-card {
+    background: #fff;
+    border: 1px solid rgba(15,23,42,0.06);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.03), 0 6px 16px rgba(0,0,0,0.05);
+  }
+
+  .ev-eyebrow {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    font-size: 0.68rem; font-weight: 700; letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ev-700); background: var(--ev-50);
+    border: 1px solid var(--ev-100);
+    padding: 0.25rem 0.6rem; border-radius: 9999px;
+    margin-bottom: 0.75rem;
+  }
+  .ev-eyebrow::before {
+    content: ''; width: 5px; height: 5px; border-radius: 9999px;
+    background: var(--ev-500); box-shadow: 0 0 0 3px rgba(250,115,5,0.18);
+  }
+
+  .ev-title {
+    font-size: clamp(1.4rem, 5vw, 2.25rem);
+    font-weight: 800; letter-spacing: -0.02em;
+    color: #0f172a; line-height: 1.15;
+  }
+
+  .ev-meta-row {
+    display: flex; flex-wrap: wrap; gap: 0.75rem 1.25rem;
+    margin-top: 1rem;
+    font-size: 0.85rem; color: #475569;
+  }
+  .ev-meta-item { display: flex; align-items: center; gap: 0.4rem; }
+
+  .ev-section-label {
+    font-size: 0.7rem; font-weight: 700; letter-spacing: 0.14em;
+    text-transform: uppercase; color: #94a3b8;
+    margin-top: 1.5rem; margin-bottom: 0.5rem;
+  }
+  .ev-description {
+    font-size: 0.92rem; color: #334155; line-height: 1.65;
+  }
+  .ev-organizers {
+    display: flex; flex-wrap: wrap; gap: 0.4rem; margin-top: 0.35rem;
+  }
+  .ev-organizer-tag {
+    font-size: 0.78rem; font-weight: 600;
+    background: var(--ev-50); color: var(--ev-700);
+    border: 1px solid var(--ev-100);
+    padding: 0.2rem 0.6rem; border-radius: 9999px;
+  }
+
+  /* ── Sidebar card ─────────────────────────────────── */
+  .ev-sidebar { display: flex; flex-direction: column; gap: 1rem; }
+
+  .ev-stat-card {
+    background: #fff;
+    border: 1px solid rgba(15,23,42,0.06);
+    border-radius: 1rem;
+    padding: 1.25rem 1.5rem;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.03), 0 6px 16px rgba(0,0,0,0.05);
+  }
+
+  .status-badge {
+    display: inline-flex; align-items: center; gap: 0.3rem;
+    font-size: 0.68rem; font-weight: 700; letter-spacing: 0.08em;
+    text-transform: uppercase; padding: 0.25rem 0.6rem; border-radius: 9999px;
+  }
+  .status-badge::before {
+    content: ''; width: 5px; height: 5px; border-radius: 9999px; background: currentColor;
+  }
+  .status-available { background: rgba(220,252,231,0.9); color: #15803d; }
+  .status-full      { background: rgba(254,226,226,0.9); color: #b91c1c; }
+  .status-done      { background: rgba(226,232,240,0.9); color: #475569; }
+  .status-cancelled { background: rgba(254,249,195,0.9); color: #a16207; }
+
+  .capacity-bar-wrap {
+    margin-top: 0.75rem;
+    background: #f1f5f9; border-radius: 9999px; height: 6px; overflow: hidden;
+  }
+  .capacity-bar {
+    height: 100%; border-radius: 9999px;
+    background: linear-gradient(90deg, var(--ev-400), var(--ev-500));
+    transition: width .6s cubic-bezier(.22,.61,.36,1);
+  }
+
+  /* ── Action buttons ───────────────────────────────── */
+  .btn-ev-primary {
+    display: inline-flex; align-items: center; justify-content: center; gap: 0.45rem;
+    width: 100%; padding: 0.7rem 1rem;
+    border-radius: 9999px; font-size: 0.88rem; font-weight: 600;
+    color: #fff; background: var(--ev-500); border: none; cursor: pointer;
+    box-shadow: 0 1px 2px rgba(250,115,5,0.20), 0 6px 16px rgba(250,115,5,0.18);
+    transition: transform .18s, box-shadow .18s, background .18s;
+    text-decoration: none;
+  }
+  .btn-ev-primary:hover:not(:disabled) {
+    transform: translateY(-1px); background: var(--ev-600);
+    box-shadow: 0 2px 4px rgba(250,115,5,0.22), 0 12px 28px rgba(250,115,5,0.22);
+  }
+  .btn-ev-primary:disabled {
+    background: #e2e8f0; color: #94a3b8;
+    box-shadow: none; cursor: not-allowed;
+  }
+  .btn-ev-ghost {
+    display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem;
+    width: 100%; padding: 0.65rem 1rem;
+    border-radius: 9999px; font-size: 0.88rem; font-weight: 600;
+    color: #334155; background: #fff; border: 1px solid #e2e8f0; cursor: pointer;
+    transition: border-color .18s, color .18s, background .18s;
+    text-decoration: none;
+  }
+  .btn-ev-ghost:hover {
+    color: var(--ev-700); border-color: var(--ev-200); background: var(--ev-50);
+  }
+</style>
+{% endblock %}
 
 {% block content %}
-    {% if event.event_image %}
-        <img src="{{ event.event_image.url }}" alt="{{ event.title }}" style="max-width: 400px;">
+
+<a href="{% url 'localevents:event_list' %}" class="back-link fade-in">← Back to Events</a>
+
+{# ── Hero image ── #}
+{% if event.event_image %}
+  <img src="{{ event.event_image.url }}" alt="{{ event.title }}" class="ev-detail-img fade-in">
+{% else %}
+  <img src="{% static 'img/No_Image_Available.jpg' %}" alt="No image" class="ev-detail-img fade-in">
+{% endif %}
+
+{# ── Detail grid ── #}
+<div class="ev-detail-grid fade-in">
+
+  {# ── Left: content ── #}
+  <div class="ev-card">
+    {% if event.category %}
+      <span class="ev-eyebrow">{{ event.category }}</span>
     {% endif %}
+    <h1 class="ev-title">{{ event.title }}</h1>
 
-    <p><strong>Category:</strong> {{ event.category }}</p>
-    <p><strong>Status:</strong> {{ event.status }}</p>
-    <p><strong>Date and Time:</strong> {{ event.start_time }} to {{ event.end_time }}</p>
-    <p><strong>Location:</strong> {{ event.location }}</p>
-    <p><strong>Capacity:</strong> {{ event.signups.count }} / {{ event.event_capacity }}</p>
-    <p><strong>Description:</strong> {{ event.description }}</p>
+    <div class="ev-meta-row">
+      <span class="ev-meta-item">📍 {{ event.location }}</span>
+      <span class="ev-meta-item">🗓 {{ event.start_time|date:"M d, Y" }}</span>
+      <span class="ev-meta-item">🕐 {{ event.start_time|date:"g:i A" }} – {{ event.end_time|date:"g:i A" }}</span>
+    </div>
 
-    <p><strong>Organizers:</strong>
-        {% for organizer in event.organizer.all %}
-            {{ organizer }}{% if not forloop.last %}, {% endif %}
-        {% endfor %}
-    </p>
+    <p class="ev-section-label">About this event</p>
+    <p class="ev-description">{{ event.description }}</p>
 
-    {% if is_organizer %}
-        <p><a href="{% url 'localevents:event_edit' event.pk %}">Edit Event</a></p>
-    {% else %}
+    <p class="ev-section-label">Organized by</p>
+    <div class="ev-organizers">
+      {% for organizer in event.organizer.all %}
+        <span class="ev-organizer-tag">{{ organizer }}</span>
+      {% endfor %}
+    </div>
+  </div>
+
+  {# ── Right: sidebar ── #}
+  <aside class="ev-sidebar">
+
+    {# Status + capacity #}
+    <div class="ev-stat-card">
+      <div class="flex items-center justify-between mb-2">
+        <span class="text-xs font-semibold uppercase tracking-widest text-slate-400">Status</span>
+        <span class="status-badge status-{{ event.status|lower }}">{{ event.status }}</span>
+      </div>
+      <div class="flex items-baseline justify-between mt-3">
+        <span class="text-2xl font-extrabold text-slate-900">{{ event.signups.count }}</span>
+        <span class="text-sm text-slate-400">/ {{ event.event_capacity }} spots</span>
+      </div>
+      <div class="capacity-bar-wrap">
+        {% widthratio event.signups.count event.event_capacity 100 as pct %}
+        <div class="capacity-bar" style="width: {{ pct }}%"></div>
+      </div>
+      <p class="text-xs text-slate-400 mt-1.5">{{ event.event_capacity|add:"-"|add:event.signups.count }} spots remaining</p>
+    </div>
+
+    {# Action #}
+    <div class="ev-stat-card">
+      {% if is_organizer %}
+        <a href="{% url 'localevents:event_edit' event.pk %}" class="btn-ev-primary">Edit Event</a>
+      {% else %}
         {% if user.is_authenticated %}
-            {% if already_signed_up %}
-                <button {% if already_signed_up %}disabled{% endif %}>
-                    {% if already_signed_up %}Already Signed Up{% endif %}
-                </button>
-            {% else %}
-                <form method="post">
-                    {% csrf_token %}
-                    <button type="submit" {% if is_full %}disabled{% endif %}>
-                        {% if is_full %}Event Full{% else %}Sign Up{% endif %}
-                    </button>
-                </form>
-            {% endif %}
+          {% if already_signed_up %}
+            <button class="btn-ev-primary" disabled>Already Signed Up</button>
+          {% else %}
+            <form method="post">
+              {% csrf_token %}
+              <button type="submit" class="btn-ev-primary" {% if is_full %}disabled{% endif %}>
+                {% if is_full %}Event Full{% else %}Sign Up{% endif %}
+              </button>
+            </form>
+          {% endif %}
         {% else %}
-            <a href="{% url 'localevents:event_signup' event.pk %}">
-                <button {% if is_full %}disabled{% endif %}>
-                    {% if is_full %}Event Full{% else %}Sign Up{% endif %}
-                </button>
-            </a>
+          <a href="{% url 'localevents:event_signup' event.pk %}" class="btn-ev-primary {% if is_full %}pointer-events-none opacity-50{% endif %}">
+            {% if is_full %}Event Full{% else %}Sign Up{% endif %}
+          </a>
         {% endif %}
-    {% endif %}
+      {% endif %}
+      <a href="{% url 'localevents:event_list' %}" class="btn-ev-ghost mt-2">Back to Events</a>
+    </div>
 
-    <br><br>
-    <a href="{% url 'localevents:event_list' %}">Back to Event List</a>
+  </aside>
+</div>
+
 {% endblock %}

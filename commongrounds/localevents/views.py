@@ -88,10 +88,11 @@ class LocalEventsUpdateView(RoleRequiredMixin, UpdateView):
 
     def form_valid(self, form):
         event = form.instance
-        if event.signups.count() >= event.event_capacity:
-            event.status = 'Full'
-        else:
-            event.status = 'Available'
+        if event.status not in ('Cancelled', 'Done'):
+            if event.signups.count() >= event.event_capacity:
+                event.status = 'Full'
+            else:
+                event.status = 'Available'
         return super().form_valid(form)
 
 

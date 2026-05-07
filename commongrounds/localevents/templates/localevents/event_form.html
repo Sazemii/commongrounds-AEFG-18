@@ -1,21 +1,181 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %}
-    {% if object %}Edit {{ object.title }}{% else %}Create Event{% endif %}
-{% endblock %}
-{% block page_heading %}
-    {% if object %}Edit Event{% else %}Create New Event{% endif %}
+{% block title %}{% if object %}Edit {{ object.title }}{% else %}Create Event{% endif %} | Local Events{% endblock %}
+{% block page_heading %}{% endblock %}
+
+{% block styles %}
+<style>
+  main > h2:empty { display: none; }
+
+  :root {
+    --ev-50:  #fff8f2;
+    --ev-100: #ffe8d0;
+    --ev-200: #ffc89a;
+    --ev-300: #ffa363;
+    --ev-400: #fb8533;
+    --ev-500: #fa7305;
+    --ev-600: #c85c04;
+    --ev-700: #964503;
+    --ev-800: #642e02;
+    --ev-900: #321701;
+  }
+
+  .fade-in { opacity: 0; animation: ev-fade .5s ease forwards; }
+  @keyframes ev-fade { to { opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) { .fade-in { animation: none; opacity: 1; } }
+
+  .back-link {
+    display: inline-flex; align-items: center; gap: 0.35rem;
+    font-size: 0.82rem; font-weight: 600; color: #64748b;
+    text-decoration: none; margin-bottom: 1.25rem;
+    transition: color .18s;
+  }
+  .back-link:hover { color: var(--ev-600); }
+
+  /* ── Form card ────────────────────────────────────── */
+  .ev-form-wrap {
+    max-width: 680px;
+    margin: 0 auto;
+  }
+
+  .ev-form-hero {
+    border-radius: 1.25rem;
+    padding: 2rem 2rem 1.75rem;
+    background:
+      radial-gradient(800px 300px at 10% 0%, rgba(250,115,5,0.08), transparent 60%),
+      #ffffff;
+    border: 1px solid rgba(250,115,5,0.12);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.06);
+    margin-bottom: 1.5rem;
+  }
+
+  .ev-form-eyebrow {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    font-size: 0.68rem; font-weight: 700; letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ev-700); background: var(--ev-50);
+    border: 1px solid var(--ev-100);
+    padding: 0.25rem 0.6rem; border-radius: 9999px;
+    margin-bottom: 0.6rem;
+  }
+  .ev-form-eyebrow::before {
+    content: ''; width: 5px; height: 5px; border-radius: 9999px;
+    background: var(--ev-500); box-shadow: 0 0 0 3px rgba(250,115,5,0.18);
+  }
+
+  .ev-form-title {
+    font-size: clamp(1.4rem, 5vw, 2rem);
+    font-weight: 800; letter-spacing: -0.02em;
+    color: #0f172a; line-height: 1.2;
+  }
+  .ev-form-sub {
+    margin-top: 0.4rem;
+    font-size: 0.88rem; color: #64748b;
+  }
+
+  /* ── Fields ───────────────────────────────────────── */
+  .ev-form-card {
+    background: #fff;
+    border: 1px solid rgba(15,23,42,0.06);
+    border-radius: 1rem;
+    padding: 1.75rem;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.03), 0 6px 16px rgba(0,0,0,0.05);
+  }
+
+  .ev-form-card p { margin-bottom: 1.1rem; }
+  .ev-form-card label {
+    display: block;
+    font-size: 0.78rem; font-weight: 700;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    color: #475569; margin-bottom: 0.35rem;
+  }
+  .ev-form-card input:not([type="checkbox"]),
+  .ev-form-card select,
+  .ev-form-card textarea {
+    width: 100%;
+    padding: 0.6rem 0.85rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.6rem;
+    font-size: 0.92rem; color: #0f172a;
+    background: #fff;
+    transition: border-color .18s, box-shadow .18s;
+    outline: none;
+  }
+  .ev-form-card input:focus,
+  .ev-form-card select:focus,
+  .ev-form-card textarea:focus {
+    border-color: var(--ev-400);
+    box-shadow: 0 0 0 3px rgba(250,115,5,0.12);
+  }
+  .ev-form-card textarea { min-height: 120px; resize: vertical; }
+  .ev-form-card .helptext {
+    display: block; font-size: 0.75rem; color: #94a3b8; margin-top: 0.3rem;
+  }
+  .ev-form-card ul.errorlist {
+    margin: 0.3rem 0 0; padding: 0; list-style: none;
+    font-size: 0.78rem; color: #b91c1c;
+  }
+
+  /* ── Buttons ──────────────────────────────────────── */
+  .ev-form-actions {
+    display: flex; gap: 0.75rem; margin-top: 1.5rem; flex-wrap: wrap;
+  }
+  .btn-ev-primary {
+    display: inline-flex; align-items: center; gap: 0.45rem;
+    padding: 0.65rem 1.4rem;
+    border-radius: 9999px; font-size: 0.88rem; font-weight: 600;
+    color: #fff; background: var(--ev-500); border: none; cursor: pointer;
+    box-shadow: 0 1px 2px rgba(250,115,5,0.20), 0 6px 16px rgba(250,115,5,0.18);
+    transition: transform .18s, box-shadow .18s, background .18s;
+    text-decoration: none;
+  }
+  .btn-ev-primary:hover {
+    transform: translateY(-1px); background: var(--ev-600);
+    box-shadow: 0 2px 4px rgba(250,115,5,0.22), 0 12px 28px rgba(250,115,5,0.22);
+  }
+  .btn-ev-ghost {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    padding: 0.6rem 1.2rem;
+    border-radius: 9999px; font-size: 0.88rem; font-weight: 600;
+    color: #334155; background: #fff; border: 1px solid #e2e8f0;
+    transition: border-color .18s, color .18s, background .18s;
+    text-decoration: none;
+  }
+  .btn-ev-ghost:hover {
+    color: var(--ev-700); border-color: var(--ev-200); background: var(--ev-50);
+  }
+</style>
 {% endblock %}
 
 {% block content %}
-    <form method="post" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">
-            {% if object %}Save Changes{% else %}Create Event{% endif %}
-        </button>
-    </form>
+<div class="ev-form-wrap fade-in">
 
-    <br>
-    <a href="{% url 'localevents:event_list' %}">Cancel</a>
+  <a href="{% url 'localevents:event_list' %}" class="back-link">← Back to Events</a>
+
+  {# ── Header ── #}
+  <div class="ev-form-hero">
+    <span class="ev-form-eyebrow">{% if object %}Editing{% else %}New Event{% endif %}</span>
+    <h1 class="ev-form-title">
+      {% if object %}Edit "{{ object.title }}"{% else %}Create a new event{% endif %}
+    </h1>
+    <p class="ev-form-sub">
+      {% if object %}Update the details below and save your changes.{% else %}Fill in the details below to publish your event to the community.{% endif %}
+    </p>
+  </div>
+
+  {# ── Form ── #}
+  <form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <div class="ev-form-card">
+      {{ form.as_p }}
+      <div class="ev-form-actions">
+        <button type="submit" class="btn-ev-primary">
+          {% if object %}Save Changes{% else %}Publish Event{% endif %}
+        </button>
+        <a href="{% url 'localevents:event_list' %}" class="btn-ev-ghost">Cancel</a>
+      </div>
+    </div>
+  </form>
+
+</div>
 {% endblock %}

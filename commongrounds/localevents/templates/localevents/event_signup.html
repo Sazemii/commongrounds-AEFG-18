@@ -1,29 +1,188 @@
 {% extends 'base.html' %}
 {% load static %}
-{% block title %}Sign Up for {{ event.title }}{% endblock %}
-{% block page_heading %}Sign Up for {{ event.title }}{% endblock %}
+{% block title %}Sign Up for {{ event.title }} | Local Events{% endblock %}
+{% block page_heading %}{% endblock %}
+
+{% block styles %}
+<style>
+  main > h2:empty { display: none; }
+
+  :root {
+    --ev-50:  #fff8f2;
+    --ev-100: #ffe8d0;
+    --ev-200: #ffc89a;
+    --ev-300: #ffa363;
+    --ev-400: #fb8533;
+    --ev-500: #fa7305;
+    --ev-600: #c85c04;
+    --ev-700: #964503;
+    --ev-800: #642e02;
+    --ev-900: #321701;
+  }
+
+  .fade-in { opacity: 0; animation: ev-fade .5s ease forwards; }
+  @keyframes ev-fade { to { opacity: 1; } }
+  @media (prefers-reduced-motion: reduce) { .fade-in { animation: none; opacity: 1; } }
+
+  .back-link {
+    display: inline-flex; align-items: center; gap: 0.35rem;
+    font-size: 0.82rem; font-weight: 600; color: #64748b;
+    text-decoration: none; margin-bottom: 1.25rem;
+    transition: color .18s;
+  }
+  .back-link:hover { color: var(--ev-600); }
+
+  .ev-signup-wrap {
+    max-width: 640px;
+    margin: 0 auto;
+  }
+
+  /* ── Event summary card ───────────────────────────── */
+  .ev-summary {
+    border-radius: 1.25rem;
+    overflow: hidden;
+    border: 1px solid rgba(250,115,5,0.12);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.04), 0 8px 24px rgba(0,0,0,0.06);
+    margin-bottom: 1.5rem;
+  }
+  .ev-summary-img {
+    width: 100%; height: 200px;
+    object-fit: cover; display: block;
+  }
+  .ev-summary-body {
+    padding: 1.5rem;
+    background:
+      radial-gradient(600px 260px at 0% 0%, rgba(250,115,5,0.07), transparent 60%),
+      #fff;
+  }
+  .ev-eyebrow {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    font-size: 0.68rem; font-weight: 700; letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--ev-700); background: var(--ev-50);
+    border: 1px solid var(--ev-100);
+    padding: 0.25rem 0.6rem; border-radius: 9999px;
+    margin-bottom: 0.6rem;
+  }
+  .ev-eyebrow::before {
+    content: ''; width: 5px; height: 5px; border-radius: 9999px;
+    background: var(--ev-500); box-shadow: 0 0 0 3px rgba(250,115,5,0.18);
+  }
+  .ev-summary-title {
+    font-size: 1.5rem; font-weight: 800;
+    letter-spacing: -0.02em; color: #0f172a; line-height: 1.2;
+  }
+  .ev-summary-meta {
+    display: flex; flex-wrap: wrap; gap: 0.6rem 1.1rem;
+    margin-top: 0.85rem; font-size: 0.83rem; color: #475569;
+  }
+  .ev-summary-desc {
+    margin-top: 0.85rem;
+    font-size: 0.88rem; color: #334155; line-height: 1.6;
+  }
+
+  /* ── Signup form card ─────────────────────────────── */
+  .ev-form-card {
+    background: #fff;
+    border: 1px solid rgba(15,23,42,0.06);
+    border-radius: 1rem;
+    padding: 1.75rem;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.03), 0 6px 16px rgba(0,0,0,0.05);
+  }
+  .ev-form-card-title {
+    font-size: 1rem; font-weight: 700; color: #0f172a;
+    margin-bottom: 1.1rem;
+  }
+  .ev-field label {
+    display: block;
+    font-size: 0.78rem; font-weight: 700;
+    letter-spacing: 0.06em; text-transform: uppercase;
+    color: #475569; margin-bottom: 0.35rem;
+  }
+  .ev-field input {
+    width: 100%;
+    padding: 0.6rem 0.85rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 0.6rem;
+    font-size: 0.92rem; color: #0f172a;
+    background: #fff;
+    transition: border-color .18s, box-shadow .18s;
+    outline: none;
+  }
+  .ev-field input:focus {
+    border-color: var(--ev-400);
+    box-shadow: 0 0 0 3px rgba(250,115,5,0.12);
+  }
+
+  .ev-form-actions {
+    display: flex; gap: 0.75rem; margin-top: 1.5rem; flex-wrap: wrap;
+  }
+  .btn-ev-primary {
+    display: inline-flex; align-items: center; gap: 0.45rem;
+    padding: 0.65rem 1.4rem;
+    border-radius: 9999px; font-size: 0.88rem; font-weight: 600;
+    color: #fff; background: var(--ev-500); border: none; cursor: pointer;
+    box-shadow: 0 1px 2px rgba(250,115,5,0.20), 0 6px 16px rgba(250,115,5,0.18);
+    transition: transform .18s, box-shadow .18s, background .18s;
+  }
+  .btn-ev-primary:hover {
+    transform: translateY(-1px); background: var(--ev-600);
+    box-shadow: 0 2px 4px rgba(250,115,5,0.22), 0 12px 28px rgba(250,115,5,0.22);
+  }
+  .btn-ev-ghost {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    padding: 0.6rem 1.2rem;
+    border-radius: 9999px; font-size: 0.88rem; font-weight: 600;
+    color: #334155; background: #fff; border: 1px solid #e2e8f0;
+    transition: border-color .18s, color .18s, background .18s;
+    text-decoration: none;
+  }
+  .btn-ev-ghost:hover {
+    color: var(--ev-700); border-color: var(--ev-200); background: var(--ev-50);
+  }
+</style>
+{% endblock %}
 
 {% block content %}
+<div class="ev-signup-wrap fade-in">
+
+  <a href="{{ event.get_absolute_url }}" class="back-link">← Back to Event</a>
+
+  {# ── Event summary ── #}
+  <div class="ev-summary">
     {% if event.event_image %}
-        <img src="{{ event.event_image.url }}" alt="{{ event.title }}" style="max-width: 400px;">
+      <img src="{{ event.event_image.url }}" alt="{{ event.title }}" class="ev-summary-img">
+    {% else %}
+      <img src="{% static 'img/No_Image_Available.jpg' %}" alt="No image" class="ev-summary-img">
     {% endif %}
-    <h3>Event Information</h3>
-    <p><strong>Category:</strong> {{ event.category }}</p>
-    <p><strong>Date and Time:</strong> {{ event.start_time }} to {{ event.end_time }}</p>
-    <p><strong>Location:</strong> {{ event.location }}</p>
-    <p><strong>Description:</strong> {{ event.description }}</p>
+    <div class="ev-summary-body">
+      {% if event.category %}
+        <span class="ev-eyebrow">{{ event.category }}</span>
+      {% endif %}
+      <h1 class="ev-summary-title">{{ event.title }}</h1>
+      <div class="ev-summary-meta">
+        <span>📍 {{ event.location }}</span>
+        <span>🗓 {{ event.start_time|date:"M d, Y · g:i A" }}</span>
+      </div>
+      <p class="ev-summary-desc">{{ event.description }}</p>
+    </div>
+  </div>
 
-    <hr>
-
+  {# ── Sign up form ── #}
+  <div class="ev-form-card">
+    <p class="ev-form-card-title">Complete your sign up</p>
     <form method="post">
-        {% csrf_token %}
-        <p>
-            <label for="new_registrant">Your Name:</label>
-            <input type="text" id="new_registrant" name="new_registrant" required>
-        </p>
-        <button type="submit">Sign Up</button>
+      {% csrf_token %}
+      <div class="ev-field">
+        <label for="new_registrant">Your Name</label>
+        <input type="text" id="new_registrant" name="new_registrant" placeholder="Enter your full name" required>
+      </div>
+      <div class="ev-form-actions">
+        <button type="submit" class="btn-ev-primary">Confirm Sign Up</button>
+        <a href="{{ event.get_absolute_url }}" class="btn-ev-ghost">Cancel</a>
+      </div>
     </form>
+  </div>
 
-    <br>
-    <a href="{{ event.get_absolute_url }}">Cancel</a>
+</div>
 {% endblock %}

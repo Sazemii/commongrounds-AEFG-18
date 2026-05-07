@@ -1,5 +1,9 @@
-{% extends 'base.html' %} {% block title %}{{ project.title }} | DIY Projects{%
-endblock %} {% block page_heading %}{% endblock %} {% block styles %}
+{% extends 'base.html' %}
+
+{% block title %}{{ project.title }} | DIY Projects{% endblock %}
+{% block page_heading %}{% endblock %}
+
+{% block styles %}
 <style>
   main > h2:empty {
     display: none;
@@ -676,4 +680,6 @@ endblock %} {% block page_heading %}{% endblock %} {% block styles %}
     to rate or review this project.
   </div>
 </section>
-{% endif %} {% endblock %}
+{% endif %} 
+
+{% endblock %}

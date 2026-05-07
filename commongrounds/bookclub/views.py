@@ -144,6 +144,8 @@ class BookBorrowView(DetailView):
                 if not borrow.name:
                     borrow.name = request.user.profile.display_name
             borrow.save()
+            self.object.available_to_borrow = False
+            self.object.save(update_fields=['available_to_borrow'])
             return redirect(self.object.get_absolute_url())
         ctx = self.get_context_data()
         ctx['borrow_form'] = form

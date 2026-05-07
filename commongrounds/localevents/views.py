@@ -21,7 +21,7 @@ class LocalEventsListView(ListView):
         context = super().get_context_data(**kwargs)
         user = self.request.user
 
-        if user.is_authenticated:
+        if user.is_authenticated and hasattr(user, 'profile'):
             profile = user.profile
             context['organized_events'] = Event.objects.filter(
                 organizer=profile)
@@ -47,7 +47,7 @@ class LocalEventsDetailView(DetailView):
         user = self.request.user
         context['is_full'] = event.signups.count() >= event.event_capacity
 
-        if user.is_authenticated:
+        if user.is_authenticated and hasattr(user, 'profile'):
             profile = user.profile
             context['is_organizer'] = profile in event.organizer.all()
             context['already_signed_up'] = event.signups.filter(

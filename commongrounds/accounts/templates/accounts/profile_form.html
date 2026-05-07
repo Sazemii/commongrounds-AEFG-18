@@ -1,16 +1,131 @@
 {% extends 'base.html' %}
 
 {% block title %}Edit Profile | Common Grounds{% endblock %}
-{% block page_heading %}Edit Profile{% endblock %}
+{% block page_heading %}{% endblock %}
+
+{% block styles %}
+<style>
+  main > h2:empty { display: none; }
+
+  :root {
+    --acc-50:  #f1f5f9; --acc-100: #e2e8f0; --acc-200: #cbd5e1;
+    --acc-500: #475569; --acc-600: #334155; --acc-700: #1e293b; --acc-800: #0f172a;
+  }
+
+  .auth-shell {
+    max-width: 640px;
+    margin: 1rem auto 0;
+    padding: 2rem;
+    background: #fff;
+    border: 1px solid rgba(15,23,42,0.06);
+    border-radius: 1.1rem;
+    box-shadow:
+      0 2px 4px rgba(0,0,0,0.04),
+      0 6px 16px rgba(0,0,0,0.05),
+      0 16px 40px rgba(0,0,0,0.04);
+    opacity: 0; transform: translateY(8px);
+    animation: rise .55s cubic-bezier(.22,.61,.36,1) forwards;
+  }
+  .auth-eyebrow {
+    font-size: 0.72rem; letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--acc-600); font-weight: 700;
+  }
+  .auth-title {
+    margin-top: 0.6rem;
+    font-size: 1.6rem; font-weight: 800;
+    letter-spacing: -0.02em; color: #0f172a;
+  }
+  .auth-sub { color: #64748b; font-size: 0.92rem; margin-top: 0.35rem; }
+
+  .info-grid {
+    margin-top: 1.25rem;
+    display: grid; grid-template-columns: max-content 1fr;
+    gap: 0.5rem 1.5rem;
+    padding: 1rem 1.1rem;
+    background: var(--acc-50);
+    border: 1px solid var(--acc-100);
+    border-radius: 0.85rem;
+    font-size: 0.88rem;
+  }
+  .info-grid dt {
+    font-size: 0.7rem; letter-spacing: 0.12em; text-transform: uppercase;
+    color: #94a3b8; font-weight: 600; align-self: center;
+  }
+  .info-grid dd { color: #0f172a; font-weight: 600; }
+
+  form { margin-top: 1.5rem; }
+  form p { margin-bottom: 1rem; }
+  form label {
+    display: block; font-size: 0.75rem; font-weight: 600;
+    color: #475569; letter-spacing: 0.04em; margin-bottom: 0.35rem;
+    text-transform: uppercase;
+  }
+  form input[type=text], form input[type=email], form input[type=password],
+  form input[type=number], form input[type=date], form textarea, form select {
+    width: 100%;
+    padding: 0.6rem 0.8rem;
+    border-radius: 0.65rem;
+    border: 1px solid #e2e8f0;
+    font-size: 0.92rem;
+    color: #0f172a;
+    background: #fff;
+    transition: border-color .18s, box-shadow .18s;
+  }
+  form input:focus, form textarea:focus, form select:focus {
+    outline: none;
+    border-color: var(--acc-600);
+    box-shadow: 0 0 0 3px rgba(71,85,105,0.18);
+  }
+  form textarea { min-height: 100px; resize: vertical; }
+  .helptext { color: #94a3b8; font-size: 0.75rem; }
+  ul.errorlist { color: #b91c1c; font-size: 0.78rem; list-style: none; padding: 0; margin: 0 0 0.4rem; }
+
+  .form-actions {
+    display: flex; align-items: center; gap: 0.6rem; margin-top: 1.25rem;
+  }
+  .btn-primary {
+    display: inline-flex; align-items: center; gap: 0.45rem;
+    padding: 0.65rem 1.15rem; border-radius: 9999px;
+    font-size: 0.88rem; font-weight: 600; color: #fff;
+    background: var(--acc-700); border: 0; cursor: pointer;
+    box-shadow: 0 1px 2px rgba(15,23,42,0.20), 0 6px 16px rgba(15,23,42,0.18);
+    transition: transform .18s, background .18s;
+  }
+  .btn-primary:hover { transform: translateY(-1px); background: var(--acc-800); }
+  .btn-cancel { font-size: 0.85rem; font-weight: 600; color: #64748b; transition: color .18s; }
+  .btn-cancel:hover { color: #0f172a; }
+
+  @keyframes rise { to { opacity: 1; transform: translateY(0); } }
+  @media (prefers-reduced-motion: reduce) { .auth-shell { animation: none; opacity: 1; transform: none; } }
+</style>
+{% endblock %}
 
 {% block content %}
-<p>Username: {{ object.user.username }}</p>
-<p>Email: {{ object.email_address }}</p>
-<p>Role: {{ object.get_role_display }}</p>
+<div class="auth-shell">
+  <div class="auth-eyebrow">Account</div>
+  <h1 class="auth-title">Edit your profile</h1>
+  <p class="auth-sub">Update how you appear across the community.</p>
 
-<form method="post">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit">Save</button>
-</form>
+  <dl class="info-grid">
+    <dt>Username</dt><dd>{{ object.user.username }}</dd>
+    <dt>Email</dt>   <dd>{{ object.email_address }}</dd>
+    <dt>Role</dt>    <dd>{{ object.get_role_display }}</dd>
+  </dl>
+
+  <form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <div class="form-actions">
+      <button type="submit" class="btn-primary">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/>
+          <polyline points="17 21 17 13 7 13 7 21"/>
+          <polyline points="7 3 7 8 15 8"/>
+        </svg>
+        Save changes
+      </button>
+      <a href="{% url 'homepage:home' %}" class="btn-cancel">Cancel</a>
+    </div>
+  </form>
+</div>
 {% endblock %}

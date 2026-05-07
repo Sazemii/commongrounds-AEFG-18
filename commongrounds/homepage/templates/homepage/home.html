@@ -9,6 +9,52 @@
   /* suppress the base.html h2 wrapper on this page */
   main > h2:empty { display: none; }
 
+  /* prevent horizontal scrollbar from the 100vw wind layer */
+  html, body { overflow-x: hidden; }
+
+  /* ── Wind trace layer ────────────────────────────── */
+  .hp-wind {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 100vw;
+    margin-left: -50vw;  /* break out of main's max-w container */
+    height: 100vh;
+    z-index: 0;          /* sits behind cards; scrolls with page */
+    overflow: hidden;
+    pointer-events: none;
+  }
+  .hp-wind svg { width: 100%; height: 100%; display: block; }
+  .hp-wind path {
+    fill: none;
+    stroke: rgba(58, 35, 16, 0.55);   /* dark brown */
+    stroke-width: 2.25;
+    stroke-linecap: round;
+    vector-effect: non-scaling-stroke;
+  }
+
+  .hp-wind path {
+    stroke-dasharray: 180 4400;   /* shorter visible streak, long gap */
+    stroke-dashoffset: 180;
+    animation-name: wind-drift;
+    animation-timing-function: linear;   /* uniform speed, no fast-then-slow */
+    animation-iteration-count: infinite;
+  }
+  @keyframes wind-drift {
+    0%   { stroke-dashoffset: 180; }
+    100% { stroke-dashoffset: -4600; }
+  }
+  .hp-wind .w2 { animation-duration: 20s; animation-delay:  -3s; }
+  .hp-wind .w4 { animation-duration: 22s; animation-delay: -11s; }
+  .hp-wind .w7 { animation-duration: 21s; animation-delay: -16s; }
+
+  main { position: relative; z-index: 1; }
+  main > h2,
+  main > #content > section,
+  main > #content > .grid { position: relative; z-index: 1; }
+  .hub-card { z-index: 1; }
+
+  /* ── Hub cards (original look) ───────────────────── */
   .hub-card {
     position: relative;
     overflow: hidden;
@@ -21,18 +67,14 @@
     flex-direction: column;
     gap: 0.75rem;
   }
-  .hub-card:hover {
-    transform: translateY(-3px);
-  }
+  .hub-card:hover { transform: translateY(-3px); }
 
-  /* Apple-style layered shadow: resting state */
   .hub-card {
     box-shadow:
       0 2px 4px rgba(0,0,0,0.04),
       0 6px 16px rgba(0,0,0,0.06),
       0 16px 40px rgba(0,0,0,0.04);
   }
-  /* Hover: shadow expands and shifts upward, mimicking physical lift */
   .hub-card:hover {
     box-shadow:
       0 4px 8px rgba(0,0,0,0.05),
@@ -41,7 +83,7 @@
   }
 
   .hub-card.card-events      { background: #fff0e6; border-color: rgba(255,255,255,0.7); }
-  .hub-card.card-books       { background: #e0f2fe; border-color: rgba(255,255,255,0.7); }
+  .hub-card.card-books       { background: #e2c9a8; border-color: rgba(255,255,255,0.7); }
   .hub-card.card-merch       { background: #dcfce7; border-color: rgba(255,255,255,0.7); }
   .hub-card.card-diy         { background: #fef9c3; border-color: rgba(255,255,255,0.7); }
   .hub-card.card-commissions { background: #f3e8ff; border-color: rgba(255,255,255,0.7); }
@@ -62,13 +104,28 @@
     transition: gap 0.2s;
   }
   .hub-card:hover .card-action { gap: 0.5rem; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .hp-wind { display: none; }
+  }
 </style>
 {% endblock %}
 
 {% block content %}
 
+{# ── Wind trace background ───────────────────────────── #}
+<div class="hp-wind" aria-hidden="true">
+  <svg viewBox="0 0 1600 900" preserveAspectRatio="none">
+    {# 3 paths, each starting INSIDE the viewBox so dashes appear mid-screen
+       rather than entering from the left edge. #}
+    <path class="w2" d="M 200,180  C 420, 80  680,440  980,420   S 1340,440 1500,360  S 1700, 80 1800, 60"></path>
+    <path class="w4" d="M 350,470  C 620,360  900,610 1180,420   S 1500,540 1760,360  S 1900,500 1980,460"></path>
+    <path class="w7" d="M 250,780  C 480,690  760,900 1020,740   S 1380,840 1660,700  S 1880,800 1980,760"></path>
+  </svg>
+</div>
+
 {# ── Hero ───────────────────────────────────────────── #}
-<section class="pt-6 pb-16 text-center bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-slate-100/60 via-transparent to-transparent">
+<section class="pt-6 pb-6 sm:pb-8 text-center bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-slate-100/60 via-transparent to-transparent">
     {% if user.is_authenticated %}
         <h1 class="text-5xl sm:text-6xl font-extrabold tracking-tight text-slate-900 mb-4">
             Welcome, {{ user.profile.display_name|default:user.username }}.
@@ -76,23 +133,12 @@
         <p class="text-lg text-slate-600 max-w-xl mx-auto">
             What fancies you today?
         </p>
-        <form method="post" action="{% url 'logout' %}" class="mt-6">
-            {% csrf_token %}
-            <button type="submit" class="text-sm text-slate-400 hover:text-slate-600 transition-colors underline underline-offset-2">
-                Sign out
-            </button>
-        </form>
     {% else %}
         <h1 class="text-5xl sm:text-6xl font-extrabold tracking-tight text-slate-900 mb-4">
             Welcome, beloved guest.
         </h1>
         <p class="text-lg text-slate-600 max-w-xl mx-auto">
             What fancies you today?
-        </p>
-        <p class="mt-6 text-sm text-slate-500">
-            <a href="{% url 'login' %}" class="font-semibold text-slate-700 underline underline-offset-2 hover:text-slate-900 transition-colors">Sign in</a>
-            <span class="mx-2 text-slate-300">·</span>
-            <a href="{% url 'accounts:register' %}" class="font-semibold text-slate-700 underline underline-offset-2 hover:text-slate-900 transition-colors">Create an account</a>
         </p>
     {% endif %}
 </section>

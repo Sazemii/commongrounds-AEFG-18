@@ -1,58 +1,372 @@
 {% extends 'base.html' %}
 
-{% block title %}{{ object.title }}{% endblock %}
-{% block page_heading %}{{ object.title }}{% endblock %}
+{% block title %}{{ object.title }} | Book Club{% endblock %}
+{% block page_heading %}{% endblock %}
+
+{% block styles %}
+<style>
+  main > h2:empty { display: none; }
+
+  :root {
+    --books-50:  #faf6f1;
+    --books-100: #f1e4d2;
+    --books-200: #e2c9a8;
+    --books-500: #8b5a2b;
+    --books-600: #6f4622;
+    --books-700: #523319;
+    --books-800: #3a2310;
+  }
+
+  .crumb {
+    display: inline-flex; align-items: center; gap: 0.35rem;
+    font-size: 0.78rem; font-weight: 600; color: #64748b;
+    transition: color .18s, gap .18s;
+  }
+  .crumb:hover { color: var(--books-700); gap: 0.5rem; }
+
+  .detail-grid {
+    display: grid; gap: 1.5rem;
+    grid-template-columns: 1fr;
+  }
+  @media (min-width: 900px) {
+    .detail-grid { grid-template-columns: 320px 1fr; gap: 2.5rem; }
+  }
+
+  .cover {
+    position: relative;
+    aspect-ratio: 3 / 4;
+    border-radius: 1rem;
+    overflow: hidden;
+    color: #fff;
+    padding: 1.5rem 1.4rem;
+    display: flex; flex-direction: column; justify-content: space-between;
+    background:
+      linear-gradient(180deg, rgba(255,255,255,0.18), rgba(255,255,255,0) 35%),
+      linear-gradient(135deg, var(--books-500), var(--books-800));
+    box-shadow:
+      0 2px 4px rgba(0,0,0,0.05),
+      0 12px 28px rgba(0,0,0,0.08),
+      0 28px 56px rgba(0,0,0,0.06);
+    transform: translateY(8px);
+    opacity: 0;
+    animation: rise .55s cubic-bezier(.22,.61,.36,1) .05s forwards;
+  }
+  .cover::before {
+    content: '';
+    position: absolute; top: 0; bottom: 0; right: 18px;
+    width: 1px; background: rgba(255,255,255,0.18);
+  }
+  .cover-genre {
+    font-size: 0.68rem;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    font-weight: 700;
+    opacity: 0.85;
+  }
+  .cover-title {
+    font-size: 1.4rem;
+    font-weight: 800;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+  }
+  .cover-author {
+    margin-top: 0.4rem;
+    font-size: 0.85rem;
+    opacity: 0.85;
+  }
+  .cover-year { font-size: 0.85rem; opacity: 0.75; }
+
+  .meta {
+    opacity: 0; transform: translateY(8px);
+    animation: rise .55s cubic-bezier(.22,.61,.36,1) .12s forwards;
+  }
+  .meta-eyebrow {
+    font-size: 0.72rem; letter-spacing: 0.16em; text-transform: uppercase;
+    color: var(--books-700); font-weight: 700;
+  }
+  .meta-title {
+    margin-top: 0.6rem;
+    font-size: clamp(1.7rem, 3vw, 2.3rem);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    color: #0f172a;
+    line-height: 1.1;
+  }
+  .meta-author { margin-top: 0.4rem; color: #64748b; font-size: 1rem; }
+  .meta-list {
+    margin-top: 1.5rem;
+    display: grid; gap: 0.6rem 2rem;
+    grid-template-columns: max-content 1fr;
+  }
+  .meta-list dt {
+    font-size: 0.72rem; letter-spacing: 0.12em; text-transform: uppercase;
+    color: #94a3b8; font-weight: 600; padding-top: 2px;
+  }
+  .meta-list dd { font-size: 0.92rem; color: #1e293b; }
+  .synopsis {
+    margin-top: 1.5rem;
+    font-size: 0.97rem;
+    line-height: 1.65;
+    color: #334155;
+    max-width: 38rem;
+  }
+
+  .chip {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    padding: 0.3rem 0.7rem;
+    border-radius: 9999px;
+    font-size: 0.75rem;
+    font-weight: 600;
+  }
+  .chip-avail { color: #047857; background: #ecfdf5; border: 1px solid #a7f3d0; }
+  .chip-out   { color: #b91c1c; background: #fef2f2; border: 1px solid #fecaca; }
+  .chip::before {
+    content: ''; width: 6px; height: 6px; border-radius: 9999px; background: currentColor;
+  }
+
+  .actions { margin-top: 1.5rem; display: flex; flex-wrap: wrap; gap: 0.6rem; }
+  .btn-primary, .btn-ghost, .btn-outline {
+    display: inline-flex; align-items: center; gap: 0.45rem;
+    padding: 0.6rem 1.05rem;
+    border-radius: 9999px;
+    font-size: 0.85rem; font-weight: 600;
+    transition: transform .18s, background .18s, color .18s, border-color .18s, box-shadow .18s;
+    border: 1px solid transparent;
+    cursor: pointer;
+  }
+  .btn-primary {
+    color: #fff; background: var(--books-500);
+    box-shadow: 0 1px 2px rgba(139,90,43,0.20), 0 6px 16px rgba(139,90,43,0.18);
+  }
+  .btn-primary:hover { background: var(--books-600); transform: translateY(-1px); }
+  .btn-primary:disabled, .btn-primary[disabled] {
+    background: #cbd5e1; color: #fff; cursor: not-allowed; box-shadow: none;
+  }
+  .btn-outline {
+    color: var(--books-700); background: #fff; border-color: var(--books-200);
+  }
+  .btn-outline:hover { background: var(--books-50); border-color: var(--books-500); }
+  .btn-ghost {
+    color: #334155; background: #fff; border-color: #e2e8f0;
+  }
+  .btn-ghost:hover { color: var(--books-700); border-color: var(--books-200); background: var(--books-50); }
+  .icon { width: 14px; height: 14px; }
+
+  /* ── Reviews ──────────────────────────────────────── */
+  .section { margin-top: 3rem; }
+  .section-title {
+    font-size: 0.78rem; letter-spacing: 0.16em; text-transform: uppercase;
+    color: #475569; font-weight: 700;
+  }
+  .section-title .accent { color: var(--books-600); }
+
+  .reviews {
+    margin-top: 1rem;
+    display: grid; gap: 0.85rem;
+  }
+  .review {
+    border: 1px solid #e2e8f0;
+    border-radius: 0.9rem;
+    background: #fff;
+    padding: 1rem 1.1rem;
+    transition: border-color .18s, transform .18s, box-shadow .18s;
+    opacity: 0; transform: translateY(6px);
+    animation: rise .5s cubic-bezier(.22,.61,.36,1) forwards;
+  }
+  .review:hover {
+    border-color: var(--books-200);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(139,90,43,0.06);
+  }
+  .review-head {
+    display: flex; align-items: baseline; justify-content: space-between; gap: 0.8rem;
+  }
+  .review-title { font-weight: 700; color: #0f172a; font-size: 0.95rem; }
+  .review-by    { font-size: 0.78rem; color: #94a3b8; }
+  .review-body  { margin-top: 0.45rem; font-size: 0.9rem; line-height: 1.55; color: #334155; }
+
+  .empty {
+    text-align: center; padding: 1.75rem 1rem; color: #94a3b8;
+    border: 1px dashed #e2e8f0; border-radius: 0.9rem;
+  }
+
+  /* ── Form ─────────────────────────────────────────── */
+  .form-card {
+    margin-top: 1rem;
+    padding: 1.25rem;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 1rem;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.03), 0 6px 16px rgba(0,0,0,0.04);
+  }
+  .form-card label {
+    display: block; font-size: 0.78rem; font-weight: 600;
+    color: #475569; letter-spacing: 0.04em; margin-bottom: 0.3rem;
+  }
+  .form-card input[type=text], .form-card textarea, .form-card input[type=date], .form-card select {
+    width: 100%;
+    padding: 0.55rem 0.75rem;
+    border-radius: 0.6rem;
+    border: 1px solid #e2e8f0;
+    font-size: 0.9rem;
+    color: #0f172a;
+    background: #fff;
+    transition: border-color .18s, box-shadow .18s;
+  }
+  .form-card input:focus, .form-card textarea:focus, .form-card select:focus {
+    outline: none;
+    border-color: var(--books-500);
+    box-shadow: 0 0 0 3px rgba(139,90,43,0.18);
+  }
+  .form-card p { margin-bottom: 0.85rem; }
+  .form-card textarea { min-height: 100px; resize: vertical; }
+  .form-card .helptext, .form-card ul.errorlist {
+    color: #94a3b8; font-size: 0.75rem; margin-top: 0.3rem;
+    list-style: none; padding: 0;
+  }
+  .form-card ul.errorlist { color: #b91c1c; }
+
+  /* Bookmark heart button */
+  .bookmark-btn {
+    display: inline-flex; align-items: center; gap: 0.4rem;
+    padding: 0.55rem 0.9rem;
+    border-radius: 9999px;
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    font-size: 0.82rem; font-weight: 600; color: #334155;
+    cursor: pointer;
+    transition: all .18s;
+  }
+  .bookmark-btn:hover { border-color: var(--books-200); background: var(--books-50); color: var(--books-700); }
+  .bookmark-btn.active { background: var(--books-50); border-color: var(--books-500); color: var(--books-700); }
+  .bookmark-btn svg { width: 14px; height: 14px; transition: transform .25s cubic-bezier(.34,1.56,.64,1); }
+  .bookmark-btn:hover svg { transform: scale(1.15); }
+  .bookmark-btn.active svg { fill: var(--books-500); stroke: var(--books-500); }
+
+  @keyframes rise {
+    to { opacity: 1; transform: translateY(0); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .cover, .meta, .review { animation: none; opacity: 1; transform: none; }
+  }
+</style>
+{% endblock %}
 
 {% block content %}
-<p>Author: {{ object.author }}</p>
-<p>Genre: {{ object.genre }}</p>
-<p>Publication Year: {{ object.publication_year }}</p>
-<p>Contributor: {{ object.contributor|default:"(none)" }}</p>
-<p>Synopsis: {{ object.synopsis }}</p>
-<p>Available to borrow:
-  {% if object.available_to_borrow %}Yes{% else %}No{% endif %}
-</p>
 
-<p>Bookmarks: {{ bookmark_count }}</p>
-{% if user.is_authenticated %}
-  <form method="post" action="{% url 'bookclub:book-bookmark' object.pk %}">
+<a href="{% url 'bookclub:book-list' %}" class="crumb">
+  <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+  Back to the shelf
+</a>
+
+<div class="detail-grid mt-4">
+
+  {# ── Cover ────────────────────────────────────────── #}
+  <div class="cover">
+    <div>
+      <div class="cover-genre">{{ object.genre|default:"Uncategorized" }}</div>
+    </div>
+    <div>
+      <div class="cover-title">{{ object.title }}</div>
+      <div class="cover-author">{{ object.author }}</div>
+    </div>
+    <div class="cover-year">{{ object.publication_year }}</div>
+  </div>
+
+  {# ── Meta ─────────────────────────────────────────── #}
+  <div class="meta">
+    <div class="meta-eyebrow">From the shelf</div>
+    <h1 class="meta-title">{{ object.title }}</h1>
+    <p class="meta-author">by {{ object.author }}</p>
+
+    <dl class="meta-list">
+      <dt>Genre</dt>      <dd>{{ object.genre|default:"-" }}</dd>
+      <dt>Published</dt>  <dd>{{ object.publication_year }}</dd>
+      <dt>Contributor</dt><dd>{{ object.contributor|default:"Anonymous" }}</dd>
+      <dt>Status</dt>
+      <dd>
+        {% if object.available_to_borrow %}
+          <span class="chip chip-avail">Available to borrow</span>
+        {% else %}
+          <span class="chip chip-out">Currently borrowed</span>
+        {% endif %}
+      </dd>
+      <dt>Bookmarks</dt>  <dd>{{ bookmark_count }}</dd>
+    </dl>
+
+    {% if object.synopsis %}
+      <p class="synopsis">{{ object.synopsis }}</p>
+    {% endif %}
+
+    <div class="actions">
+      <a href="{% url 'bookclub:book-borrow' object.pk %}"
+         class="btn-primary {% if not object.available_to_borrow %}pointer-events-none opacity-60{% endif %}"
+         {% if not object.available_to_borrow %}aria-disabled="true"{% endif %}>
+        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M4 19.5V6a2 2 0 012-2h12v15.5"/>
+          <path d="M6 17.5h12"/>
+        </svg>
+        Borrow this book
+      </a>
+
+      {% if user.is_authenticated %}
+        <form method="post" action="{% url 'bookclub:book-bookmark' object.pk %}">
+          {% csrf_token %}
+          <button type="submit" class="bookmark-btn {% if is_bookmarked %}active{% endif %}">
+            <svg viewBox="0 0 24 24" fill="{% if is_bookmarked %}currentColor{% else %}none{% endif %}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/>
+            </svg>
+            {% if is_bookmarked %}Bookmarked{% else %}Bookmark{% endif %}
+          </button>
+        </form>
+      {% endif %}
+
+      {% if is_owner %}
+        <a href="{% url 'bookclub:book-update' object.pk %}" class="btn-ghost">
+          <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M12 20h9"/>
+            <path d="M16.5 3.5a2.121 2.121 0 113 3L7 19l-4 1 1-4z"/>
+          </svg>
+          Edit
+        </a>
+      {% endif %}
+    </div>
+  </div>
+</div>
+
+{# ── Reviews ───────────────────────────────────────── #}
+<section class="section">
+  <div class="section-title">Reader <span class="accent">notes</span></div>
+  {% if reviews %}
+    <div class="reviews">
+      {% for review in reviews %}
+        <div class="review" style="animation-delay: {% widthratio forloop.counter0 1 50 %}ms;">
+          <div class="review-head">
+            <div class="review-title">{{ review.title }}</div>
+            <div class="review-by">{{ review.reviewer_display }}</div>
+          </div>
+          <div class="review-body">{{ review.comment }}</div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div class="empty">No notes yet. Be the first to share what you thought.</div>
+  {% endif %}
+</section>
+
+{# ── Leave a review ────────────────────────────────── #}
+<section class="section">
+  <div class="section-title">Leave a <span class="accent">note</span></div>
+  <form method="post" class="form-card">
     {% csrf_token %}
-    <button type="submit">
-      {% if is_bookmarked %}Remove Bookmark{% else %}Bookmark{% endif %}
+    {{ review_form.as_p }}
+    <button type="submit" class="btn-primary">
+      <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4z"/>
+      </svg>
+      Submit review
     </button>
   </form>
-{% endif %}
+</section>
 
-<p>
-  <a href="{% url 'bookclub:book-borrow' object.pk %}">
-    <button {% if not object.available_to_borrow %}disabled{% endif %}>
-      Borrow this book
-    </button>
-  </a>
-</p>
-
-{% if is_owner %}
-  <p><a href="{% url 'bookclub:book-update' object.pk %}">Edit this book</a></p>
-{% endif %}
-
-<h3>Reviews</h3>
-<ul>
-  {% for review in reviews %}
-    <li>
-      <strong>{{ review.title }}</strong> by {{ review.reviewer_display }}<br>
-      {{ review.comment }}
-    </li>
-  {% empty %}
-    <li>No reviews yet.</li>
-  {% endfor %}
-</ul>
-
-<h3>Leave a review</h3>
-<form method="post">
-  {% csrf_token %}
-  {{ review_form.as_p }}
-  <button type="submit">Submit Review</button>
-</form>
-
-<p><a href="{% url 'bookclub:book-list' %}">Back to Books</a></p>
 {% endblock %}

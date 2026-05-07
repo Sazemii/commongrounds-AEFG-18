@@ -1,6 +1,7 @@
 from django.urls import path
 
 from .views import (
+    DashboardView,
     PermissionDeniedView,
     ProfileUpdateView,
     RegisterView,
@@ -15,6 +16,7 @@ urlpatterns = [
          name='permission-denied'),
     path('contributor-dashboard/', contributor_dashboard,
          name='contributor-dashboard'),
+    path('dashboard/', DashboardView.as_view(), name='dashboard'),
     path('<str:username>/', ProfileUpdateView.as_view(),
          name='profile-update'),
 ]

@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    {% if form.instance.pk %}Edit Commission{% else %}Post New Commission{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <h1>{% if form.instance.pk %}Edit Commission{% else %}Post New Commission{% endif %}</h1>
+    
+    <form method="post" novalidate>
+        {% csrf_token %}
+        
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Commission Details</h5>
+            
+                <div class="form-group">
+                    <label>Maker (You)</label>
+                    <input type="text" class="form-control" value="{{ request.user.profile.user.username }}" disabled>
+                </div>
+                
+                <div class="form-group">
+                    <label for="{{ form.title.id_for_label }}">Title *</label>
+                    <input type="text" name="{{ form.title.name }}" class="form-control {% if form.title.errors %}is-invalid{% endif %}" value="{{ form.title.value|default:'' }}">
+                    {% if form.title.errors %}
+                        <div class="invalid-feedback d-block">{{ form.title.errors }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    <label for="{{ form.description.id_for_label }}">Description *</label>
+                    <textarea name="{{ form.description.name }}" class="form-control {% if form.description.errors %}is-invalid{% endif %}" rows="4">{{ form.description.value|default:'' }}</textarea>
+                    {% if form.description.errors %}
+                        <div class="invalid-feedback d-block">{{ form.description.errors }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    <label for="{{ form.type.id_for_label }}">Type *</label>
+                    {{ form.type }}
+                    {% if form.type.errors %}
+                        <div class="text-danger">{{ form.type.errors }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    <label for="{{ form.people_required.id_for_label }}">People Required *</label>
+                    <input type="number" name="{{ form.people_required.name }}" class="form-control {% if form.people_required.errors %}is-invalid{% endif %}" value="{{ form.people_required.value|default:'' }}">
+                    {% if form.people_required.errors %}
+                        <div class="invalid-feedback d-block">{{ form.people_required.errors }}</div>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    <label for="{{ form.status.id_for_label }}">Status *</label>
+                    {{ form.status }}
+                    {% if form.status.errors %}
+                        <div class="text-danger">{{ form.status.errors }}</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5 class="card-title">Jobs</h5>
+                
+                {{ job_formset.management_form }}
+                
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Role</th>
+                            <th>Manpower Required</th>
+                            <th>Status</th>
+                            <th>Delete</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for form in job_formset %}
+                            <tr>
+                                <td>
+                                    {{ form.role }}
+                                    {% if form.role.errors %}
+                                        <div class="text-danger">{{ form.role.errors }}</div>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {{ form.manpower_required }}
+                                    {% if form.manpower_required.errors %}
+                                        <div class="text-danger">{{ form.manpower_required.errors }}</div>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {{ form.status }}
+                                    {% if form.status.errors %}
+                                        <div class="text-danger">{{ form.status.errors }}</div>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {{ form.DELETE }}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                
+                {% if job_formset.non_form_errors %}
+                    <div class="alert alert-danger">
+                        {{ job_formset.non_form_errors }}
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary">
+            {% if form.instance.pk %}Update{% else %}Post{% endif %}
+        </button>
+        <a href="{% url 'commissions:commission_list' %}" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+{% endblock %}

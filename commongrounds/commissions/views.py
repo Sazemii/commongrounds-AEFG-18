@@ -87,34 +87,25 @@ class CommissionDetailView(DetailView):
             status='Accepted'
         ).count()
 
-        job_full = {}
-        user_applied_to = {}
-        
-        for job in jobs:
-            accepted_for_job = job.applications.filter(status='Accepted').count()
-            job_full[job.id] = accepted_for_job >= job.manpower_required
-            
-            if user.is_authenticated:
-                profile = getattr(user, 'profile', None)
-                if profile is None:
-                    profile = Profile.objects.filter(user=user).first()
-                user_applied_to[job.id] = JobApplication.objects.filter(
-                    job=job,
-                    applicant=profile
-                ).exists()
-
         profile = None
         if user.is_authenticated:
             profile = getattr(user, 'profile', None)
             if profile is None:
                 profile = Profile.objects.filter(user=user).first()
 
+        jobs = list(jobs)
+        for job in jobs:
+            accepted_for_job = job.applications.filter(status='Accepted').count()
+            job.is_full = accepted_for_job >= job.manpower_required
+            job.user_applied = profile is not None and JobApplication.objects.filter(
+                job=job,
+                applicant=profile
+            ).exists()
+
         context.update({
             'jobs': jobs,
             'total_manpower': total_manpower,
             'open_manpower': max(total_manpower - accepted_count, 0),
-            'job_full': job_full,
-            'user_applied_to': user_applied_to,
             'is_owner': user.is_authenticated and profile is not None and commission.maker == profile,
             'can_apply': user.is_authenticated,
         })

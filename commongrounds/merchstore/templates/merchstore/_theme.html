@@ -38,18 +38,10 @@
       0 16px 40px rgba(0,0,0,0.04);
   }
   .ms-hero-eyebrow {
-    display: inline-flex; align-items: center; gap: 0.4rem;
+    display: block;
     font-size: 0.7rem; font-weight: 700; letter-spacing: 0.12em;
     text-transform: uppercase;
     color: var(--merch-700);
-    background: var(--merch-50);
-    border: 1px solid var(--merch-100);
-    padding: 0.3rem 0.65rem; border-radius: 9999px;
-  }
-  .ms-hero-eyebrow::before {
-    content: ''; width: 6px; height: 6px; border-radius: 9999px;
-    background: var(--merch-500);
-    box-shadow: 0 0 0 4px rgba(16,188,76,0.20);
   }
   .ms-hero h1 {
     font-size: clamp(1.5rem, 6vw, 2.75rem);
@@ -178,18 +170,14 @@
     display: flex; align-items: center; justify-content: space-between;
   }
   .price { font-weight: 700; color: var(--merch-700); font-size: 0.95rem; }
-  .badge {
-    display: inline-flex; align-items: center; gap: 0.35rem;
-    font-size: 0.7rem; font-weight: 600;
-    padding: 0.22rem 0.55rem; border-radius: 9999px;
-    color: var(--merch-700); background: var(--merch-50); border: 1px solid var(--merch-100);
-  }
-  .badge-out { color: #b91c1c; background: #fef2f2; border-color: #fecaca; }
-  .badge-sale { color: #b45309; background: #fffbeb; border-color: #fde68a; }
+  .badge { font-size: 0.78rem; font-weight: 600; color: var(--merch-700); }
+  .badge-out  { color: #b91c1c; }
+  .badge-sale { color: #b45309; }
 
   .empty {
     text-align: center; padding: 3rem 1rem;
     border: 1px dashed #e2e8f0; border-radius: 1rem; color: #64748b;
+    grid-column: 1 / -1;
   }
 
   .form-card {
@@ -218,6 +206,25 @@
     color: #94a3b8; font-size: 0.75rem; margin-top: 0.3rem; list-style: none; padding: 0;
   }
   .form-card ul.errorlist { color: #b91c1c; }
+
+  .form-card input[type="file"] {
+    padding: 0; border: none; background: transparent;
+    font-size: 0.85rem; color: #475569;
+  }
+  .form-card input[type="file"]::file-selector-button {
+    margin-right: 0.75rem;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 0.6rem;
+    background: #475569;
+    color: #fff;
+    font-size: 0.82rem; font-weight: 600;
+    cursor: pointer;
+    transition: background .18s;
+  }
+  .form-card input[type="file"]::file-selector-button:hover {
+    background: #334155;
+  }
 
   @keyframes ms-rise {
     from { opacity: 0; transform: translateY(10px); }
